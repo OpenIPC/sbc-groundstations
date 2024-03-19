@@ -12,7 +12,7 @@ This changes all wifi cards connect to be wlan0
 
 <br>
 
-This changes the raxda zero 3w internal wifi to wlan1 *note -- we're relying on the OUI of the MAC address on the internal wifi adapter, which *should* be the same for all zero 3w boards.
+This changes the radxa zero 3w internal wifi to wlan1 *note -- we're relying on the OUI of the MAC address on the internal wifi adapter, which *should* be the same for all zero 3w boards.
 
 `sudo nano /etc/udev/rules.d/99-custom-wifi.rules`
 
@@ -78,4 +78,4 @@ Reboot and then follow the steps above for NetworkManager.
 
 ***
 
-Your Raxda pi zero 3w is now headless, ready for an ssh connection on your home wifi network on bootup.
+Your Radxa pi zero 3w is now headless, ready for an ssh connection on your home wifi network on bootup.
