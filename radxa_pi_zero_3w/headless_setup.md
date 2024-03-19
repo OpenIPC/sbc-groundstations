@@ -47,7 +47,7 @@ Enter the following, replacing your_SSID and your_password as needed.
 
 <h3>If your image does not come with NetworkManager</h3>
 
-If your image does not ship with NetworkManager, you will need to make an initial manual connection via wpa_supplicant to download and install NetworkManager and then follow the steps above for autoconnection on boot. Wpa_supplicant will not persisist after a reboot.
+If your image does not ship with NetworkManager, you will need to make an initial manual connection via wpa_supplicant to download and install NetworkManager and then follow the steps above for autoconnection on boot. Wpa_supplicant will not persist after a reboot.
 
 If this is your first boot, you will need to set the root password.
 
@@ -78,4 +78,4 @@ Reboot and then follow the steps above for NetworkManager.
 
 ***
 
-Your Radxa pi zero 3w is now headless, ready for an ssh connection on your home wifi network on bootup.
+Your Raxda pi zero 3w is now headless, ready for an ssh connection on your home wifi network on bootup.
