@@ -12,7 +12,7 @@ This changes all wifi cards connect to be wlan0
 
 <br>
 
-This changes the raxda zero 3w internal wifi to wlan1 *note -- we're relying on the OUI of the MAC address on the internal wifi adapter, which *should* be the same for all zero 3w boards.
+This changes the radxa zero 3w internal wifi to wlan1 *note -- we're relying on the OUI of the MAC address on the internal wifi adapter, which *should* be the same for all zero 3w boards.
 
 `sudo nano /etc/udev/rules.d/99-custom-wifi.rules`
 
@@ -47,7 +47,7 @@ Enter the following, replacing your_SSID and your_password as needed.
 
 <h3>If your image does not come with NetworkManager</h3>
 
-If your image does not ship with NetworkManager, you will need to make an initial manual connection via wpa_supplicant to download and install NetworkManager and then follow the steps above for autoconnection on boot. Wpa_supplicant will not persisist after a reboot.
+If your image does not ship with NetworkManager, you will need to make an initial manual connection via wpa_supplicant to download and install NetworkManager and then follow the steps above for autoconnection on boot. Wpa_supplicant will not persist after a reboot.
 
 If this is your first boot, you will need to set the root password.
 
