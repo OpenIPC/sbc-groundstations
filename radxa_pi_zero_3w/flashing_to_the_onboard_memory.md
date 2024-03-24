@@ -1,7 +1,18 @@
 <h1>How to flash the image to the onboard memory</h1>
 
+Please refer to the Official Radxa documents on flashing your Radxa's onboard emmc memory with the official tools here: https://docs.radxa.com/en/zero/zero3/low-level-dev/rkdevtool
 
-Currently the flashrom feature from Radxa is more trouble than it is worth. However it is still possible to flash the image to the onboard emmc. We do this by booting from the SD card and flashing the onboard memory with the `dd` command.
+The bootloader is the rk356x_spl_loader_ddr1056_v1.xx.xxx.bin file found at the bottom of the page.
+
+**note**
+
+RKDevTool is in the Chinese language when first downloaded, however it includes an english ini. After downloading RKDevTool, extract the zip and open config.ini in a text editor. Under [Language] at the top, change Selected from 1 to 2. ![image](https://github.com/OpenIPC/sbc-groundstations/assets/35317840/0bb45f68-b3d3-4901-ad12-6ccad391e0ea)
+
+
+***
+
+
+It is still possible to flash the image to the onboard emmc by booting from the SD card and flashing the onboard memory with the `dd` command.
 
 Download an image of your choice for the Zero 3W. [I recommend this one.](https://github.com/Joshua-Riek/ubuntu-rockchip/releases/download/v1.33/ubuntu-22.04.3-preinstalled-server-arm64-radxa-zero3.img.xz) (You'll have to boot it up once first or manually expand the filesystem with resize2fs)
 
