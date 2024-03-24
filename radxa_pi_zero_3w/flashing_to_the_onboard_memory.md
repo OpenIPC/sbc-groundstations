@@ -1,5 +1,7 @@
 <h1>How to flash the image to the onboard memory</h1>
 
+<h2>Flashing using the Maskrom </h2>
+
 Please refer to the Official Radxa documents on flashing your Radxa's onboard emmc memory with the official tools here: https://docs.radxa.com/en/zero/zero3/low-level-dev/rkdevtool
 
 The bootloader is the rk356x_spl_loader_ddr1056_v1.xx.xxx.bin file found at the bottom of the page.
@@ -11,6 +13,7 @@ RKDevTool is in the Chinese language when first downloaded, however it includes 
 
 ***
 
+<h2>Flashing with dd</h2>
 
 It is still possible to flash the image to the onboard emmc by booting from the SD card and flashing the onboard memory with the `dd` command.
 
