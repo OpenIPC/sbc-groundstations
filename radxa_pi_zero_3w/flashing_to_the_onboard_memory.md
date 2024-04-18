@@ -48,7 +48,9 @@ When that's done, power down and remove the SD card. The system should now boot 
 
 <h2>Pre-made image for flashing onboard emmc</h2>
 
-[Download this file](https://drive.google.com/file/d/1lww4TroX9bOikmyH1OmMclRrubx-wBQJ/view) and flash it to an SD card and boot.
+[Download this file](https://drive.google.com/file/d/1lww4TroX9bOikmyH1OmMclRrubx-wBQJ/view) and flash it to an SD card using balenaEtcher on windows or dd on linux.
+
+Boot the device.
 
 Login is ubuntu/ubuntu
 
