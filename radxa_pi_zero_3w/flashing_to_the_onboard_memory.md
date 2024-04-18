@@ -42,3 +42,20 @@ Go to the directory you put the img file and enter the following command:
 `sudo dd bs=1M if=image_we_want_on_the_emmc.img of=/dev/mmcblk0 status=progress`
 
 When that's done, power down and remove the SD card. The system should now boot from onboard emmc.
+
+
+***
+
+<h2>Pre-made image for flashing onbaord emmc</h2>
+
+[Download this file](https://drive.google.com/file/d/1lww4TroX9bOikmyH1OmMclRrubx-wBQJ/view) and flash it to an SD card and boot.
+
+Login is ubuntu/ubuntu
+
+run `./flash_emmc.sh`
+
+Wait for the image for flash (approx 5.3GB)
+
+shutdown the system and remove the sd card
+
+Power on the system and it should boot the openipc image from emmc
