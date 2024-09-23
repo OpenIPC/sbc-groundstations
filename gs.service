@@ -1,0 +1,12 @@
+[Unit]
+Description=OpenIPC GS
+After=network.target
+Before=wfb.service
+
+[Service]
+ExecStart=/home/radxa/gs/gs.sh
+Type=oneshot
+RemainAfterExit=true
+
+[Install]
+WantedBy=multi-user.target

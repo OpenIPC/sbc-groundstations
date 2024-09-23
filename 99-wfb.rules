@@ -1,0 +1,12 @@
+# Exclude wlan0 based on devpath
+SUBSYSTEM=="net", KERNEL=="wl*", ACTION=="add", DEVPATH!="/devices/platform/fe2c0000.dwmmc/mmc_host/mmc2/mmc2:390b/mmc2:390b:1/net/wlan0", RUN+="/home/radxa/gs/wfb.sh $name"
+# Exclude wlan0 based on MAC
+# SUBSYSTEM=="net", KERNEL=="wl*", ACTION=="add", ATTR{address}!="98:03:cf:*:*:*", RUN+="/home/radxa/gs/wfb.sh $name"
+# Trigger only for USB WiFi
+# SUBSYSTEM=="net", KERNEL=="wl*", ACTION=="add", SUBSYSTEMS=="usb", RUN+="/home/radxa/gs/wfb.sh $name"
+SUBSYSTEM=="net", KERNEL=="wl*", ACTION=="remove", RUN+="/home/radxa/gs/wfb.sh"
+#
+#
+# KERNEL== must be wl*, not wlx*, otherwise the network card cannot be matched. Although udevadm test shows that the script will be executed, it will not actually be executed.
+# DRIVERS=="rtl88xxau_wfb" # Need Test
+# DRIVERS!="aicwf_sdio" # Tested and invalid
