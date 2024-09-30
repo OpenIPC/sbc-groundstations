@@ -1,0 +1,10 @@
+[Unit]
+Description=GS fan control
+
+[Service]
+ExecStart=/home/radxa/gs/fan.sh
+Type=oneshot
+RemainAfterExit=true
+
+[Install]
+WantedBy=multi-user.target
