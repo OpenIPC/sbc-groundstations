@@ -52,8 +52,19 @@ while true; do
 			$video_rec_cmd &
 			pid_player=$!
 			video_record='1'
+			# Todo: do not flash led when system is overheat
+			(
+			while true; do
+				# Flash red record LED, if direct connect LED to GPIO, should delete `-D open-drain`
+				gpioset -D open-drain $(gpiofind PIN_${REC_GPIO_PIN})=1
+				sleep 1
+				gpioset -D open-drain $(gpiofind PIN_${REC_GPIO_PIN})=0
+			done
+		        ) &
+			pid_led=$!
 		else
 			kill -15 $pid_player
+			kill $pid_led
 			sleep 0.2
 			gencmd norecord
 			$video_play_cmd &

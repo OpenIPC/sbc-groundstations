@@ -42,7 +42,8 @@ while true; do
 	if [ $temp_max -gt $fan_overheat_temperature ];then
 		echo "CATION: System is overheat! fan speed up to 100%!"
 		echo $period > ${pwmchip_path}/pwm${fan_PWM_channel}/duty_cycle
-		# TODO: turn on red record LED 
+		# Turn on red record LED, if direct connect LED to GPIO, should delete `-D open-drain` 
+		gpioset -D open-drain $(gpiofind PIN_${REC_GPIO_PIN})=1 && sleep $(($temperature_monitor_cycle - 1)) && gpioset -D open-drain $(gpiofind PIN_${REC_GPIO_PIN})=0 &
 	elif [ $temp_max -gt $target_temp_max ]; then
 		if [ $duty_cycle_now -le $(($fan_PWM_MAX_duty_cycle * $one_percent_period)) ]; then
 			echo "$temp_max is greater than ${target_temp_max}, fan speed up 5%"
