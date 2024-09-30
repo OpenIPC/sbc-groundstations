@@ -13,7 +13,8 @@ if [[ -n $ETH_Fixed_ip && -n $ETH_Fixed_ip2 ]]; then
 	[ $eth0_fixed_ip_OS == "${ETH_Fixed_ip}, ${ETH_Fixed_ip2}" ] || nmcli con modify eth0 ipv4.addresses ${ETH_Fixed_ip},${ETH_Fixed_ip2}
 fi
 
-# radxa0 network configuration
+# radxa0 usb gadget network configuration
+[ $(cat /sys/kernel/debug/usb/fcc00000.dwc3/mode) == "device" ] && systemctl start radxa-adbd@fcc00000.dwc3.service radxa-ncm@fcc00000.dwc3.service
 [ -f /etc/NetworkManager/system-connections/radxa0.nmconnection ] || nmcli con add type ethernet con-name radxa0 ifname radxa0 ipv4.method auto ipv4.addresses ${gadget_net_fixed_ip} autoconnect yes
 if [[ -n $gadget_net_fixed_ip ]]; then
 	# Check whether the configuration in gs.conf is consistent with radxa0. If not, update it.
