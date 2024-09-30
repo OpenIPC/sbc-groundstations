@@ -33,7 +33,7 @@ systemctl daemon-reload
 systemctl enable gs
 echo -e "\033[31mCopy FPVue.key to /config/gs.key and linked to /etc/gs.key\033[0m"
 cp FPVue.key /config/gs.key
-[ -f /etc/gs.key ] && rm /etc/gs.key
+[ $(readlink -f /etc/gs.conf) == "/config/gs.key" ] || rm /etc/gs.key
 ln -s /config/gs.key /etc/gs.key
 
 echo -e "\033[31mInstallation Complete, Configuration file is /config/gs.conf\033[0m"
