@@ -33,6 +33,9 @@ if [[ -n $WIFI_SSID && -n $WIFI_Encryption && -n $WIFI_Password ]]; then
 	[[ $WIFI_SSID_OS == $WIFI_SSID && $WIFI_Encryption_OS == $WIFI_Encryption && $WIFI_Password_OS == $WIFI_Password ]] || nmcli con modify radxa ssid ${WIFI_SSID} wifi-sec.key-mgmt ${WIFI_Encryption} wifi-sec.psk ${WIFI_Password}
 fi
 
+# pwm fan service
+[ $fan_service_enable == "yes" ] && systemd-run --unit=pwmfan /home/radxa/gs/fan.sh
+
 # Bind mount the wifibroadcast configuration file to the memory file to prevent frequent writing to the memory card and ensure that the original file is not modified
 touch /tmp/wifibroadcast.cfg /tmp/wifibroadcast.default
 mount --bind /tmp/wifibroadcast.cfg /etc/wifibroadcast.cfg
