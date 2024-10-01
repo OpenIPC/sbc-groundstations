@@ -66,6 +66,7 @@ while true; do
 			kill -15 $pid_player
 			kill $pid_led
 			sleep 0.2
+			gpioset -D $REC_LED_drive $(gpiofind PIN_${REC_GPIO_PIN})=0
 			gencmd norecord
 			$video_play_cmd &
 			pid_player=$!
