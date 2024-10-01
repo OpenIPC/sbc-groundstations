@@ -52,13 +52,13 @@ while true; do
 			$video_rec_cmd &
 			pid_player=$!
 			video_record='1'
-			# Todo: do not flash led when system is overheat
+			# Todo: How to deal with led when system is overheat
 			(
 			while true; do
-				# Flash red record LED, if direct connect LED to GPIO, should delete `-D open-drain`
-				gpioset -D open-drain $(gpiofind PIN_${REC_GPIO_PIN})=1
+				# Blink red record LED
+				gpioset -D $REC_LED_drive $(gpiofind PIN_${REC_GPIO_PIN})=1
 				sleep 1
-				gpioset -D open-drain $(gpiofind PIN_${REC_GPIO_PIN})=0
+				gpioset -D $REC_LED_drive $(gpiofind PIN_${REC_GPIO_PIN})=0
 			done
 		        ) &
 			pid_led=$!

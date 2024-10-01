@@ -50,4 +50,7 @@ fi
 # If video_on_boot=yes, video playback will be automatically started
 [ $video_on_boot == "yes" ] && bash /home/radxa/gs/stream.sh 2>&1 > /dev/null &
 
+# system boot complete, turn red record LED off
+gpioset -D $PWR_LED_drive $(gpiofind PIN_${REC_GPIO_PIN})=0
+
 exit 0
