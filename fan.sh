@@ -26,7 +26,7 @@ while true; do
 	temp_cpu=$(cat /sys/class/thermal/thermal_zone0/temp)
 	temp_max=${temp_cpu:0:-3}
 	echo "CPU temperature: ${temp_max}°"
-	if [[ $monitor_8812eu_temperature == "yes" && -d /proc/net/rtl88x2eu && $(ls /proc/net/rtl88x2eu | wc -l) -gt 10 ]]; then
+	if [[ "$monitor_8812eu_temperature" == "yes" && -d /proc/net/rtl88x2eu && $(ls /proc/net/rtl88x2eu | wc -l) -gt 10 ]]; then
 		for temp_file in /proc/net/rtl88x2eu/*/thermal_state; do
 			temp_eu_info=$(head -n 1 $temp_file)
 			temp_eu=$((${temp_eu_info##* } + ${rtl8812eu_temperature_offset}))

@@ -9,21 +9,21 @@ video_play_cmd=""
 video_rec_cmd=""
 
 function gencmd(){
-	if [$video_player == "pixelpilot" ]; then
+	if [ "$video_player" == "pixelpilot" ]; then
 		video_rec_cmd="pixelpilot --screen-mode $SCREEN_MODE --dvr $1"
 		video_play_cmd="pixelpilot --screen-mode $SCREEN_MODE"
-		if [ $osd_enable == "yes" ];then
+		if [ "$osd_enable" == "yes" ];then
 			video_rec_cmd="$video_rec_cmd --osd --osd-elements $osd_elements --osd-telem-lvl $osd_telem_lvl"
 			video_play_cmd="$video_play_cmd --osd --osd-elements $osd_elements --osd-telem-lvl $osd_telem_lvl"
 		fi
-	elif [$video_player == "gstreamer" ]; then
+	elif [ "$video_player" == "gstreamer" ]; then
 		video_play_cmd="gst-launch-1.0 -e udpsrc port=5600 caps='application/x-rtp, media=(string)video, clock-rate=(int)90000, encoding-name=(string)H265' ! rtph265depay ! h265parse ! mppvideodec ! videoconvert ! rkximagesink plane-id=76"
 		video_rec_cmd=" gst-launch-1.0 -e udpsrc port=5600 caps='application/x-rtp, media=(string)video, clock-rate=(int)90000, encoding-name=(string)H265' ! rtph265depay ! h265parse ! tee name=t ! mppvideodec ! rkximagesink plane-id=76 t. ! queue ! mpegtsmux ! filesink location=$1"
 	else
 		# use fpvue as default
 		video_rec_cmd="fpvue --screen-mode $SCREEN_MODE --dvr $1"
 		video_play_cmd="fpvue --screen-mode $SCREEN_MODE"
-		if [ $osd_enable == "yes" ];then
+		if [ "$osd_enable" == "yes" ];then
 			video_rec_cmd="$video_rec_cmd --osd --osd-elements $osd_elements --osd-telem-lvl $osd_telem_lvl"
 			video_play_cmd="$video_play_cmd --osd --osd-elements $osd_elements --osd-telem-lvl $osd_telem_lvl"
 		fi
@@ -35,8 +35,8 @@ gencmd norecord
 $video_play_cmd &
 pid_player=$!
 while true; do
-	if [ $(gpiomon -F %e -n 1 $(gpiofind PIN_${REC_GPIO_PIN})) == "1" ]; then
-		if [ $video_record == "0" ]; then
+	if [ "$(gpiomon -F %e -n 1 $(gpiofind PIN_${REC_GPIO_PIN}))" == "1" ]; then
+		if [ "$video_record" == "0" ]; then
 			kill -15 $pid_player
 			sleep 0.2
 			# current_date=$(date +'%m-%d-%Y_%H-%M-%S')

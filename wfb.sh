@@ -1,7 +1,7 @@
 #!/bin/bash
 
 source /config/gs.conf
-if [[ $wfb_rx_mode == "aggregator" && -n $1 ]]; then
+if [[ "$wfb_rx_mode" == "aggregator" && -n $1 ]]; then
 	# Unmanage USB WiFi from NetworkManager
 	# nmcli device set $1 managed no # This approach sometimes doesn't work?
 	[ -f /etc/network/interfaces.d/wfb-$1 ] || echo -e "allow-hotplug $1\niface $1 inet manual" > /etc/network/interfaces.d/wfb-$1
@@ -15,7 +15,7 @@ if [[ $wfb_rx_mode == "aggregator" && -n $1 ]]; then
 	systemd-run /usr/bin/wfb_rx -f -p $wfb_stream_id_video -c 127.0.0.1 -u $wfb_listen_port_video -i $wfb_link_id $1
 	systemd-run /usr/bin/wfb_rx -f -p $wfb_stream_id_telemetry -c 127.0.0.1 -u $wfb_listen_port_telemetry -i $wfb_link_id $1
 
-elif [ $wfb_rx_mode == "receiver" ]; then
+elif [ "$wfb_rx_mode" == "receiver" ]; then
 	# Modify /etc/wifibroadcast.cfg according to gs.conf
 	cat > /etc/wifibroadcast.cfg << EOF
 [common]

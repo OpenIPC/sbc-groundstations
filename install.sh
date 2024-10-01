@@ -14,7 +14,7 @@ fi
 [ -d ${install_dir}/udev-rules-bak ] || mkdir -p ${install_dir}/udev-rules-bak
 
 echo -e "\033[31mRemove /etc/NetworkManager/system-connections/*\033[0m"
-[ $(ls -A "/etc/NetworkManager/system-connections/") ] && rm /etc/NetworkManager/system-connections/*
+[ "$(ls -A /etc/NetworkManager/system-connections/)" ] && rm /etc/NetworkManager/system-connections/*
 echo -e "\033[31mDisable wifibroadcast.service wifibroadcast@gs.service\033[0m"
 systemctl disable wifibroadcast.service wifibroadcast@gs.service
 echo -e "\033[31mcopy gs.sh wfb.sh stream.sh fan.sh to ${install_dir}/\033[0m"
