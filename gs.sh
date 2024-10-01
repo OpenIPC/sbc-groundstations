@@ -34,7 +34,7 @@ if [[ -n $WIFI_SSID && -n $WIFI_Encryption && -n $WIFI_Password ]]; then
 fi
 
 # pwm fan service
-[ $fan_service_enable == "yes" ] && systemd-run --unit=pwmfan /home/radxa/gs/fan.sh
+[ $fan_service_enable == "yes" ] && systemd-run --unit=fan /home/radxa/gs/fan.sh
 
 # Bind mount the wifibroadcast configuration file to the memory file to prevent frequent writing to the memory card and ensure that the original file is not modified
 touch /tmp/wifibroadcast.cfg /tmp/wifibroadcast.default
