@@ -14,15 +14,6 @@ if [[ -n $ETH_Fixed_ip && -n $ETH_Fixed_ip2 ]]; then
 	[ "$eth0_fixed_ip_OS" == "${ETH_Fixed_ip}, ${ETH_Fixed_ip2}" ] || nmcli con modify eth0 ipv4.addresses ${ETH_Fixed_ip},${ETH_Fixed_ip2}
 fi
 
-# radxa0 usb gadget network configuration
-[ "$(cat /sys/kernel/debug/usb/fcc00000.dwc3/mode)" == "device" ] && systemctl start radxa-adbd@fcc00000.dwc3.service radxa-ncm@fcc00000.dwc3.service
-[ -f /etc/NetworkManager/system-connections/radxa0.nmconnection ] || nmcli con add type ethernet con-name radxa0 ifname radxa0 ipv4.method auto ipv4.addresses ${gadget_net_fixed_ip} autoconnect yes
-if [[ -n $gadget_net_fixed_ip ]]; then
-	# Check whether the configuration in gs.conf is consistent with radxa0. If not, update it.
-	radxa0_fixed_ip_OS=$(nmcli -g ipv4.addresses con show radxa0)
-	[ "$radxa0_fixed_ip_OS" == "${gadget_net_fixed_ip}" ] || nmcli con modify radxa0 ipv4.addresses ${gadget_net_fixed_ip}
-fi
-
 # wlan0 network card configuration
 # If no connection named radxa, create one to automatically connect to the unencrypted WiFi named OpenIPC.
 [ -f /etc/NetworkManager/system-connections/wlan0.nmconnection ] || nmcli con add type wifi ifname wlan0 con-name wlan0 ssid OpenIPC
@@ -32,6 +23,25 @@ if [[ -n $WIFI_SSID && -n $WIFI_Encryption && -n $WIFI_Password ]]; then
 	WIFI_Encryption_OS=$(nmcli -g 802-11-wireless-security.key-mgmt connection show wlan0)
 	WIFI_Password_OS=$(nmcli -s -g 802-11-wireless-security.psk connection show wlan0)
 	[[ "$WIFI_SSID_OS" == "$WIFI_SSID" && "$WIFI_Encryption_OS" == "$WIFI_Encryption" && "$WIFI_Password_OS" == "$WIFI_Password" ]] || nmcli con modify wlan0 ssid ${WIFI_SSID} wifi-sec.key-mgmt ${WIFI_Encryption} wifi-sec.psk ${WIFI_Password}
+fi
+
+# radxa0 usb gadget network configuration
+[ "$(cat /sys/kernel/debug/usb/fcc00000.dwc3/mode)" == "device" ] && systemctl start radxa-adbd@fcc00000.dwc3.service radxa-ncm@fcc00000.dwc3.service
+if [ ! -f /etc/network/interfaces.d/radxa0 ]; then
+	cat > /etc/network/interfaces.d/radxa0 << EOF
+auto radxa0
+allow-hotplug radxa0
+iface radxa0 inet static
+	address $gadget_net_fixed_ip
+	# post-up mount -o remount,ro /home/radxa/Videos && link mass
+	# post-down remove mass && mount -o remount,rw /home/radxa/Videos
+EOF
+fi
+if [[ -n $gadget_net_fixed_ip ]]; then
+	# Check whether the configuration in gs.conf is consistent with radxa0. If not, update it.
+	radxa0_fixed_ipinfo_OS=$(cat /etc/network/interfaces.d/radxa0 | grep address)
+	radxa0_fixed_ip_OS=${radxa0_fixed_ipinfo_OS##* }
+	[ "$radxa0_fixed_ip_OS" == "${gadget_net_fixed_ip}" ] || sed -i "s^${radxa0_fixed_ip_OS}^${gadget_net_fixed_ip^g}" /etc/network/interfaces.d/radxa0
 fi
 
 # usb0 RNDIS network configuration
