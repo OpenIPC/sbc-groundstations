@@ -25,13 +25,13 @@ fi
 
 # wlan0 network card configuration
 # If no connection named radxa, create one to automatically connect to the unencrypted WiFi named OpenIPC.
-[ -f /etc/NetworkManager/system-connections/radxa.nmconnection ] || nmcli con add type wifi ifname wlan0 con-name radxa ssid OpenIPC
+[ -f /etc/NetworkManager/system-connections/wlan0.nmconnection ] || nmcli con add type wifi ifname wlan0 con-name wlan0 ssid OpenIPC
 # If the WiFi configuration in gs.conf is not empty and changes, modify the WiFi connection information according to the configuration file
 if [[ -n $WIFI_SSID && -n $WIFI_Encryption && -n $WIFI_Password ]]; then
-	WIFI_SSID_OS=$(nmcli -g 802-11-wireless.ssid connection show radxa)
-	WIFI_Encryption_OS=$(nmcli -g 802-11-wireless-security.key-mgmt connection show radxa)
-	WIFI_Password_OS=$(nmcli -s -g 802-11-wireless-security.psk connection show radxa)
-	[[ "$WIFI_SSID_OS" == "$WIFI_SSID" && "$WIFI_Encryption_OS" == "$WIFI_Encryption" && "$WIFI_Password_OS" == "$WIFI_Password" ]] || nmcli con modify radxa ssid ${WIFI_SSID} wifi-sec.key-mgmt ${WIFI_Encryption} wifi-sec.psk ${WIFI_Password}
+	WIFI_SSID_OS=$(nmcli -g 802-11-wireless.ssid connection show wlan0)
+	WIFI_Encryption_OS=$(nmcli -g 802-11-wireless-security.key-mgmt connection show wlan0)
+	WIFI_Password_OS=$(nmcli -s -g 802-11-wireless-security.psk connection show wlan0)
+	[[ "$WIFI_SSID_OS" == "$WIFI_SSID" && "$WIFI_Encryption_OS" == "$WIFI_Encryption" && "$WIFI_Password_OS" == "$WIFI_Password" ]] || nmcli con modify wlan0 ssid ${WIFI_SSID} wifi-sec.key-mgmt ${WIFI_Encryption} wifi-sec.psk ${WIFI_Password}
 fi
 
 # usb0 RNDIS network configuration
