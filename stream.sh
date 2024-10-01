@@ -10,7 +10,7 @@ video_rec_cmd=""
 
 function gencmd(){
 	if [ "$video_player" == "pixelpilot" ]; then
-		video_rec_cmd="pixelpilot --screen-mode $SCREEN_MODE --dvr $1"
+		video_rec_cmd="pixelpilot --screen-mode $SCREEN_MODE --dvr-framerate $REC_FPS --dvr-fmp4 --dvr $1"
 		video_play_cmd="pixelpilot --screen-mode $SCREEN_MODE"
 		if [ "$osd_enable" == "yes" ];then
 			video_rec_cmd="$video_rec_cmd --osd --osd-elements $osd_elements --osd-telem-lvl $osd_telem_lvl"
