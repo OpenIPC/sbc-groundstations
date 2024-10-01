@@ -57,7 +57,7 @@ if [ "$wfb_rx_mode" == "aggregator" ]; then
 fi
 
 # If video_on_boot=yes, video playback will be automatically started
-[ "$video_on_boot" == "yes" ] && bash /home/radxa/gs/stream.sh 2>&1 > /dev/null &
+[ "$video_on_boot" == "yes" ] && systemd-run --unit=stream /home/radxa/gs/stream.sh
 
 # system boot complete, turn red record LED off
 gpioset -D $PWR_LED_drive $(gpiofind PIN_${REC_LED_PIN})=0
