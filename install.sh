@@ -26,8 +26,8 @@ cp gs.service /etc/systemd/system/
 echo -e "\033[31mBackup exist udev rules to ${install_dir}/udev-rules-bak/\033[0m"
 [ -f /etc/udev/rules.d/98-custom-wifi.rules ] && mv /etc/udev/rules.d/98-custom-wifi.rules ${install_dir}/udev-rules-bak/
 [ -f /etc/udev/rules.d/99-custom-wifi.rules ] && mv /etc/udev/rules.d/99-custom-wifi.rules ${install_dir}/udev-rules-bak/
-echo -e "\033[31mcopy 99-wfb.rules to /etc/udev/rules.d/\033[0m"
-cp 99-wfb.rules /etc/udev/rules.d/
+echo -e "\033[31mcopy 99-wfb.rules 98-gadget.rules to /etc/udev/rules.d/\033[0m"
+cp 99-wfb.rules 98-gadget.rules /etc/udev/rules.d/
 echo -e "\033[31msystemctl enable gs.service \033[0m"
 systemctl daemon-reload
 systemctl enable gs
