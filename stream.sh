@@ -10,8 +10,8 @@ video_rec_cmd=""
 
 function gencmd(){
 	if [ "$video_player" == "pixelpilot" ]; then
-		video_rec_cmd="pixelpilot --screen-mode $SCREEN_MODE --dvr-framerate $REC_FPS --dvr-fmp4 --dvr $1"
-		video_play_cmd="pixelpilot --screen-mode $SCREEN_MODE"
+		video_rec_cmd="pixelpilot --screen-mode $SCREEN_MODE --codec=$video_codec --dvr-framerate $REC_FPS --dvr-fmp4 --dvr $1"
+		video_play_cmd="pixelpilot --screen-mode $SCREEN_MODE --codec=$video_codec"
 		if [ "$osd_enable" == "yes" ];then
 			video_rec_cmd="$video_rec_cmd --osd --osd-elements $osd_elements --osd-telem-lvl $osd_telem_lvl"
 			video_play_cmd="$video_play_cmd --osd --osd-elements $osd_elements --osd-telem-lvl $osd_telem_lvl"
@@ -21,8 +21,8 @@ function gencmd(){
 		video_rec_cmd=" gst-launch-1.0 -e udpsrc port=5600 caps='application/x-rtp, media=(string)video, clock-rate=(int)90000, encoding-name=(string)H265' ! rtph265depay ! h265parse ! tee name=t ! mppvideodec ! rkximagesink plane-id=76 t. ! queue ! mpegtsmux ! filesink location=$1"
 	else
 		# use fpvue as default
-		video_rec_cmd="fpvue --screen-mode $SCREEN_MODE --dvr $1"
-		video_play_cmd="fpvue --screen-mode $SCREEN_MODE"
+		video_rec_cmd="fpvue --screen-mode $SCREEN_MODE --codec=$video_codec --dvr $1"
+		video_play_cmd="fpvue --screen-mode $SCREEN_MODE --codec=$video_codec"
 		if [ "$osd_enable" == "yes" ];then
 			video_rec_cmd="$video_rec_cmd --osd --osd-elements $osd_elements --osd-telem-lvl $osd_telem_lvl"
 			video_play_cmd="$video_play_cmd --osd --osd-elements $osd_elements --osd-telem-lvl $osd_telem_lvl"
