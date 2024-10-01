@@ -12,7 +12,7 @@ systemctl enable wifibroadcast.service wifibroadcast@gs.service
 
 echo "Restore udev rules"
 rm /etc/udev/rules.d/99-wfb.rules
-mv ${install_dir}/udev-rules-bak/* /etc/udev/rules.d/
+[ $(ls -A ${install_dir}/udev-rules-bak) ] && mv ${install_dir}/udev-rules-bak/* /etc/udev/rules.d/
 
 echo "Remove files"
 rm /config/gs.conf
