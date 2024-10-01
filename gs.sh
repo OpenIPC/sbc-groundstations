@@ -33,6 +33,14 @@ if [[ -n $WIFI_SSID && -n $WIFI_Encryption && -n $WIFI_Password ]]; then
 	[[ $WIFI_SSID_OS == $WIFI_SSID && $WIFI_Encryption_OS == $WIFI_Encryption && $WIFI_Password_OS == $WIFI_Password ]] || nmcli con modify radxa ssid ${WIFI_SSID} wifi-sec.key-mgmt ${WIFI_Encryption} wifi-sec.psk ${WIFI_Password}
 fi
 
+# usb0 RNDIS network configuration
+[ -f /etc/NetworkManager/system-connections/usb0.nmconnection ] || nmcli con add type ethernet con-name usb0 ifname usb0 ipv4.method auto ipv4.addresses ${usb0_fixed_ip} autoconnect yes
+if [[ -n $usb0_fixed_ip ]]; then
+	# Check whether the configuration in gs.conf is consistent with radxa0. If not, update it.
+	usb0_fixed_ip_OS=$(nmcli -g ipv4.addresses con show usb0)
+	[ $usb0_fixed_ip_OS == "${usb0_fixed_ip}" ] || nmcli con modify usb0 ipv4.addresses ${usb0_fixed_ip}
+fi
+
 # pwm fan service
 [ $fan_service_enable == "yes" ] && systemd-run --unit=fan /home/radxa/gs/fan.sh
 
