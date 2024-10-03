@@ -1,10 +1,16 @@
 #!/bin/bash
 
 source /config/gs.conf
+need_u_boot_update=0
+need_reboot=0
 
 [ -d $REC_Dir ] || mkdir -p $REC_Dir
 # Auto expand rootfs [ TODO ]
 # If the partition has been extended, an expanded file will be created. If the file is detected to exist, the automatic partition extension will be skipped.
+
+# dtbo configuration
+ftdoverlays_extlinux=$(grep fdtoverlays /boot/extlinux/extlinux.conf | head -n 1)
+[[ -f /boot/dtbo/rk3566-dwc3-otg-role-switch.dtbo && "$ftdoverlays_extlinux" == *rk3566-dwc3-otg-role-switch.dtbo* ]] || ( dtc -I dts -O dtb -o /boot/dtbo/rk3566-dwc3-otg-role-switch.dtbo /home/radxa/gs/rk3566-dwc3-otg-role-switch.dts; need_u_boot_update=1; need_reboot=1 )
 
 # eth0 network configuration
 [ -f /etc/NetworkManager/system-connections/eth0.nmconnection ] || nmcli con add type ethernet con-name eth0 ifname eth0 ipv4.method auto ipv4.addresses ${ETH_Fixed_ip},${ETH_Fixed_ip2} autoconnect yes
@@ -68,6 +74,9 @@ fi
 
 # If video_on_boot=yes, video playback will be automatically started
 [ "$video_on_boot" == "yes" ] && systemd-run --unit=stream /home/radxa/gs/stream.sh
+
+[ "$need_u_boot_update" == "1" ] && u-boot-update
+[ "$need_reboot" == "1" ] && reboot
 
 # system boot complete, turn red record LED off
 gpioset -D $PWR_LED_drive $(gpiofind PIN_${REC_LED_PIN})=0

@@ -1,0 +1,27 @@
+/dts-v1/;
+
+/ {
+
+	metadata {
+		title = "Set OTG port to be controlled by hardware switch";
+		compatible = "radxa,rock-3a\0radxa,rock-3b\0radxa,e25";
+		category = "misc";
+		exclusive = "usbdrd_dwc3-dr_mode";
+		description = "Set OTG port to be controlled by hardware switch.";
+	};
+
+	fragment@0 {
+		target = <0xffffffff>;
+
+		__overlay__ {
+			status = "okay";
+			dr_mode = "otg";
+			usb-role-switch;
+			role-switch-default-mode = "host";
+		};
+	};
+
+	__fixups__ {
+		usbdrd_dwc3 = "/fragment@0:target:0";
+	};
+};
