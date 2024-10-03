@@ -16,6 +16,10 @@ for dtbo in "${dtbo_enable_array[@]}"; do
 	[ -f /boot/dtbo/rk3568-${dtbo}.dtbo.disabled ] && ( mv /boot/dtbo/rk3568-${dtbo}.dtbo.disabled /boot/dtbo/rk3568-${dtbo}.dtbo; need_u_boot_update=1; need_reboot=1 )
 done
 
+# some configuration need reboot to take effect
+[ "$need_u_boot_update" == "1" ] && u-boot-update
+[ "$need_reboot" == "1" ] && reboot
+
 # eth0 network configuration
 [ -f /etc/NetworkManager/system-connections/eth0.nmconnection ] || nmcli con add type ethernet con-name eth0 ifname eth0 ipv4.method auto ipv4.addresses ${ETH_Fixed_ip},${ETH_Fixed_ip2} autoconnect yes
 if [[ -n $ETH_Fixed_ip && -n $ETH_Fixed_ip2 ]]; then
@@ -34,6 +38,18 @@ if [[ -n $WIFI_SSID && -n $WIFI_Encryption && -n $WIFI_Password ]]; then
 	WIFI_Password_OS=$(nmcli -s -g 802-11-wireless-security.psk connection show wlan0)
 	[[ "$WIFI_SSID_OS" == "$WIFI_SSID" && "$WIFI_Encryption_OS" == "$WIFI_Encryption" && "$WIFI_Password_OS" == "$WIFI_Password" ]] || nmcli con modify wlan0 ssid ${WIFI_SSID} wifi-sec.key-mgmt ${WIFI_Encryption} wifi-sec.psk ${WIFI_Password}
 fi
+
+if [ -f /etc/NetworkManager/system-connections/hotspot.nmconnection ];then
+	Hotspot_SSID_OS=$(nmcli -g 802-11-wireless.ssid connection show hotspot)
+	Hotspot_Password_OS=$(nmcli -s -g 802-11-wireless-security.psk connection show hotspot)
+	Hotspot_ip_OS=$(nmcli -g ipv4.addresses con show hotspot)
+	[[ "$Hotspot_SSID_OS" == "$Hotspot_SSID" && "$Hotspot_Password_OS" == "$Hotspot_Password" ]] || nmcli connection modify hotspot ssid $Hotspot_SSID wifi-sec.psk $Hotspot_Password
+	[[ "$Hotspot_ip_OS" == $Hotspot_ip ]] || nmcli connection modify hotspot ipv4.method shared ipv4.addresses $Hotspot_ip
+else
+	nmcli dev wifi hotspot con-name hotspot ifname wlan0 ssid $Hotspot_SSID password $Hotspot_Password
+	nmcli connection modify hotspot ipv4.method shared ipv4.addresses $Hotspot_ip autoconnect no
+fi
+[ "$WIFI_mode" == "hotspot" ] && ( sleep 20; nmcli connection up hotspot ) &
 
 # radxa0 usb gadget network configuration
 if [ ! -f /etc/network/interfaces.d/radxa0 ]; then
@@ -80,9 +96,6 @@ fi
 [[ "$otg_mode" == "device" && "$(cat /sys/kernel/debug/usb/fcc00000.dwc3/mode)" == "host" ]] && echo device > /sys/kernel/debug/usb/fcc00000.dwc3/mode
 # if otg mode is device, start adbd and ncm on boot
 [ "$(cat /sys/kernel/debug/usb/fcc00000.dwc3/mode)" == "device" ] && systemctl start radxa-adbd@fcc00000.dwc3.service radxa-ncm@fcc00000.dwc3.service
-
-[ "$need_u_boot_update" == "1" ] && u-boot-update
-[ "$need_reboot" == "1" ] && reboot
 
 # system boot complete, turn red record LED off
 gpioset -D $PWR_LED_drive $(gpiofind PIN_${REC_LED_PIN})=0
