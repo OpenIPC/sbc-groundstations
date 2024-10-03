@@ -11,7 +11,6 @@ need_reboot=0
 # dtbo configuration
 ftdoverlays_extlinux=$(grep fdtoverlays /boot/extlinux/extlinux.conf | head -n 1)
 [[ -f /boot/dtbo/rk3566-dwc3-otg-role-switch.dtbo && "$ftdoverlays_extlinux" == *rk3566-dwc3-otg-role-switch.dtbo* ]] || ( dtc -I dts -O dtb -o /boot/dtbo/rk3566-dwc3-otg-role-switch.dtbo /home/radxa/gs/rk3566-dwc3-otg-role-switch.dts; need_u_boot_update=1; need_reboot=1 )
-[[ "$otg_mode" == "device" && "$(cat /sys/kernel/debug/usb/fcc00000.dwc3/mode)" == "host" ]] && echo device > /sys/kernel/debug/usb/fcc00000.dwc3/mode
 dtbo_enable_array=($dtbo_enable_list)
 for dtbo in "${dtbo_enable_array[@]}"; do
 	[ -f /boot/dtbo/rk3568-${dtbo}.dtbo.disabled ] && ( mv /boot/dtbo/rk3568-${dtbo}.dtbo.disabled /boot/dtbo/rk3568-${dtbo}.dtbo; need_u_boot_update=1; need_reboot=1 )
@@ -78,6 +77,7 @@ fi
 
 # If video_on_boot=yes, video playback will be automatically started
 [ "$video_on_boot" == "yes" ] && systemd-run --unit=stream /home/radxa/gs/stream.sh
+[[ "$otg_mode" == "device" && "$(cat /sys/kernel/debug/usb/fcc00000.dwc3/mode)" == "host" ]] && echo device > /sys/kernel/debug/usb/fcc00000.dwc3/mode
 # if otg mode is device, start adbd and ncm on boot
 [ "$(cat /sys/kernel/debug/usb/fcc00000.dwc3/mode)" == "device" ] && systemctl start radxa-adbd@fcc00000.dwc3.service radxa-ncm@fcc00000.dwc3.service
 
