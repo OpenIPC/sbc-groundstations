@@ -11,6 +11,11 @@ need_reboot=0
 # dtbo configuration
 ftdoverlays_extlinux=$(grep fdtoverlays /boot/extlinux/extlinux.conf | head -n 1)
 [[ -f /boot/dtbo/rk3566-dwc3-otg-role-switch.dtbo && "$ftdoverlays_extlinux" == *rk3566-dwc3-otg-role-switch.dtbo* ]] || ( dtc -I dts -O dtb -o /boot/dtbo/rk3566-dwc3-otg-role-switch.dtbo /home/radxa/gs/rk3566-dwc3-otg-role-switch.dts; need_u_boot_update=1; need_reboot=1 )
+[[ "$otg_mode" == "device" && "$(cat /sys/kernel/debug/usb/fcc00000.dwc3/mode)" == "host" ]] && echo device > /sys/kernel/debug/usb/fcc00000.dwc3/mode
+dtbo_enable_array=($dtbo_enable_list)
+for dtbo in "${dtbo_enable_array[@]}"; do
+	[ -f /boot/dtbo/rk3568-${dtbo}.dtbo.disabled ] && ( mv /boot/dtbo/rk3568-${dtbo}.dtbo.disabled /boot/dtbo/rk3568-${dtbo}.dtbo; need_u_boot_update=1; need_reboot=1 )
+done
 
 # eth0 network configuration
 [ -f /etc/NetworkManager/system-connections/eth0.nmconnection ] || nmcli con add type ethernet con-name eth0 ifname eth0 ipv4.method auto ipv4.addresses ${ETH_Fixed_ip},${ETH_Fixed_ip2} autoconnect yes
@@ -32,7 +37,6 @@ if [[ -n $WIFI_SSID && -n $WIFI_Encryption && -n $WIFI_Password ]]; then
 fi
 
 # radxa0 usb gadget network configuration
-[ "$(cat /sys/kernel/debug/usb/fcc00000.dwc3/mode)" == "device" ] && systemctl start radxa-adbd@fcc00000.dwc3.service radxa-ncm@fcc00000.dwc3.service
 if [ ! -f /etc/network/interfaces.d/radxa0 ]; then
 	cat > /etc/network/interfaces.d/radxa0 << EOF
 auto radxa0
@@ -74,6 +78,8 @@ fi
 
 # If video_on_boot=yes, video playback will be automatically started
 [ "$video_on_boot" == "yes" ] && systemd-run --unit=stream /home/radxa/gs/stream.sh
+# if otg mode is device, start adbd and ncm on boot
+[ "$(cat /sys/kernel/debug/usb/fcc00000.dwc3/mode)" == "device" ] && systemctl start radxa-adbd@fcc00000.dwc3.service radxa-ncm@fcc00000.dwc3.service
 
 [ "$need_u_boot_update" == "1" ] && u-boot-update
 [ "$need_reboot" == "1" ] && reboot
