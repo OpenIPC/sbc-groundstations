@@ -17,8 +17,8 @@ echo -e "\033[31mRemove /etc/NetworkManager/system-connections/*\033[0m"
 [ "$(ls -A /etc/NetworkManager/system-connections/)" ] && rm /etc/NetworkManager/system-connections/*
 echo -e "\033[31mDisable wifibroadcast.service wifibroadcast@gs.service\033[0m"
 systemctl disable wifibroadcast.service wifibroadcast@gs.service
-echo -e "\033[31mcopy gs.sh wfb.sh stream.sh fan.sh button.sh to ${install_dir}/\033[0m"
-chmod +x gs.sh wfb.sh stream.sh fan.sh && cp gs.sh wfb.sh stream.sh fan.sh ${install_dir}/
+echo -e "\033[31mcopy gs.sh wfb.sh stream.sh fan.sh button.sh rk3566-dwc3-otg-role-switch.dts to ${install_dir}/\033[0m"
+chmod +x gs.sh wfb.sh stream.sh fan.sh button.sh && cp gs.sh wfb.sh stream.sh fan.sh button.sh rk3566-dwc3-otg-role-switch.dts ${install_dir}/
 echo -e "\033[31mcopy gs.conf to /config/gs.conf\033[0m"
 cp gs.conf /config/
 echo -e "\033[31mcopy gs.service to /etc/systemd/system/\033[0m"
@@ -34,6 +34,8 @@ systemctl enable gs
 echo -e "\033[31mCopy FPVue.key to /config/gs.key and linked to /etc/gs.key\033[0m"
 cp FPVue.key /config/gs.key
 [ $(readlink -f /etc/gs.key) == "/config/gs.key" ] || ( rm /etc/gs.key && ln -s /config/gs.key /etc/gs.key )
+echo -e "\033[31mLinked /config/gs.conf to /etc/gs.conf\033[0m"
+[ $(readlink -f /etc/gs.conf) == "/config/gs.key" ] || ( rm /etc/gs.conf && ln -s /config/gs.conf /etc/gs.conf )
 
 echo -e "\033[31mInstallation Complete, Configuration file is /config/gs.conf\033[0m"
 sync
