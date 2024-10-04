@@ -17,7 +17,7 @@ echo -e "\033[31mRemove /etc/NetworkManager/system-connections/*\033[0m"
 [ "$(ls -A /etc/NetworkManager/system-connections/)" ] && rm /etc/NetworkManager/system-connections/*
 echo -e "\033[31mDisable wifibroadcast.service wifibroadcast@gs.service\033[0m"
 systemctl disable wifibroadcast.service wifibroadcast@gs.service
-echo -e "\033[31mcopy gs.sh wfb.sh stream.sh fan.sh to ${install_dir}/\033[0m"
+echo -e "\033[31mcopy gs.sh wfb.sh stream.sh fan.sh button.sh to ${install_dir}/\033[0m"
 chmod +x gs.sh wfb.sh stream.sh fan.sh && cp gs.sh wfb.sh stream.sh fan.sh ${install_dir}/
 echo -e "\033[31mcopy gs.conf to /config/gs.conf\033[0m"
 cp gs.conf /config/

@@ -97,6 +97,9 @@ fi
 # if otg mode is device, start adbd and ncm on boot
 [ "$(cat /sys/kernel/debug/usb/fcc00000.dwc3/mode)" == "device" ] && systemctl start radxa-adbd@fcc00000.dwc3.service radxa-ncm@fcc00000.dwc3.service
 
+# start button service
+systemd-run --unit=button /home/radxa/gs/button.sh
+
 # system boot complete, turn red record LED off
 gpioset -D $PWR_LED_drive $(gpiofind PIN_${REC_LED_PIN})=0
 
