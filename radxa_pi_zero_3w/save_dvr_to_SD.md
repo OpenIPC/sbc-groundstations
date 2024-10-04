@@ -13,6 +13,10 @@ and edit the file to include the following line:
 
 `/dev/mmcblk1p1  /media  vfat  defaults  0  2`
 
+or
+
+`/dev/mmcblk1p1  /home/radxa/Videos  vfat  defaults  0  2`
+
 It should look something along the lines of this:
 
 ![fstab](https://github.com/user-attachments/assets/55ad1323-06b2-4180-a644-67f66bccc65f)
