@@ -3,7 +3,7 @@
 If your Radxa OpenIPC image is running from onboard emmc, the sd card slot is free for us to insert an sd card and save dvr files.
 
 * Format an sd card to FAT32.
-* Edit `/etc/fstab` to mount the sd card to `/media` where the dvr files are normally stored.
+* Edit `/etc/fstab` to mount the sd card to `/media` where the dvr files are normally stored. (older images used the directory `/home/radxa/Videos` edit accordingly)
 
 ***
 
