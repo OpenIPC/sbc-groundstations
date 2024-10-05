@@ -2,13 +2,38 @@
 
 source /config/gs.conf
 
-# otg mode switch button
+# wifi mode switch button
 (
+WIFI_mode_switch_PIN_info=$(gpiofind PIN_${WIFI_mode_switch_PIN})
+while true; do
+	if [ ! -d /sys/class/net/wlan0 ]; then
+		echo "WARING: no wlan0 found, can't switch wifi mode."
+		break
+	fi
+        if [ "$(gpiomon -F %e -n 1 $WIFI_mode_switch_PIN_info)" == "1" ]; then
+		wlan0_connected_connection =$(nmcli device status | grep '^wlan0.*connected' | tr -s ' ' | cut -d ' ' -f 4)
+		case $wlan0_connected_connection in
+			hotspot)
+				nmcli connection up wlan0
+				sleep 5
+				;;
+			wlan0)
+				nmcli connection up hotspot
+				sleep 5
+				;;
+			*)  echo "connection is unknow"
+				;;
+		esac
+	fi
+done
+) &
+
+# otg mode switch button
 otg_mode_switch_PIN_info=$(gpiofind PIN_${otg_mode_switch_PIN})
 otg_mode_file="/sys/kernel/debug/usb/fcc00000.dwc3/mode"
 otg_mode_LED_PIN_info=$(gpiofind PIN_${otg_mode_LED_PIN})
 while true; do
-        if [ "$(gpiomon -F %e -n 1 $(otg_mode_switch_PIN_info))" == "1" ]; then
+        if [ "$(gpiomon -F %e -n 1 $otg_mode_switch_PIN_info)" == "1" ]; then
 		otg_mode=$(cat $otg_mode_file)
                 if [ "$otg_mode" == "host" ]; then
 			echo device > $otg_mode_file
@@ -32,28 +57,3 @@ while true; do
 		fi
 	fi
 done
-
-
-) &
-
-# wifi mode switch button
-(
-WIFI_mode_switch_PIN_info=$(gpiofind PIN_${WIFI_mode_switch_PIN})
-while true; do
-        if [ "$(gpiomon -F %e -n 1 $(WIFI_mode_switch_PIN_info))" == "1" ]; then
-		wlan0_connected_connection =$(nmcli device status | grep '^wlan0.*connected' | tr -s ' ' | cut -d ' ' -f 4)
-		case $wlan0_connected_connection in
-			hotspot)
-				nmcli connection up wlan0
-				sleep 5
-				;;
-			wlan0)
-				nmcli connection up hotspot
-				sleep 5
-				;;
-			*)  echo "connection is unknow"
-				;;
-		esac
-	fi
-done
-) &
