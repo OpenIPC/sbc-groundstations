@@ -38,7 +38,10 @@ while true; do
                 if [ "$otg_mode" == "host" ]; then
 			echo device > $otg_mode_file
 			sleep 0.2
-			systemctl restart radxa-adbd@fcc00000.dwc3.service radxa-ncm@fcc00000.dwc3.service
+			[ -d /sys/kernel/config/usb_gadget/fcc00000.dwc3/functions/ffs.adb ] || systemctl start radxa-adbd@fcc00000.dwc3.service
+			[ -f /sys/class/net/radxa0 ] || systemctl start radxa-ncm@fcc00000.dwc3.service
+			sleep 1
+			# [ "$(ip link ls radxa0 | grep -oP '(?<=state ).+(?=mode)')" == "DOWN"  ] && ifup radxa0
 			(
 			while true; do
 				# Blink green power LED
