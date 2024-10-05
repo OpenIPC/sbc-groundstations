@@ -1,5 +1,6 @@
 #!/bin/bash
 
+[ -f /config/before.txt ] && exit 0
 source /config/gs.conf
 need_u_boot_update=0
 need_reboot=0
@@ -22,7 +23,7 @@ done
 
 # eth0 network configuration
 [ -f /etc/NetworkManager/system-connections/eth0.nmconnection ] || nmcli con add type ethernet con-name eth0 ifname eth0 ipv4.method auto ipv4.addresses ${ETH_Fixed_ip},${ETH_Fixed_ip2} autoconnect yes
-if [[ -n $ETH_Fixed_ip && -n $ETH_Fixed_ip2 ]]; then
+if [[ -f /etc/NetworkManager/system-connections/eth0.nmconnection && -n $ETH_Fixed_ip && -n $ETH_Fixed_ip2 ]]; then
 	# Check whether the configuration in gs.conf is consistent with eth0. If not, update it.
 	eth0_fixed_ip_OS=$(nmcli -g ipv4.addresses con show eth0)
 	[ "$eth0_fixed_ip_OS" == "${ETH_Fixed_ip}, ${ETH_Fixed_ip2}" ] || nmcli con modify eth0 ipv4.addresses ${ETH_Fixed_ip},${ETH_Fixed_ip2}
@@ -32,24 +33,26 @@ fi
 # If no connection named radxa, create one to automatically connect to the unencrypted WiFi named OpenIPC.
 [ -f /etc/NetworkManager/system-connections/wlan0.nmconnection ] || nmcli con add type wifi ifname wlan0 con-name wlan0 ssid OpenIPC
 # If the WiFi configuration in gs.conf is not empty and changes, modify the WiFi connection information according to the configuration file
-if [[ -n $WIFI_SSID && -n $WIFI_Encryption && -n $WIFI_Password ]]; then
+if [[ -f /etc/NetworkManager/system-connections/wlan0.nmconnection && -n $WIFI_SSID && -n $WIFI_Encryption && -n $WIFI_Password ]]; then
 	WIFI_SSID_OS=$(nmcli -g 802-11-wireless.ssid connection show wlan0)
 	WIFI_Encryption_OS=$(nmcli -g 802-11-wireless-security.key-mgmt connection show wlan0)
 	WIFI_Password_OS=$(nmcli -s -g 802-11-wireless-security.psk connection show wlan0)
 	[[ "$WIFI_SSID_OS" == "$WIFI_SSID" && "$WIFI_Encryption_OS" == "$WIFI_Encryption" && "$WIFI_Password_OS" == "$WIFI_Password" ]] || nmcli con modify wlan0 ssid ${WIFI_SSID} wifi-sec.key-mgmt ${WIFI_Encryption} wifi-sec.psk ${WIFI_Password}
 fi
 
-if [ -f /etc/NetworkManager/system-connections/hotspot.nmconnection ];then
+if [[ -f /etc/NetworkManager/system-connections/hotspot.nmconnection && -n $Hotspot_SSID && -n $Hotspot_Password && -n $Hotspot_ip ]];then
 	Hotspot_SSID_OS=$(nmcli -g 802-11-wireless.ssid connection show hotspot)
 	Hotspot_Password_OS=$(nmcli -s -g 802-11-wireless-security.psk connection show hotspot)
 	Hotspot_ip_OS=$(nmcli -g ipv4.addresses con show hotspot)
 	[[ "$Hotspot_SSID_OS" == "$Hotspot_SSID" && "$Hotspot_Password_OS" == "$Hotspot_Password" ]] || nmcli connection modify hotspot ssid $Hotspot_SSID wifi-sec.psk $Hotspot_Password
 	[[ "$Hotspot_ip_OS" == $Hotspot_ip ]] || nmcli connection modify hotspot ipv4.method shared ipv4.addresses $Hotspot_ip
-else
+elif [[ -d /sys/class/net/wlan0 && -n $Hotspot_SSID && -n $Hotspot_Password && -n $Hotspot_ip ]]; then
 	nmcli dev wifi hotspot con-name hotspot ifname wlan0 ssid $Hotspot_SSID password $Hotspot_Password
 	nmcli connection modify hotspot ipv4.method shared ipv4.addresses $Hotspot_ip autoconnect no
+else
+	echo "no wlan0 or hotspot setting is blank"
 fi
-[ "$WIFI_mode" == "hotspot" ] && ( sleep 20; nmcli connection up hotspot ) &
+[[ -d /sys/class/net/wlan0 && "$WIFI_mode" == "hotspot" ]] && ( sleep 15; nmcli connection up hotspot ) &
 
 # radxa0 usb gadget network configuration
 if [ ! -f /etc/network/interfaces.d/radxa0 ]; then
