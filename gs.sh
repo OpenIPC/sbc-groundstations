@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -e
+
 [ -f /config/before.txt ] && exit 0
 source /config/gs.conf
 need_u_boot_update=0
