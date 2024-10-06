@@ -31,4 +31,4 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         name: build-artifacts
-        path: ${{ github.workspace }}/*.xz
+        path: ${{ github.workspace }}/build/*.xz

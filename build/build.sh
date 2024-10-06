@@ -9,11 +9,11 @@ export LC_ALL=POSIX
 export LANG=POSIX
 
 # Remove unnecessary package [ need remove more unnecessary package ] [ if use debian cli as base image, just delete this part]
-apt purge -y xfce4 chromium-x11 xserver-xorg-core xserver-xorg-legacy rockchip-chromium-x11-utils firefox-esr x11-apps
+apt purge -y xfce4* chromium-x11
 # fix radxa-sddm-theme uninstall issue
 mkdir -p /usr/share/sddm/themes/breeze
 touch /usr/share/sddm/themes/breeze/Main.qml
-apt autoremove -y --purge
+# apt autoremove -y --purge
 
 # Update system to date
 apt update
@@ -23,7 +23,7 @@ apt -y dist-upgrade --allow-downgrades
 dpkg -l | grep -q "linux-image-5.10.160-26-rk356x" && apt purge -y linux-image-5.10.160-26-rk356x linux-headers-5.10.160-26-rk356x
 
 ## 
-mkdir -p /home/radxa/SourceCode
+[ -d /home/radxa/SourceCode ] || mkdir -p /home/radxa/SourceCode
 cd /home/radxa/SourceCode
 
 # 8812au
@@ -55,7 +55,7 @@ pushd wfb-ng
 ./scripts/install_gs.sh wlanx
 popd
 
-# PixelPilot_rk / fpvue / gstreamer1
+# PixelPilot_rk / fpvue / gstreamer
 #  build-essential
 # From JohnDGodwin
 apt -y install cmake librockchip-mpp-dev libdrm-dev libcairo-dev
@@ -67,16 +67,19 @@ cmake -B build
 cmake --build build --target install
 popd
 
+# for gstreamer
+apt install -y --no-install-recommends xorg lightdm-gtk-greeter lightdm openbox
+
 # SBC-GS-CC
-git clone --depth=1 https://github.com/zhouruixi/SBC-GS.git
-pushd SBC-GS
-./gs/install.sh
+pushd gs
+./install.sh
 popd
 
 # install useful packages
 apt -y install lrzsz net-tools socat netcat
 
 rm -rf /home/radxa/SourceCode
-chown -R radxa:radxa /home/radxa
+chown -R 1000:1000 /home/radxa
+systemctl disable lightdm
 
 exit 0

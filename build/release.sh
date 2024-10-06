@@ -9,13 +9,13 @@ apt install -y qemu-user-static
 if [[ "$IMAGE_URL" == "/*" ]]; then
 	cp $IMAGE_URL .
 else
-	wget "$IMAGE_URL"
+	wget -q "$IMAGE_URL"
 fi
 IMAGE=$(basename "$IMAGE_URL" .xz)
 unxz -T0 ${IMAGE}.xz
 
 # expand disk size
-truncate -s 8G $IMAGE
+truncate -s 16G $IMAGE
 
 LOOPDEV=$(losetup -P --show -f $IMAGE)
 ROOT_PART=$(sgdisk -p $LOOPDEV | grep "rootfs" | tail -n 1 | tr -s ' ' | cut -d ' ' -f 2)
@@ -48,16 +48,19 @@ mount -t devpts devpts $ROOTFS/dev/pts
 # add dns server
 echo "nameserver 8.8.8.8" >> $ROOTFS/etc/resolv.conf
 
+mkdir -p $ROOTFS/home/radxa/SourceCode
+cp -r ../gs $ROOTFS/home/radxa/SourceCode
+
 #########
 # chroot $ROOTFS /bin/bash
-cp build/build.sh $ROOTFS/root/build.sh
+cp build.sh $ROOTFS/root/build.sh
 chroot $ROOTFS /root/build.sh
 
 
 ##############
 
 # 禁用自动扩展root分区？方便在分区最后创建一个exfat分区
-sed "s/disable_service ssh/enable_service ssh/" $ROOTFS/config/before.txt
+sed -i "s/disable_service ssh/enable_service ssh/" $ROOTFS/config/before.txt
 rm $ROOTFS/etc/resolv.conf
 umount $ROOTFS/dev/pts
 umount $ROOTFS/run
@@ -96,5 +99,6 @@ sgdisk -v $IMAGE > /dev/null
 echo "Image shrunked from ${TOTAL_BLOCKS} to ${TOTAL_BLOCKS_SHRINKED}."
 
 xz -T0 $IMAGE
+mv *.xz Radxa-zero-3_GroundStation_${VERSION}.img.xz
 
 exit 0
