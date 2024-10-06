@@ -11,10 +11,21 @@ need_reboot=0
 
 # dtbo configuration
 ftdoverlays_extlinux=$(grep fdtoverlays /boot/extlinux/extlinux.conf | head -n 1)
-[[ -f /boot/dtbo/rk3566-dwc3-otg-role-switch.dtbo && "$ftdoverlays_extlinux" == *rk3566-dwc3-otg-role-switch.dtbo* ]] || ( dtc -I dts -O dtb -o /boot/dtbo/rk3566-dwc3-otg-role-switch.dtbo /home/radxa/gs/rk3566-dwc3-otg-role-switch.dts; need_u_boot_update=1; need_reboot=1 )
+if [[ -f /boot/dtbo/rk3566-dwc3-otg-role-switch.dtbo && "$ftdoverlays_extlinux" == *rk3566-dwc3-otg-role-switch.dtbo* ]]; then
+	echo "dwc3-otg-role-switch dtb overlay is enabled"
+else
+	dtc -I dts -O dtb -o /boot/dtbo/rk3566-dwc3-otg-role-switch.dtbo /home/radxa/gs/rk3566-dwc3-otg-role-switch.dts
+	need_u_boot_update=1
+	need_reboot=1
+fi
 dtbo_enable_array=($dtbo_enable_list)
 for dtbo in "${dtbo_enable_array[@]}"; do
-	[ -f /boot/dtbo/rk3568-${dtbo}.dtbo.disabled ] && ( mv /boot/dtbo/rk3568-${dtbo}.dtbo.disabled /boot/dtbo/rk3568-${dtbo}.dtbo; need_u_boot_update=1; need_reboot=1 )
+	if [ -f /boot/dtbo/rk3568-${dtbo}.dtbo.disabled ]; then
+		echo "enable ${dtbo}"
+		mv /boot/dtbo/rk3568-${dtbo}.dtbo.disabled /boot/dtbo/rk3568-${dtbo}.dtbo
+		need_u_boot_update=1
+		need_reboot=1
+	fi
 done
 
 # some configuration need reboot to take effect
