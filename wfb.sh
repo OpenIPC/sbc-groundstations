@@ -1,5 +1,7 @@
 #!/bin/bash
 
+[ -h "/run/systemd/units/invocation:gs.service" ] || exit 0
+
 source /config/gs.conf
 if [[ "$wfb_rx_mode" == "aggregator" && -n $1 ]]; then
 	# Unmanage USB WiFi from NetworkManager
