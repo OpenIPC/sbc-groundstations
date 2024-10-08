@@ -13,9 +13,24 @@ source /config/gs.conf
 need_u_boot_update=0
 need_reboot=0
 
+# Create a partition(exfat) to save record videos
 [ -d $REC_Dir ] || mkdir -p $REC_Dir
-# Auto expand rootfs [ TODO ]
-# If the partition has been extended, an expanded file will be created. If the file is detected to exist, the automatic partition extension will be skipped.
+os_dev=$(df / | grep -oP "/dev/.+(?=p\d+)")
+if [ ! -b ${os_dev}p4 ]; then
+	sgdisk -ge $os_dev
+	root_partirion_size=$(parted -s $os_dev p | grep -oP "\d+(?=MB\s*ext4)")
+	root_partirion_size_new=$(( root_partirion_size + $rootfs_reserved_space ))
+	cat << EOF | parted ---pretend-input-tty $os_dev > /dev/null 2>&1
+resizepart 3 ${root_partirion_size_new}MiB
+yes
+EOF
+	resize2fs ${os_dev}p3
+	root_partirion_end=$(parted -s $os_dev p | grep -oP "\d+(?=MB\s*\d+MB\s+ext4)")
+	parted -s $os_dev mkpart videos fat32 ${root_partirion_end}MB 100%
+	mkfs.exfat ${os_dev}p4
+fi
+# mount /dev/disk/by-partlabel/videos $REC_Dir
+mount ${os_dev}p4 $REC_Dir
 
 # dtbo configuration
 ftdoverlays_extlinux=$(grep fdtoverlays /boot/extlinux/extlinux.conf | head -n 1)
