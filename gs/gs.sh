@@ -2,7 +2,13 @@
 
 set -e
 
-[ -f /config/before.txt ] && exit 0
+while true; do
+	if [ -f /config/before.txt ]; then
+		sleep 1
+	else
+		break
+	fi
+done
 source /config/gs.conf
 need_u_boot_update=0
 need_reboot=0
