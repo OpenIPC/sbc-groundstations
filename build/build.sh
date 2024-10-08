@@ -8,6 +8,9 @@ export LANGUAGE=POSIX
 export LC_ALL=POSIX
 export LANG=POSIX
 
+# add dns server
+echo "nameserver 8.8.8.8" >> /etc/resolv.conf
+
 # Remove unnecessary package for xface base image [ need remove more unnecessary package ]
 if dpkg -l | grep -q xface4; then
 	apt purge -y xfce4* lightdm* liblightdm-gobject-1-0 libupower-glib3 libxklavier16 upower chromium-x11 xserver-xorg-core xserver-xorg-legacy rockchip-chromium-x11-utils firefox-esr x11-apps
@@ -77,9 +80,17 @@ pushd gs
 popd
 
 # install useful packages
-apt -y install lrzsz net-tools socat netcat
+apt -y install lrzsz net-tools socat netcat exfatprogs ifstat
+
+# enable ssh
+sed -i "s/disable_service ssh/enable_service ssh/" $ROOTFS/config/before.txt
+
+# disable auto extend root partition and rootfs
+apt purge -y cloud-initramfs-growroot
+sed -i "s/resize_root/# resize_root/" $ROOTFS/config/before.txt
 
 rm -rf /home/radxa/SourceCode
+rm /etc/resolv.conf
 chown -R 1000:1000 /home/radxa
 
 exit 0

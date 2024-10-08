@@ -38,30 +38,22 @@ resize2fs $ROOT_DEV
 [ -d $ROOTFS ] || mkdir $ROOTFS
 mount $ROOT_DEV $ROOTFS
 mount ${LOOPDEV}p1 $ROOTFS/config
-
 mount -t proc /proc $ROOTFS/proc
 mount -t sysfs /sys $ROOTFS/sys
 mount -o bind /dev $ROOTFS/dev
 mount -o bind /run $ROOTFS/run
 mount -t devpts devpts $ROOTFS/dev/pts
 
-# add dns server
-echo "nameserver 8.8.8.8" >> $ROOTFS/etc/resolv.conf
-
+# copy gs code to target rootfs
 mkdir -p $ROOTFS/home/radxa/SourceCode
 cp -r ../gs $ROOTFS/home/radxa/SourceCode
 
-#########
+# run build script
 # chroot $ROOTFS /bin/bash
 cp build.sh $ROOTFS/root/build.sh
 chroot $ROOTFS /root/build.sh
 
-
-##############
-
-# 禁用自动扩展root分区？方便在分区最后创建一个exfat分区
-sed -i "s/disable_service ssh/enable_service ssh/" $ROOTFS/config/before.txt
-rm $ROOTFS/etc/resolv.conf
+# umount
 umount $ROOTFS/dev/pts
 umount $ROOTFS/run
 umount $ROOTFS/dev
@@ -71,8 +63,7 @@ umount $ROOTFS/config
 umount $ROOTFS
 rm -r $ROOTFS
 
-##############
-
+# shrink image
 SECTOR_SIZE=$(sgdisk -p $ROOT_DEV | grep -oP "(?<=: )\d+(?=/)")
 START_SECTOR=$(sgdisk -i $ROOT_PART $LOOPDEV | grep "First sector:" | cut -d ' ' -f 3)
 TOTAL_BLOCKS=$(tune2fs -l $ROOT_DEV | grep '^Block count:' | tr -s ' ' | cut -d ' ' -f 3)
@@ -98,6 +89,7 @@ sgdisk -v $IMAGE > /dev/null
 
 echo "Image shrunked from ${TOTAL_BLOCKS} to ${TOTAL_BLOCKS_SHRINKED}."
 
+# compression image and rename xz file
 xz -T0 $IMAGE
 mv *.xz Radxa-zero-3_GroundStation_${VERSION}.img.xz
 
