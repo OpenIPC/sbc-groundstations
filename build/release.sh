@@ -52,6 +52,7 @@ cp -r ../gs $ROOTFS/home/radxa/SourceCode
 # chroot $ROOTFS /bin/bash
 cp build.sh $ROOTFS/root/build.sh
 chroot $ROOTFS /root/build.sh
+rm $ROOTFS/root/build.sh
 
 # umount
 umount $ROOTFS/dev/pts
