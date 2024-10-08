@@ -8,16 +8,21 @@ export LANGUAGE=POSIX
 export LC_ALL=POSIX
 export LANG=POSIX
 
-# Remove unnecessary package [ need remove more unnecessary package ] [ if use debian cli as base image, just delete this part]
-apt purge -y xfce4* chromium-x11
-# fix radxa-sddm-theme uninstall issue
-mkdir -p /usr/share/sddm/themes/breeze
-touch /usr/share/sddm/themes/breeze/Main.qml
-# apt autoremove -y --purge
+# Remove unnecessary package for xface base image [ need remove more unnecessary package ]
+if dpkg -l | grep -q xface4; then
+	apt purge -y xfce4* lightdm* liblightdm-gobject-1-0 libupower-glib3 libxklavier16 upower chromium-x11 xserver-xorg-core xserver-xorg-legacy rockchip-chromium-x11-utils firefox-esr x11-apps
+	# fix radxa-sddm-theme uninstall issue
+	mkdir -p /usr/share/sddm/themes/breeze
+	touch /usr/share/sddm/themes/breeze/Main.qml
+	# fix radxa-system-config-rockchip uninstall issue
+	[ -f /etc/modprobe.d/panfrost.conf.bak ] && rm /etc/modprobe.d/panfrost.conf.bak
+	apt autoremove -y --purge
+fi
 
 # Update system to date
 apt update
-apt -y dist-upgrade --allow-downgrades
+apt dist-upgrade -y --allow-downgrades
+apt install -y git dkms build-essential
 
 # Remove old kernel in radxa-zero3_debian_bullseye_xfce_b6.img
 dpkg -l | grep -q "linux-image-5.10.160-26-rk356x" && apt purge -y linux-image-5.10.160-26-rk356x linux-headers-5.10.160-26-rk356x
@@ -55,8 +60,7 @@ pushd wfb-ng
 ./scripts/install_gs.sh wlanx
 popd
 
-# PixelPilot_rk / fpvue / gstreamer
-#  build-essential
+# PixelPilot_rk / fpvue
 # From JohnDGodwin
 apt -y install cmake librockchip-mpp-dev libdrm-dev libcairo-dev
 apt --no-install-recommends -y install libgstreamer1.0-dev libgstreamer-plugins-base1.0-dev libgstreamer-plugins-bad1.0-dev gstreamer1.0-plugins-base gstreamer1.0-plugins-good gstreamer1.0-plugins-bad gstreamer1.0-plugins-ugly gstreamer1.0-libav gstreamer1.0-tools
@@ -66,9 +70,6 @@ pushd PixelPilot_rk
 cmake -B build
 cmake --build build --target install
 popd
-
-# for gstreamer
-apt install -y --no-install-recommends xorg lightdm-gtk-greeter lightdm openbox
 
 # SBC-GS-CC
 pushd gs
@@ -80,6 +81,5 @@ apt -y install lrzsz net-tools socat netcat
 
 rm -rf /home/radxa/SourceCode
 chown -R 1000:1000 /home/radxa
-systemctl disable lightdm
 
 exit 0
