@@ -158,13 +158,11 @@ echo "run wfb.sh once"
 
 # If video_on_boot=yes, video playback will be automatically started
 [ "$video_on_boot" == "yes" ] && ( echo "start stream service"; systemd-run --unit=stream /home/radxa/gs/stream.sh )
-# if otg mode is device, start adbd and ncm on boot
+
+# If otg mode is device, start adbd and ncm on boot
 if [ "$otg_mode" == "device" ]; then
-	systemctl start radxa-adbd@fcc00000.dwc3.service radxa-ncm@fcc00000.dwc3.service
-elif [ "$otg_mode" == "host" ]; then
-	echo host > /sys/kernel/debug/usb/fcc00000.dwc3/mode
-else
-	echo "otg_mode is wrong!"
+        echo device > /sys/kernel/debug/usb/fcc00000.dwc3/mode
+	( sleep 1 && systemctl start radxa-adbd@fcc00000.dwc3.service radxa-ncm@fcc00000.dwc3.service ) &
 fi
 
 # start button service
