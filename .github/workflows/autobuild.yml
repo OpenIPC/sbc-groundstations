@@ -24,10 +24,9 @@ jobs:
       run: |
         echo "cd code dir ${{ github.workspace }}"
         cd ${{ github.workspace }}/build
-        ls
-        sudo ./release.sh
+        sudo ./release.sh ${GITHUB_SHA} ${GITHUB_REF}
 
-    - name: Upload image
+    - name: Upload test image
       uses: actions/upload-artifact@v4
       with:
         name: build-artifacts

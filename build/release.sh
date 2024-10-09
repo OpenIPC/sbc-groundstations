@@ -54,6 +54,23 @@ cp build.sh $ROOTFS/root/build.sh
 chroot $ROOTFS /root/build.sh
 rm $ROOTFS/root/build.sh
 
+# add release info
+BUILD_DATE=$(date "+%Y-%m-%d")
+BUILD_DATETIME=$(date "+%Y-%m-%d %H:%M:%S")
+echo "BUILD_DATETIME=\"${BUILD_DATETIME}\"" >> $ROOTFS/etc/gs-release
+echo "COMMIT=\"${1}\"" >> $ROOTFS/etc/gs-release
+
+if [[ "$2" == refs/tags/* ]]; then
+	VERSION=${2#refs/tags/}
+	echo "CHANNEL=\"release\"" >> $ROOTFS/etc/gs-release
+else
+	VERSION=${1:0:7}
+	echo "CHANNEL=\"test\"" >> $ROOTFS/etc/gs-release
+fi
+echo "VERSION=\"${VERSION}\"" >> $ROOTFS/etc/gs-release
+echo "==============show gs-release============"
+cat $ROOTFS/etc/gs-release
+
 # umount
 umount $ROOTFS/dev/pts
 umount $ROOTFS/run
@@ -92,6 +109,6 @@ echo "Image shrunked from ${TOTAL_BLOCKS} to ${TOTAL_BLOCKS_SHRINKED}."
 
 # compression image and rename xz file
 xz -T0 $IMAGE
-mv *.xz Radxa-zero-3_GroundStation_${VERSION}.img.xz
+mv *.xz Radxa-zero-3_GroundStation_${VERSION}_${BUILD_DATE}.img.xz
 
 exit 0
