@@ -83,14 +83,14 @@ popd
 apt -y install lrzsz net-tools socat netcat exfatprogs ifstat
 
 # enable ssh
-sed -i "s/disable_service ssh/enable_service ssh/" $ROOTFS/config/before.txt
+sed -i "s/disable_service ssh/# disable_service ssh/" /config/before.txt
 
 # disable auto extend root partition and rootfs
 apt purge -y cloud-initramfs-growroot
-sed -i "s/resize_root/# resize_root/" $ROOTFS/config/before.txt
+sed -i "s/resize_root/# resize_root/" /config/before.txt
 
 # disable services
-systemctl disable dnsmasq
+sed -i '/disable_service systemd-networkd/a disable_service dnsmasq' /config/before.txt
 
 rm -rf /home/radxa/SourceCode
 rm /etc/resolv.conf
