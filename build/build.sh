@@ -89,6 +89,9 @@ sed -i "s/disable_service ssh/enable_service ssh/" $ROOTFS/config/before.txt
 apt purge -y cloud-initramfs-growroot
 sed -i "s/resize_root/# resize_root/" $ROOTFS/config/before.txt
 
+# disable services
+systemctl disable dnsmasq
+
 rm -rf /home/radxa/SourceCode
 rm /etc/resolv.conf
 chown -R 1000:1000 /home/radxa

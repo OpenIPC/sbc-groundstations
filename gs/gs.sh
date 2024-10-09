@@ -105,6 +105,19 @@ iface radxa0 inet static
 	address $gadget_net_fixed_ip
 	# post-up mount -o remount,ro /home/radxa/Videos && link mass
 	# post-down remove mass && mount -o remount,rw /home/radxa/Videos
+	post-up systemctl restart dnsmasq
+	post-down systemctl stop dnsmasq
+EOF
+fi
+# radxa0 dnsmasq configuration
+gadget_net_fixed_ip_sub=${gadget_net_fixed_ip%.*}
+if [ ! -f /etc/dnsmasq.d/radxa0.conf ]; then
+	cat > /etc/dnsmasq.d/radxa0.conf << EOF
+interface=radxa0
+port=5353
+dhcp-range=${gadget_net_fixed_ip_sub}.11,${gadget_net_fixed_ip_sub}.20,12h
+dhcp-option=3
+dhcp-option=6
 EOF
 fi
 if [[ -n $gadget_net_fixed_ip ]]; then
@@ -112,6 +125,7 @@ if [[ -n $gadget_net_fixed_ip ]]; then
 	radxa0_fixed_ipinfo_OS=$(cat /etc/network/interfaces.d/radxa0 | grep address)
 	radxa0_fixed_ip_OS=${radxa0_fixed_ipinfo_OS##* }
 	[ "$radxa0_fixed_ip_OS" == "${gadget_net_fixed_ip}" ] || sed -i "s^${radxa0_fixed_ip_OS}^${gadget_net_fixed_ip^g}" /etc/network/interfaces.d/radxa0
+	grep -q "dhcp-range=${gadget_net_fixed_ip_sub}.11,${gadget_net_fixed_ip_sub}.20,12h" /etc/dnsmasq.d/radxa0.conf || sed -i "s/dhcp-range.*/dhcp-range=${gadget_net_fixed_ip_sub}.11,${gadget_net_fixed_ip_sub}.20,12h/" /etc/dnsmasq.d/radxa0.conf
 fi
 echo "radxa0 usb gadget network configure done"
 
