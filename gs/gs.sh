@@ -169,6 +169,29 @@ fi
 echo "start button service"
 systemd-run --unit=button /home/radxa/gs/button.sh
 
+# samba configuration
+grep -q "\[config\]" /etc/samba/smb.conf || cat >> /etc/samba/smb.conf << EOF
+[Videos]
+   path = /home/radxa/Videos
+   writable = yes
+   browseable = yes
+   create mode = 0777
+   directory mode = 0777
+   guest ok = yes
+   force user = root
+
+[config]
+   path = /config
+   writable = yes
+   browseable = yes
+   create mode = 0777
+   directory mode = 0777
+   guest ok = yes
+   force user = root
+EOF
+
+grep -q "$REC_Dir" /etc/samba/smb.conf || sed -i "/\[Videos\]/{n;s|.*|   ${REC_Dir}|;}" /etc/samba/smb.conf
+
 # system boot complete, turn red record LED off
 gpioset -D $PWR_LED_drive $(gpiofind PIN_${REC_LED_PIN})=0
 echo "gs service start completed"
