@@ -97,6 +97,8 @@ echo "wlan0 hotspot mode configure done"
 
 # radxa0 usb gadget network configuration
 echo "start configure radxa0 usb gadget network"
+gadget_net_fixed_ip_addr=${gadget_net_fixed_ip%/*}
+gadget_net_fixed_ip_sub=${gadget_net_fixed_ip%.*}
 if [ ! -f /etc/network/interfaces.d/radxa0 ]; then
 	cat > /etc/network/interfaces.d/radxa0 << EOF
 auto radxa0
@@ -105,27 +107,15 @@ iface radxa0 inet static
 	address $gadget_net_fixed_ip
 	# post-up mount -o remount,ro /home/radxa/Videos && link mass
 	# post-down remove mass && mount -o remount,rw /home/radxa/Videos
-	post-up systemctl restart dnsmasq
-	post-down systemctl stop dnsmasq
+	post-up /usr/sbin/dnsmasq --conf-file=/dev/null --no-hosts --bind-interfaces --except-interface=lo --clear-on-reload --strict-order --listen-address=${gadget_net_fixed_ip_addr} --dhcp-range=${gadget_net_fixed_ip_sub}.11,${gadget_net_fixed_ip_sub}.20,12h --dhcp-lease-max=5 --pid-file=/run/dnsmasq-radxa0.pid --dhcp-option=3 --dhcp-option=6
 EOF
 fi
 # radxa0 dnsmasq configuration
-gadget_net_fixed_ip_sub=${gadget_net_fixed_ip%.*}
-if [ ! -f /etc/dnsmasq.d/radxa0.conf ]; then
-	cat > /etc/dnsmasq.d/radxa0.conf << EOF
-interface=radxa0
-port=5353
-dhcp-range=${gadget_net_fixed_ip_sub}.11,${gadget_net_fixed_ip_sub}.20,12h
-dhcp-option=3
-dhcp-option=6
-EOF
-fi
 if [[ -n $gadget_net_fixed_ip ]]; then
 	# Check whether the configuration in gs.conf is consistent with radxa0. If not, update it.
-	radxa0_fixed_ipinfo_OS=$(cat /etc/network/interfaces.d/radxa0 | grep address)
-	radxa0_fixed_ip_OS=${radxa0_fixed_ipinfo_OS##* }
-	[ "$radxa0_fixed_ip_OS" == "${gadget_net_fixed_ip}" ] || sed -i "s^${radxa0_fixed_ip_OS}^${gadget_net_fixed_ip^g}" /etc/network/interfaces.d/radxa0
-	grep -q "dhcp-range=${gadget_net_fixed_ip_sub}.11,${gadget_net_fixed_ip_sub}.20,12h" /etc/dnsmasq.d/radxa0.conf || sed -i "s/dhcp-range.*/dhcp-range=${gadget_net_fixed_ip_sub}.11,${gadget_net_fixed_ip_sub}.20,12h/" /etc/dnsmasq.d/radxa0.conf
+	radxa0_fixed_ip_OS=$(grep -oP "(?<=address\s).*" /etc/network/interfaces.d/radxa0)
+	[ "$radxa0_fixed_ip_OS" == "${gadget_net_fixed_ip}" ] || sed -i "s^${radxa0_fixed_ip_OS}^${gadget_net_fixed_ip^}" /etc/network/interfaces.d/radxa0
+	grep -q "${gadget_net_fixed_ip_addr}" /etc/network/interfaces.d/radxa0 || sed -i "s/--listen-address=.*,12h/--listen-address=${gadget_net_fixed_ip_addr} --dhcp-range=${gadget_net_fixed_ip_sub}.11,${gadget_net_fixed_ip_sub}.20,12h/" /etc/network/interfaces.d/radxa0
 fi
 echo "radxa0 usb gadget network configure done"
 
