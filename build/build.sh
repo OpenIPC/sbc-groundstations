@@ -25,7 +25,7 @@ fi
 # Update system to date
 apt update
 apt dist-upgrade -y --allow-downgrades
-apt install -y git dkms build-essential
+apt install -y git cmake dkms build-essential
 
 # Remove old kernel in radxa-zero3_debian_bullseye_xfce_b6.img
 dpkg -l | grep -q "linux-image-5.10.160-26-rk356x" && apt purge -y linux-image-5.10.160-26-rk356x linux-headers-5.10.160-26-rk356x
@@ -65,7 +65,7 @@ popd
 
 # PixelPilot_rk / fpvue
 # From JohnDGodwin
-apt -y install cmake librockchip-mpp-dev libdrm-dev libcairo-dev
+apt -y install librockchip-mpp-dev libdrm-dev libcairo-dev gstreamer1.0-rockchip1 librga-dev librga2 librockchip-mpp1 librockchip-vpu0 libv4l-rkmpp libgl4es libgl4es-dev
 apt --no-install-recommends -y install libgstreamer1.0-dev libgstreamer-plugins-base1.0-dev libgstreamer-plugins-bad1.0-dev gstreamer1.0-plugins-base gstreamer1.0-plugins-good gstreamer1.0-plugins-bad gstreamer1.0-plugins-ugly gstreamer1.0-libav gstreamer1.0-tools
 
 git clone --depth=1 https://github.com/OpenIPC/PixelPilot_rk.git

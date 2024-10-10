@@ -19,8 +19,8 @@ function gencmd(){
 			video_play_cmd="$video_play_cmd --osd --osd-elements $osd_elements --osd-telem-lvl $osd_telem_lvl"
 		fi
 	elif [ "$video_player" == "gstreamer" ]; then
-		video_play_cmd="gst-launch-1.0 -e udpsrc port=5600 caps='application/x-rtp, media=(string)video, clock-rate=(int)90000, encoding-name=(string)H265' ! rtph265depay ! h265parse ! mppvideodec ! videoconvert ! rkximagesink plane-id=76"
-		video_rec_cmd=" gst-launch-1.0 -e udpsrc port=5600 caps='application/x-rtp, media=(string)video, clock-rate=(int)90000, encoding-name=(string)H265' ! rtph265depay ! h265parse ! tee name=t ! mppvideodec ! rkximagesink plane-id=76 t. ! queue ! mpegtsmux ! filesink location=$1"
+		video_play_cmd="gst-launch-1.0 -e udpsrc port=5600 caps='application/x-rtp, media=(string)video, clock-rate=(int)90000, encoding-name=(string)H${video_codec:1:4}' ! rtp${video_codec}depay ! ${video_codec}parse ! mppvideodec ! kmssink"
+		video_rec_cmd="gst-launch-1.0 -e udpsrc port=5600 caps='application/x-rtp, media=(string)video, clock-rate=(int)90000, encoding-name=(string)H${video_codec:1:4}' ! rtp${video_codec}depay ! ${video_codec}parse ! tee name=t ! mppvideodec ! kmssink t. ! queue ! mp4mux ! filesink location=${1}"
 	else
 		# use fpvue as default
 		video_rec_cmd="fpvue --screen-mode $SCREEN_MODE --codec $video_codec --dvr $1"
@@ -34,7 +34,7 @@ function gencmd(){
 }
 
 gencmd norecord
-$video_play_cmd &
+bash -c "$video_play_cmd" &
 pid_player=$!
 while true; do
 	if [ "$(gpiomon -F %e -n 1 $(gpiofind PIN_${REC_GPIO_PIN}))" == "1" ]; then
@@ -50,8 +50,8 @@ while true; do
 			else
 				rec_index=1000
 			fi
-			gencmd ${rec_index}.ts
-			$video_rec_cmd &
+			gencmd ${rec_index}.mp4
+			bash -c "$video_rec_cmd" &
 			pid_player=$!
 			video_record='1'
 			# Todo: How to deal with led when system is overheat
@@ -69,7 +69,7 @@ while true; do
 			sleep 0.2
 			sleep 1 && gpioset -D $REC_LED_drive $(gpiofind PIN_${REC_LED_PIN})=0 &
 			gencmd norecord
-			$video_play_cmd &
+			bash -c "$video_play_cmd" &
 			pid_player=$!
 			video_record='0'
 		fi
