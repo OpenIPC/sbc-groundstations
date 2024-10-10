@@ -43,12 +43,11 @@ while true; do
 			sleep 0.2
 			# current_date=$(date +'%m-%d-%Y_%H-%M-%S')
 			# gencmd record_${current_date}.ts
-			lastfile=$(ls -1 | tail -n 1)
-			rec_index=${lastfile%.*}
-			if [[ $rec_index =~ ^-?[0-9]+$ ]]; then
-				rec_index=$(($rec_index + 1))
+			rec_index=$(ls -1 $REC_Dir | grep -oP "^\d+(?=\.mp4)" | tail -n 1)
+			if [ -z $rec_index ]; then
+				rec_index="1000"
 			else
-				rec_index=1000
+				rec_index=$(($rec_index + 1))
 			fi
 			gencmd ${rec_index}.mp4
 			bash -c "$video_rec_cmd" &
