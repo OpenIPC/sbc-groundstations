@@ -109,6 +109,6 @@ echo "Image shrunked from ${TOTAL_BLOCKS} to ${TOTAL_BLOCKS_SHRINKED}."
 
 # compression image and rename xz file
 xz -T0 $IMAGE
-mv *.xz Radxa-zero-3_GroundStation_${VERSION}_${BUILD_DATE}.img.xz
+mv *.xz Radxa-Zero-3_GroundStation_${BUILD_DATE}_${VERSION}.img.xz
 
 exit 0
