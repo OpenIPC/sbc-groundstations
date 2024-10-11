@@ -6,7 +6,7 @@ source config
 apt update
 apt install -y qemu-user-static
 
-if [[ "$IMAGE_URL" == "/*" ]]; then
+if [[ "$IMAGE_URL" == /* ]]; then
 	cp $IMAGE_URL .
 else
 	wget -q "$IMAGE_URL"
