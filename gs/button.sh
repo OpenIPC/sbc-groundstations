@@ -11,8 +11,8 @@ while true; do
 		break
 	fi
         if [ "$(gpiomon -F %e -n 1 $WIFI_mode_switch_PIN_info)" == "1" ]; then
-		wlan0_connected_connection =$(nmcli device status | grep '^wlan0.*connected' | tr -s ' ' | cut -d ' ' -f 4)
-		case $wlan0_connected_connection in
+		wlan0_connected_connection=$(nmcli device status | grep '^wlan0.*connected' | tr -s ' ' | cut -d ' ' -f 4)
+		case "$wlan0_connected_connection" in
 			hotspot)
 				nmcli connection up wlan0
 				sleep 5
