@@ -6,10 +6,10 @@ Main Features
 * __Button support.__ There are 8 buttons in plan, they are `up, down, left, right, center and quick 1, 2, 3` buttons. Currently only the quick buttons are used, `quick 1` button start / stop video record, `quick 2` button switch USB OTG mode between host and device, `quick 3` button switch WiFi mode between station and hotspot (Only for 3W).
 * __LED support.__ Currently support `video record LED (Red)` and `power LED (Green)`. The green and red LED turn on after the SBC is powered on. Red LED turn off after the system is startup completed. The red LED will blink when video record is turn on. The green LED will blink when OTG mode is switched to device.
 * __Multiple types of network support.__ Support `WiFi`, `Ethernet` and `USB Net`, See Network Configuration for details.
-* __Optional video player.__ Support pixelpilot, fpvue, gstreamer as Video player. Gstreamer not support OSD. 
+* __Optional video player.__ Support pixelpilot, fpvue, gstreamer as Video player. Gstreamer not support OSD.
 * __Multiple USB OTG gadget functions.__ Support `adbd` and `CDC NCM`, `CDC ACM` and `MASS` supported in plan. Use a data cable to connect the computer and the SBC OTG port, adb device and an additional NCM network card will appear on the computer. NCM  can auto get ip address with DHCP.
 * __Temperature monitoring and active cooling.__ Support monitoring `RK3566` and `RTL8812EU` temperature and automatically adjust PWM fan speed according to temperature.
-* __Multiple WiFi card drivers.__ Currently supports RTL8812AU and RTL8812EU. Plan to add RTL8812BU, RTL8812CU, RTL8814AU, RTL8731BU driver support.
+* __Multiple WiFi card drivers.__ Currently supports `RTL8812AU, RTL8812EU, RTL8812BU, RTL8812CU, RTL8814AU, RTL8731BU`.
 * __USB WiFi card hot plug.__ Support multiple USB WiFi cards with Hotplugging.
 * __Two wifibroadcast working modes.__ `Local receiver` mode is the native mode with the best compatibility, but hot-plugging USB WiFi card will briefly interrupted the stream. `aggregator` mode will run wfb_rx aggregator on boot, and run wfb_rx forwarder for each USB WiFi card, hot-plugging USB WiFi card will not interrupt the stram and can receive streams from other external devices through the network like an openwrt router, but may add a little delay (<1ms?)
 * __Share config and videos with smb.__ Anonymous access with root permissions is enabled by default, which allows you to easily modify configurations, obtain and delete record files. Enter \\192.168.x.x (SBC IP address) in the Windows Explorer address bar to access.
@@ -25,7 +25,7 @@ Files and Services
 * __build files:__ script files for build images
 * __workflows files:__ Auto build images using github action
 * __gs files:__
-  1. Configuration file `/config/gs.conf` 
+  1. Configuration file `/config/gs.conf`
   2. wfb key file `/config/gs.key`
   3. script files `/home/radxa/gs/[button.sh, fan.sh, gs.sh, stream.sh, wfb.sh]`
   4. udev rule files `/etc/udev/rules.d/[98-gadget.rules, 99-wfb.rules]`
@@ -82,9 +82,9 @@ Hardware
 --------
 __Designed for and tested on Radxa Zero 3W/3E only.__
 * __Buttons:__ All buttons must connect to 3.3V.
-* __LEDs:__ 
+* __LEDs:__
   1. GPIO work in `Push-Pull` mode. `GPIO->Resistor->LED->GND`
-  2. GPIO work in `Open-Drain` mode. 
+  2. GPIO work in `Open-Drain` mode.
   ```
   3V3->Resistor--->LED->GND
                 │  
@@ -112,9 +112,9 @@ Configuration [ gs.conf for details ]
 1. __WiFi:__ `wlan0`
     * `station mode:` Default connect to an open WiFi named `OpenIPC` if not configured.
     * `hotspot mode:` Default SSID is `SBC-GS` with password `12345678`, IP is `192.168.4.1/24`
-2. __Ethernet:__ `eth0` Default `DHCP client` with static IP `192.168.1.20/24, 10.0.36.254/24` 
+2. __Ethernet:__ `eth0` Default `DHCP client` with static IP `192.168.1.20/24, 10.0.36.254/24`
 3. __USB Net:__ `radxa0` Default `DHCP server` with static IP `192.168.2.20/24`
-4. __usb tethering:__ `usb0` Default `DHCP client` with static IP `192.168.3.20/24` 
+4. __usb tethering:__ `usb0` Default `DHCP client` with static IP `192.168.3.20/24`
 
 ### 4. Video Configuration
 

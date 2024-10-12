@@ -42,20 +42,56 @@ sed -i "s^dkms install -m \${DRV_NAME} -v \${DRV_VERSION}^dkms install -m \${DRV
 ./dkms-install.sh
 popd
 
+# 8812bu
+# make -j16 KSRC=/lib/modules/$(ls /lib/modules | tail -n 1)/build
+# make install
+git clone --depth=1 https://github.com/OpenHD/rtl88x2bu.git
+cp -r rtl88x2bu /usr/src/rtl88x2bu-git
+sed -i 's/PACKAGE_VERSION="@PKGVER@"/PACKAGE_VERSION="git"/g' /usr/src/rtl88x2bu-git/dkms.conf
+dkms add -m rtl88x2bu -v git
+dkms build -m rtl88x2bu -v git -k $(ls /lib/modules | tail -n 1)
+dkms install -m rtl88x2bu -v git -k $(ls /lib/modules | tail -n 1)
+
+# 8812cu
+git clone --depth=1 https://github.com/libc0607/rtl88x2cu-20230728.git
+pushd rtl88x2cu-20230728
+sed -i 's/CONFIG_PLATFORM_I386_PC = y/CONFIG_PLATFORM_I386_PC = n/g' Makefile
+sed -i 's/CONFIG_PLATFORM_ARM64_RPI = n/CONFIG_PLATFORM_ARM64_RPI = y/g' Makefile
+sed -i "s^dkms build -m \${DRV_NAME} -v \${DRV_VERSION}^dkms build -m \${DRV_NAME} -v \${DRV_VERSION} -k \$(ls /lib/modules | tail -n 1)^" dkms-install.sh
+sed -i "s^dkms install -m \${DRV_NAME} -v \${DRV_VERSION}^dkms install -m \${DRV_NAME} -v \${DRV_VERSION} -k \$(ls /lib/modules | tail -n 1)^" dkms-install.sh
+popd
+
 # 8812eu
-git clone https://github.com/libc0607/rtl88x2eu-20230815.git
+git clone --depth=1 https://github.com/libc0607/rtl88x2eu-20230815.git
 pushd rtl88x2eu-20230815
-git checkout 0e98ea110381d627ae4fdf7a14e38a361b197257
+sed -i 's/CONFIG_PLATFORM_I386_PC = y/CONFIG_PLATFORM_I386_PC = n/g' Makefile
+sed -i 's/CONFIG_PLATFORM_ARM64_RPI = n/CONFIG_PLATFORM_ARM64_RPI = y/g' Makefile
 sed -i "s^dkms build -m \${DRV_NAME} -v \${DRV_VERSION}^dkms build -m \${DRV_NAME} -v \${DRV_VERSION} -k \$(ls /lib/modules | tail -n 1)^" dkms-install.sh
 sed -i "s^dkms install -m \${DRV_NAME} -v \${DRV_VERSION}^dkms install -m \${DRV_NAME} -v \${DRV_VERSION} -k \$(ls /lib/modules | tail -n 1)^" dkms-install.sh
 ./dkms-install.sh
 popd
 
-# 8812cu
 # 8731bu
+git clone --depth=1 https://github.com/libc0607/rtl8733bu-20230626.git
+pushd rtl8733bu-20230626
+sed -i 's/CONFIG_PLATFORM_I386_PC = y/CONFIG_PLATFORM_I386_PC = n/g' Makefile
+sed -i 's/CONFIG_PLATFORM_ARM64_RPI = n/CONFIG_PLATFORM_ARM64_RPI = y/g' Makefile
+sed -i "s^dkms build -m \${DRV_NAME} -v \${DRV_VERSION}^dkms build -m \${DRV_NAME} -v \${DRV_VERSION} -k \$(ls /lib/modules | tail -n 1)^" dkms-install.sh
+sed -i "s^dkms install -m \${DRV_NAME} -v \${DRV_VERSION}^dkms install -m \${DRV_NAME} -v \${DRV_VERSION} -k \$(ls /lib/modules | tail -n 1)^" dkms-install.sh
+popd
+
 # 8814au
-# 8812bu
-# MT7620
+git clone --depth=1 https://github.com/morrownr/8814au.git rtl8814au
+DRV_NAME_8814AU="rtl8814au"
+DRV_VERSION_8814AU="5.8.5.1"
+sed -i "/MODULE_VERSION(DRIVERVERSION);/a MODULE_IMPORT_NS(VFS_internal_I_am_really_a_filesystem_and_am_NOT_a_driver);" rtl8814au/os_dep/linux/os_intfs.c
+sed -i "s^kernelver=\$kernelver ./dkms-make.sh^'make' -j\$(nproc) KVER=\${kernelver} KSRC=/lib/modules/\${kernelver}/build^" rtl8814au/dkms.conf
+cp -rf rtl8814au /usr/src/${DRV_NAME_8814AU}-${DRV_VERSION_8814AU}
+dkms add -m ${DRV_NAME_8814AU} -v ${DRV_VERSION_8814AU}
+dkms build -m ${DRV_NAME_8814AU} -v ${DRV_VERSION_8814AU} -k $(ls /lib/modules | tail -n 1)
+dkms install -m ${DRV_NAME_8814AU} -v ${DRV_VERSION_8814AU} -k $(ls /lib/modules | tail -n 1)
+
+# MT7612u
 
 # wfb-ng
 git clone -b stable --depth=1 https://github.com/svpcom/wfb-ng.git
