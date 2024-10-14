@@ -29,6 +29,7 @@ done
 ) &
 
 # otg mode switch button
+(
 otg_mode_switch_PIN_info=$(gpiofind PIN_${otg_mode_switch_PIN})
 otg_mode_file="/sys/kernel/debug/usb/fcc00000.dwc3/mode"
 otg_mode_LED_PIN_info=$(gpiofind PIN_${otg_mode_LED_PIN})
@@ -60,3 +61,5 @@ while true; do
 		fi
 	fi
 done
+) &
+wait
