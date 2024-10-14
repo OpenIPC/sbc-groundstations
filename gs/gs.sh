@@ -4,13 +4,14 @@ set -e
 
 if [ -f /config/before.txt ]; then
 	sleep 15
-	cat > /dev/tty1 << EOF
+	cat | tee /dev/ttyFIQ0 /dev/tty1 << EOF
 
-
-############################# Welcome to SBC Ground Station ################################
-
-WARING: Thist is init startup, may take few minuts, system will auto restart when init done.
-WARING: Do not turn off the power during the initialization process.
+############################### Welcome to SBC Ground Station ##################################
+#                                                                                              #
+# WARING: Thist is init startup, may take few minuts, system will auto restart when init done. #
+# WARING: Do not turn off the power during the initialization process.                         #
+#                                                                                              #
+################################################################################################
 
 EOF
 fi
