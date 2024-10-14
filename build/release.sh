@@ -45,8 +45,8 @@ mount -o bind /run $ROOTFS/run
 mount -t devpts devpts $ROOTFS/dev/pts
 
 # copy gs code to target rootfs
-mkdir -p $ROOTFS/home/radxa/SourceCode
-cp -r ../gs $ROOTFS/home/radxa/SourceCode
+mkdir -p $ROOTFS/home/radxa/SourceCode/SBC-GS
+cp -r ../gs ../pics $ROOTFS/home/radxa/SourceCode/SBC-GS
 
 # run build script
 # chroot $ROOTFS /bin/bash

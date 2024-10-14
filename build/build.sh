@@ -111,12 +111,12 @@ cmake --build build --target install
 popd
 
 # SBC-GS-CC
-pushd gs
+pushd SBC-GS/gs
 ./install.sh
 popd
 
 # install useful packages
-apt -y install lrzsz net-tools socat netcat exfatprogs ifstat
+apt -y install lrzsz net-tools socat netcat exfatprogs ifstat fbi minicom
 
 # enable services
 sed -i "s/disable_service ssh/# disable_service ssh/" /config/before.txt

@@ -73,6 +73,7 @@ GS Directory Tree
         │   ├── gs.sh
         │   ├── rk3566-dwc3-otg-role-switch.dts
         │   ├── stream.sh
+        │   ├── wallpaper.png
         │   └── wfb.sh
         └── Videos
 ```

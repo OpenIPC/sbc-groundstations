@@ -189,6 +189,9 @@ EOF
 
 grep -q "$REC_Dir" /etc/samba/smb.conf || sed -i "/\[Videos\]/{n;s|.*|   ${REC_Dir}|;}" /etc/samba/smb.conf
 
+# show wallpaper
+fbi -d /dev/fb0 -a -T 1 /home/radxa/gs/wallpaper.png
+
 # system boot complete, turn red record LED off
 gpioset -D $PWR_LED_drive $(gpiofind PIN_${REC_LED_PIN})=0
 echo "gs service start completed"
