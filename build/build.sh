@@ -91,6 +91,9 @@ dkms add -m ${DRV_NAME_8814AU} -v ${DRV_VERSION_8814AU}
 dkms build -m ${DRV_NAME_8814AU} -v ${DRV_VERSION_8814AU} -k $(ls /lib/modules | tail -n 1)
 dkms install -m ${DRV_NAME_8814AU} -v ${DRV_VERSION_8814AU} -k $(ls /lib/modules | tail -n 1)
 
+# AR9271
+apt install firmware-atheros
+
 # MT7612u
 
 # wfb-ng
