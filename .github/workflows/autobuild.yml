@@ -1,15 +1,15 @@
 name: AutoBuild
 
 on:
+  workflow_dispatch:
+  release:
+    types: [published]
   # push:
   #   branches:
   #     - main
   # pull_request:
   #   branches:
   #     - main
-  workflow_dispatch:
-  release:
-    types: [published]
 
 
 jobs:
@@ -26,8 +26,17 @@ jobs:
         cd ${{ github.workspace }}/build
         sudo ./release.sh ${GITHUB_SHA} ${GITHUB_REF}
 
-    - name: Upload test image
+    - name: Upload test Image
+      if: github.event_name != 'release'
       uses: actions/upload-artifact@v4
       with:
         name: build-artifacts
         path: ${{ github.workspace }}/build/*.xz
+
+    - name: Upload Release Image
+      if: github.event_name == 'release'
+      uses: softprops/action-gh-release@v2
+      with:
+        tag_name: ${{env.TAG_NAME}}
+        token: ${{ secrets.RELEASE_TOKEN }}
+        files: ${{ github.workspace }}/build/*.xz
