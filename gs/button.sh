@@ -10,7 +10,7 @@ if [ ! -d /sys/class/net/wlan0 ]; then
 	exit 0
 fi
 WIFI_mode_switch_PIN_info=$(gpiofind PIN_${WIFI_mode_switch_PIN})
-while [ "$(gpiomon -F %e -n 1 $WIFI_mode_switch_PIN_info)" == "1" ]; do
+while gpiomon -r -s -n 1 -B pull-down $WIFI_mode_switch_PIN_info; do
 		wlan0_connected_connection=$(nmcli device status | grep '^wlan0.*connected' | tr -s ' ' | cut -d ' ' -f 4)
 		case "$wlan0_connected_connection" in
 			hotspot)
@@ -32,7 +32,7 @@ done
 otg_mode_switch_PIN_info=$(gpiofind PIN_${otg_mode_switch_PIN})
 otg_mode_file="/sys/kernel/debug/usb/fcc00000.dwc3/mode"
 otg_mode_LED_PIN_info=$(gpiofind PIN_${otg_mode_LED_PIN})
-while [ "$(gpiomon -F %e -n 1 $otg_mode_switch_PIN_info)" == "1" ]; do
+while gpiomon -r -s -n 1 -B pull-down $otg_mode_switch_PIN_info; do
 	otg_mode=$(cat $otg_mode_file)
 	if [ "$otg_mode" == "host" ]; then
 		echo device > $otg_mode_file

@@ -34,7 +34,7 @@ function gencmd(){
 gencmd norecord
 bash -c "$video_play_cmd" &
 pid_player=$!
-while [ "$(gpiomon -F %e -n 1 ${GPIO_REC})" == "1" ]; do
+while gpiomon -r -s -n 1 -B pull-down ${GPIO_REC}; do
 	if [ "$video_record" == "0" ]; then
 		if [ "$video_player" == "pixelpilot" ]; then
 			kill -SIGUSR1 $pid_player
@@ -78,5 +78,5 @@ while [ "$(gpiomon -F %e -n 1 ${GPIO_REC})" == "1" ]; do
 		fi
 		video_record='0'
 	fi
-	sleep 1
+	sleep 3
 done
