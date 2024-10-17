@@ -17,7 +17,7 @@ if [[ "$wfb_rx_mode" == "aggregator" && -n $1 ]]; then
 	systemd-run /usr/bin/wfb_rx -f -p $wfb_stream_id_video -c 127.0.0.1 -u $wfb_listen_port_video -i $wfb_link_id $1
 	systemd-run /usr/bin/wfb_rx -f -p $wfb_stream_id_telemetry -c 127.0.0.1 -u $wfb_listen_port_telemetry -i $wfb_link_id $1
 
-elif [ "$wfb_rx_mode" == "receiver" ]; then
+elif [ "$wfb_rx_mode" == "standalone" ]; then
 	# Modify /etc/wifibroadcast.cfg according to gs.conf
 	cat > /etc/wifibroadcast.cfg << EOF
 [common]
