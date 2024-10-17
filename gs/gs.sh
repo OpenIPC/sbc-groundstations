@@ -143,6 +143,7 @@ if [ "$wfb_rx_mode" == "aggregator" ]; then
         wfb_rx -a $wfb_listen_port_telemetry -K $wfb_key -i $wfb_link_id -c $wfb_outgoing_ip -u $wfb_outgoing_port_telemetry 2>&1 > /dev/null &
 fi
 echo "run wfb.sh once"
+ip ro add 224.0.0.0/4 dev br0
 /home/radxa/gs/wfb.sh &
 
 # If video_on_boot=yes, video playback will be automatically started
