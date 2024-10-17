@@ -62,15 +62,17 @@ done
 [ "$need_u_boot_update" == "1" ] && u-boot-update
 [ "$need_reboot" == "1" ] && reboot
 
-# eth0 network configuration
-echo "start configure eth0"
-[ -f /etc/NetworkManager/system-connections/eth0.nmconnection ] || nmcli con add type ethernet con-name eth0 ifname eth0 ipv4.method auto ipv4.addresses ${ETH_Fixed_ip},${ETH_Fixed_ip2} autoconnect yes
-if [[ -f /etc/NetworkManager/system-connections/eth0.nmconnection && -n $ETH_Fixed_ip && -n $ETH_Fixed_ip2 ]]; then
-	# Check whether the configuration in gs.conf is consistent with eth0. If not, update it.
-	eth0_fixed_ip_OS=$(nmcli -g ipv4.addresses con show eth0)
-	[ "$eth0_fixed_ip_OS" == "${ETH_Fixed_ip}, ${ETH_Fixed_ip2}" ] || nmcli con modify eth0 ipv4.addresses ${ETH_Fixed_ip},${ETH_Fixed_ip2}
+# br0 network configuration
+echo "start configure br0"
+[ -f /etc/NetworkManager/system-connections/br0.nmconnection ] || nmcli con add type bridge con-name br0 ifname br0 ipv4.method auto ipv4.addresses ${br0_fixed_ip},${br0_fixed_ip2} autoconnect yes
+if [[ -f /etc/NetworkManager/system-connections/br0.nmconnection && -n $br0_fixed_ip && -n $br0_fixed_ip2 ]]; then
+	# Check whether the configuration in gs.conf is consistent with br0. If not, update it.
+	br0_fixed_ip_OS=$(nmcli -g ipv4.addresses con show br0)
+	[ "$eth0_fixed_ip_OS" == "${br0_fixed_ip}, ${br0_fixed_ip2}" ] || nmcli con modify br0 ipv4.addresses ${br0_fixed_ip},${br0_fixed_ip2}
 fi
-echo "eth0 configure done"
+[ -f /etc/NetworkManager/system-connections/br0-slave-eth0.nmconnection ] || nmcli con add type bridge-slave con-name br0-slave-eth0 ifname eth0 master br0
+[ -f /etc/NetworkManager/system-connections/br0-slave-usb0.nmconnection ] || nmcli con add type bridge-slave con-name br0-slave-usb0 ifname usb0 master br0
+echo "br0 configure done"
 
 # wlan0 station mode configuration
 echo "start configure wlan0 station mode"
@@ -125,16 +127,6 @@ if [[ -n $gadget_net_fixed_ip ]]; then
 	grep -q "${gadget_net_fixed_ip_addr}" /etc/network/interfaces.d/radxa0 || sed -i "s/--listen-address=.*,12h/--listen-address=${gadget_net_fixed_ip_addr} --dhcp-range=${gadget_net_fixed_ip_sub}.11,${gadget_net_fixed_ip_sub}.20,12h/" /etc/network/interfaces.d/radxa0
 fi
 echo "radxa0 usb gadget network configure done"
-
-# usb0 RNDIS network configuration
-echo "start configure usb0 RNDIS network"
-[ -f /etc/NetworkManager/system-connections/usb0.nmconnection ] || nmcli con add type ethernet con-name usb0 ifname usb0 ipv4.method auto ipv4.addresses ${usb0_fixed_ip} autoconnect yes
-if [[ -n $usb0_fixed_ip ]]; then
-	# Check whether the configuration in gs.conf is consistent with radxa0. If not, update it.
-	usb0_fixed_ip_OS=$(nmcli -g ipv4.addresses con show usb0)
-	[ "$usb0_fixed_ip_OS" == "${usb0_fixed_ip}" ] || nmcli con modify usb0 ipv4.addresses ${usb0_fixed_ip}
-fi
-echo "usb0 RNDIS network configure done"
 
 # pwm fan service
 [ "$fan_service_enable" == "yes" ] && ( echo "start fan service"; systemd-run --unit=fan /home/radxa/gs/fan.sh )
