@@ -190,7 +190,7 @@ EOF
 grep -q "$REC_Dir" /etc/samba/smb.conf || sed -i "/\[Videos\]/{n;s|.*|   ${REC_Dir}|;}" /etc/samba/smb.conf
 
 # show wallpaper
-sleep 10 && fbi -d /dev/fb0 -a -T 1 --noverbose /home/radxa/gs/wallpaper.png &
+sleep 10 && fbi -d /dev/fb0 -a -fitwidth -T 1 --noverbose /home/radxa/gs/wallpaper.png &
 
 # system boot complete, turn red record LED off
 gpioset -D $PWR_LED_drive $(gpiofind PIN_${REC_LED_PIN})=0
