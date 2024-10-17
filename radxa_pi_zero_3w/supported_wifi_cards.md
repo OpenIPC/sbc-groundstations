@@ -6,6 +6,7 @@
     * BL-R8812AF1
 * RTL8812eu chipset
   * BL-M8812EU2
-* rtl8731bu & rtl8733bu chipsets (testing)
-* ath9k_htc driver (testing)
+* RTL8812bu chipset 
+* RTL8731bu & RTL8733bu chipsets
+* ath9k_htc driver
   * Atheros AR9271
