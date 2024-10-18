@@ -119,7 +119,7 @@ pushd SBC-GS/gs
 popd
 
 # install useful packages
-apt -y install lrzsz net-tools socat netcat exfatprogs ifstat fbi minicom
+apt -y install lrzsz net-tools socat netcat exfatprogs ifstat fbi minicom bridge-utils
 
 # enable services
 sed -i "s/disable_service ssh/# disable_service ssh/" /config/before.txt
