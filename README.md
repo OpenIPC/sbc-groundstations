@@ -15,7 +15,8 @@ Main Features
 * __Share config and videos with smb.__ Anonymous access with root permissions is enabled by default, which allows you to easily modify configurations, obtain and delete record files. Enter \\192.168.x.x (SBC IP address) in the Windows Explorer address bar to access.
 * __Auto extend root partition and rootfs.__ The root partition and rootfs will automatically `expand to the size specified in gs.conf->rootfs_reserved_space` on initial startup.
 * __exfat partition for video recordings.__ Automatically create an `exfat partition` using all remaining space during initial startup. The partition will be `mounted to /home/radxa/Videos` for storing video recordings, can get the record files through smb or insert the TF card into the computer.
-* __Sequentially increasing video file names.__ SBC has incorrect time without Internet, The system names the video files sequentially starting from 1000.mp4, Finally video files will be like this: `1000.mp4, 1001.mp4, etc.`
+* __Sequentially increasing video file names.__ SBC has incorrect time without Internet, The gstreamer record video files name sequentially starting from 1000.mkv, Finally video files will be like this: `1000.mkv, 1001.mkv, etc.` PixelPilot record file name use template since this [commit](https://github.com/OpenIPC/PixelPilot_rk/commit/eab6c59e203c22c468a4ce99ff8461ec00d56fc3), Finally video files will be like record_%Y-%m-%d_%H-%M-%S.mp4.
+* __send stream over USB tethering and Ethernet__ Video and telemetry stream can send to other device over USB tethering or Ethernet, witch can be played with Android QGroundControl,PixelPilot etc. Notice: share stream using multicast by default, not working with windows QGroundControl.
 * __Version in /etc/gs-release__
 * __Auto build with github action.__
 
@@ -113,9 +114,10 @@ Configuration [ gs.conf for details ]
 1. __WiFi:__ `wlan0`
     * `station mode:` Default connect to an open WiFi named `OpenIPC` if not configured.
     * `hotspot mode:` Default SSID is `SBC-GS` with password `12345678`, IP is `192.168.4.1/24`
-2. __Ethernet:__ `eth0` Default `DHCP client` with static IP `192.168.1.20/24, 10.0.36.254/24`
+2. __Ethernet:__ `eth0` Default slave of br0.
 3. __USB Net:__ `radxa0` Default `DHCP server` with static IP `192.168.2.20/24`
-4. __usb tethering:__ `usb0` Default `DHCP client` with static IP `192.168.3.20/24`
+4. __USB tethering:__ `usb0` Default slave of br0.
+5. __Bridge:__ `br0` Default `DHCP client` with static IP `192.168.1.20/24, 10.0.36.254/24`
 
 ### 4. Video Configuration
 
