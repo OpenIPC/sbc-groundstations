@@ -40,6 +40,15 @@ fi
 mount ${os_dev}p4 $REC_Dir
 
 # dtbo configuration
+if [[ "$enable_external_antenna" == "yes" && ! -f /boot/dtbo/radxa-zero3-external-antenna.dtbo && -d /sys/class/net/wlan0 ]]; then
+	mv /boot/dtbo/radxa-zero3-external-antenna.dtbo.disabled /boot/dtbo/radxa-zero3-external-antenna.dtbo
+	need_u_boot_update=1
+	need_reboot=1
+elif [[ -f /boot/dtbo/radxa-zero3-external-antenna.dtbo && -d /sys/class/net/wlan0 ]] ; then
+	mv /boot/dtbo/radxa-zero3-external-antenna.dtbo /boot/dtbo/radxa-zero3-external-antenna.dtbo.disabled
+	need_u_boot_update=1
+	need_reboot=1
+fi
 ftdoverlays_extlinux=$(grep fdtoverlays /boot/extlinux/extlinux.conf | head -n 1)
 if [[ -f /boot/dtbo/rk3566-dwc3-otg-role-switch.dtbo && "$ftdoverlays_extlinux" == *rk3566-dwc3-otg-role-switch.dtbo* ]]; then
 	echo "dwc3-otg-role-switch dtb overlay is enabled"
