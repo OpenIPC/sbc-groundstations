@@ -1,7 +1,5 @@
 #!/bin/bash
 
-[ -h "/run/systemd/units/invocation:gs.service" ] || exit 0
-
 source /config/gs.conf
 if [[ "$wfb_rx_mode" == "aggregator" && -n $1 ]]; then
 	# Unmanage USB WiFi from NetworkManager
@@ -18,6 +16,7 @@ if [[ "$wfb_rx_mode" == "aggregator" && -n $1 ]]; then
 	systemd-run /usr/bin/wfb_rx -f -p $wfb_stream_id_telemetry -c 127.0.0.1 -u $wfb_listen_port_telemetry -i $wfb_link_id $1
 
 elif [ "$wfb_rx_mode" == "standalone" ]; then
+	[ -h "/run/systemd/units/invocation:gs.service" ] || exit 0
 	# Modify /etc/wifibroadcast.cfg according to gs.conf
 	cat > /etc/wifibroadcast.cfg << EOF
 [common]
