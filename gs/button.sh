@@ -8,6 +8,9 @@ source /config/gs.conf
 if [ ! -d /sys/class/net/wlan0 ]; then
 	echo "WARING: no wlan0 found, can't switch wifi mode."
 	exit 0
+elif [ "$wfb_integrated_wnic" == "wlan0" ]; then
+	echo "WARING: wlan0 used by wfb, can't switch wifi mode."
+	exit 0
 fi
 WIFI_mode_switch_PIN_info=$(gpiofind PIN_${WIFI_mode_switch_PIN})
 while gpiomon -r -s -n 1 -B pull-down $WIFI_mode_switch_PIN_info; do

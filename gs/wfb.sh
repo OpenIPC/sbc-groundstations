@@ -32,6 +32,7 @@ peer = 'connect://${wfb_outgoing_ip}:${wfb_outgoing_port_video}'
 
 EOF
 	wfb_nics=$(echo /sys/class/net/wl* | sed -r -e "s^/sys/class/net/^^g" -e "s/wlan0\s{0,1}//")
+	[ -n "$wfb_integrated_wnic" ] && wfb_nics="$wfb_integrated_wnic $wfb_nics"
 	# grep -q "WFB_NICS=\"${wfb_nics}\"" /etc/default/wifibroadcast || echo "WFB_NICS=\"${wfb_nics}\"" > /tmp/wifibroadcast.default
 	# Need Fix: udev rule is executed before the bind mount in gs.service, /tmp/{wifibroadcast.cfg,wifibroadcast.default} being empty on boot
 	echo "WFB_NICS=\"${wfb_nics}\"" > /etc/default/wifibroadcast
