@@ -97,7 +97,7 @@ apt install firmware-atheros
 # MT7612u
 
 # wfb-ng
-git clone -b stable --depth=1 https://github.com/svpcom/wfb-ng.git
+git clone -b master --depth=1 https://github.com/svpcom/wfb-ng.git
 pushd wfb-ng
 ./scripts/install_gs.sh wlanx
 popd
