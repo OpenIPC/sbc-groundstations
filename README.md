@@ -146,5 +146,4 @@ Known issues
 ------------
 
 1. When WiFi is set to station mode, it will enter hotspot mode when it is turned on for the first time after initialization. [ maybe not bad :) ]
-2. The video recorded by gstreamer is likely to be unplayable.
 
