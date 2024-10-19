@@ -53,9 +53,10 @@ GS Directory Tree
 │   │       └── radxa0
 │   ├── NetworkManager
 │   │   └── system-connections
-│   │       ├── eth0.nmconnection
+│   │       ├── br0.nmconnection
+│   │       ├── br0-slave-eth0.nmconnection
+│   │       ├── br0-slave-usb0.nmconnection
 │   │       ├── hotspot.nmconnection
-│   │       ├── usb0.nmconnection
 │   │       └── wlan0.nmconnection
 │   ├── systemd
 │   │   └── system
