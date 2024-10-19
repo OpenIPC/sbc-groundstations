@@ -44,7 +44,7 @@ if [[ "$enable_external_antenna" == "yes" && ! -f /boot/dtbo/radxa-zero3-externa
 	mv /boot/dtbo/radxa-zero3-external-antenna.dtbo.disabled /boot/dtbo/radxa-zero3-external-antenna.dtbo
 	need_u_boot_update=1
 	need_reboot=1
-elif [[ -f /boot/dtbo/radxa-zero3-external-antenna.dtbo && -d /sys/class/net/wlan0 ]] ; then
+elif [[ "$enable_external_antenna" != "yes" && -f /boot/dtbo/radxa-zero3-external-antenna.dtbo && -d /sys/class/net/wlan0 ]] ; then
 	mv /boot/dtbo/radxa-zero3-external-antenna.dtbo /boot/dtbo/radxa-zero3-external-antenna.dtbo.disabled
 	need_u_boot_update=1
 	need_reboot=1
@@ -81,10 +81,12 @@ if [[ -f /etc/NetworkManager/system-connections/br0.nmconnection && -n $br0_fixe
 fi
 [ -f /etc/NetworkManager/system-connections/br0-slave-eth0.nmconnection ] || nmcli con add type bridge-slave con-name br0-slave-eth0 ifname eth0 master br0
 [ -f /etc/NetworkManager/system-connections/br0-slave-usb0.nmconnection ] || nmcli con add type bridge-slave con-name br0-slave-usb0 ifname usb0 master br0
+ip ro add 224.0.0.0/4 dev br0
 echo "br0 configure done"
 
 if [ -z "$wfb_integrated_wnic" ]; then
 	# managed wlan0 by NetworkManager
+	[ -f /etc/network/interfaces.d/wfb-wlan0 ] && rm /etc/network/interfaces.d/wfb-wlan0
 	nmcli device | grep -q "^wlan0.*unmanaged.*" && nmcli device set wlan0 managed yes
 
 	# wlan0 station mode configuration
@@ -113,9 +115,9 @@ if [ -z "$wfb_integrated_wnic" ]; then
 		nmcli connection modify hotspot ipv4.method shared ipv4.addresses $Hotspot_ip autoconnect no
 	else
 		echo "no wlan0 or hotspot setting is blank"
-fi
-[[ -d /sys/class/net/wlan0 && "$WIFI_mode" == "hotspot" ]] && ( sleep 15; nmcli connection up hotspot ) &
-echo "wlan0 hotspot mode configure done"
+	fi
+	[[ -d /sys/class/net/wlan0 && "$WIFI_mode" == "hotspot" ]] && ( sleep 15; nmcli connection up hotspot ) &
+	echo "wlan0 hotspot mode configure done"
 fi
 
 # radxa0 usb gadget network configuration
@@ -130,7 +132,7 @@ iface radxa0 inet static
 	address $gadget_net_fixed_ip
 	# post-up mount -o remount,ro /home/radxa/Videos && link mass
 	# post-down remove mass && mount -o remount,rw /home/radxa/Videos
-	up /usr/sbin/dnsmasq --conf-file=/dev/null --no-hosts --bind-interfaces --except-interface=lo --clear-on-reload --strict-order --listen-address=${gadget_net_fixed_ip_addr} --dhcp-range=${gadget_net_fixed_ip_sub}.11,${gadget_net_fixed_ip_sub}.20,12h --dhcp-lease-max=5 --pid-file=/run/dnsmasq-radxa0.pid --dhcp-option=3 --dhcp-option=6
+	up /usr/sbin/dnsmasq --conf-file=/dev/null --no-hosts --bind-interfaces --except-interface=lo --clear-on-reload --strict-order --listen-address=${gadget_net_fixed_ip_addr} --dhcp-range=${gadget_net_fixed_ip_sub}.11,${gadget_net_fixed_ip_sub}.19,12h --dhcp-lease-max=5 --pid-file=/run/dnsmasq-radxa0.pid --dhcp-option=3 --dhcp-option=6
 EOF
 fi
 # radxa0 dnsmasq configuration
@@ -152,16 +154,16 @@ mount --bind /tmp/wifibroadcast.default /etc/default/wifibroadcast
 
 # Start wfb_rx aggregator on boot if using aggregator mode
 if [ "$wfb_rx_mode" == "aggregator" ]; then
-	echo "start wfb_rx aggregator"
+	echo "start wfb_rx aggregator in aggregator mode"
         wfb_rx -a $wfb_listen_port_video -K $wfb_key -i $wfb_link_id -c $wfb_outgoing_ip -u $wfb_outgoing_port_video 2>&1 > /dev/null &
         wfb_rx -a $wfb_listen_port_telemetry -K $wfb_key -i $wfb_link_id -c $wfb_outgoing_ip -u $wfb_outgoing_port_telemetry 2>&1 > /dev/null &
-	if [ "$wfb_integrated_wnic" == "wlan0" ]; then
-		/home/radxa/gs/wfb.sh wlan0
+	if [[ "$wfb_integrated_wnic" == "wlan0" && -d /sys/class/net/wlan0 ]]; then
+		nmcli device set wlan0 managed no
+		/home/radxa/gs/wfb.sh wlan0 &
 	fi
 fi
-echo "run wfb.sh once"
-ip ro add 224.0.0.0/4 dev br0
-/home/radxa/gs/wfb.sh &
+echo "run wfb.sh once in standalone mode"
+[ "$wfb_rx_mode" == "standalone" ] && /home/radxa/gs/wfb.sh &
 
 # If video_on_boot=yes, video playback will be automatically started
 [ "$video_on_boot" == "yes" ] && ( echo "start stream service"; systemd-run --unit=stream /home/radxa/gs/stream.sh )
