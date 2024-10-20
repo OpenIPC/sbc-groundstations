@@ -57,6 +57,13 @@ else
 	need_u_boot_update=1
 	need_reboot=1
 fi
+if [[ -f /boot/dtbo/rk3566-hdmi-max-resolution-4k.dtbo && "$ftdoverlays_extlinux" == *rk3566-hdmi-max-resolution-4k.dtbo* ]]; then
+        echo "rk3566-hdmi-max-resolution-4k dtb overlay is enabled"
+else
+        dtc -I dts -O dtb -o /boot/dtbo/rk3566-hdmi-max-resolution-4k.dtbo /home/radxa/gs/rk3566-hdmi-max-resolution-4k.dts
+        need_u_boot_update=1
+        need_reboot=1
+fi
 dtbo_enable_array=($dtbo_enable_list)
 for dtbo in "${dtbo_enable_array[@]}"; do
 	if [ -f /boot/dtbo/rk3568-${dtbo}.dtbo.disabled ]; then
