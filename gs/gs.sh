@@ -4,6 +4,7 @@ set -e
 
 if [ -f /config/before.txt ]; then
 	sleep 15
+	setfont /usr/share/consolefonts/CyrAsia-TerminusBold32x16.psf.gz
 	cat | tee /dev/ttyFIQ0 /dev/tty1 << EOF
 
 ############################### Welcome to SBC Ground Station ##################################
