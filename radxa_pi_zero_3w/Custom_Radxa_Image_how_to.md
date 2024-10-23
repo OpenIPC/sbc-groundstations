@@ -6,7 +6,7 @@
 
   Debian 12 is recommended. QEMU has a [bug](https://github.com/docker/buildx/issues/1170#issuecomment-2136084089) with later Ubuntu distros when chrooting into an aarch64 environment.
   
-  Download the [sandbox.img](https://github.com/OpenIPC/sbc-groundstations/releases) for the radxa. The sandbox.img is identical to the release image, but contains an extra 1.5G of free space for extras.
+  Download the latest [sandbox.img](https://github.com/OpenIPC/sbc-groundstations/releases) for the radxa. The sandbox.img is identical to the release image, but contains an extra 1.5G of free space for extras.
 
 <h3>Step 2 - Install required packages</h3>
 
