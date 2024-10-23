@@ -48,6 +48,7 @@ GS Directory Tree
 ├── etc
 │   ├── gs.conf -> /config/gs.conf
 │   ├── gs.key -> /config/gs.key
+│   ├── gs-release
 │   ├── network
 │   │   └── interfaces.d
 │   │       └── radxa0
