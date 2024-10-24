@@ -54,12 +54,16 @@ GS Directory Tree
 │   │       └── radxa0
 │   ├── NetworkManager
 │   │   └── system-connections
-│   │       ├── br0.nmconnection
-│   │       ├── br0-slave-eth0.nmconnection
-│   │       ├── br0-slave-usb0.nmconnection
 │   │       ├── hotspot.nmconnection
 │   │       └── wlan0.nmconnection
+│   ├── samba
+│   │   └── smb.conf
 │   ├── systemd
+│   │   ├── network
+│   │   │   ├── br0.netdev
+│   │   │   ├── br0.network
+│   │   │   ├── eth0.network
+│   │   │   └── usb0.network
 │   │   └── system
 │   │       ├── gs.service
 │   │       └── multi-user.target.wants
@@ -76,9 +80,9 @@ GS Directory Tree
         │   ├── gs.sh
         │   ├── rk3566-dwc3-otg-role-switch.dts
         │   ├── stream.sh
-        │   ├── wallpaper.png
         │   └── wfb.sh
         └── Videos
+
 ```
 
 

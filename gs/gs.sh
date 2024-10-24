@@ -79,19 +79,58 @@ done
 [ "$need_u_boot_update" == "1" ] && u-boot-update
 [ "$need_reboot" == "1" ] && reboot
 
-# br0 network configuration
-echo "start configure br0"
-[ -f /etc/NetworkManager/system-connections/br0.nmconnection ] || nmcli con add type bridge con-name br0 ifname br0 ipv4.method auto ipv4.addresses ${br0_fixed_ip},${br0_fixed_ip2} autoconnect yes
-if [[ -f /etc/NetworkManager/system-connections/br0.nmconnection && -n $br0_fixed_ip && -n $br0_fixed_ip2 ]]; then
-	# Check whether the configuration in gs.conf is consistent with br0. If not, update it.
-	br0_fixed_ip_OS=$(nmcli -g ipv4.addresses con show br0)
-	[ "$eth0_fixed_ip_OS" == "${br0_fixed_ip}, ${br0_fixed_ip2}" ] || nmcli con modify br0 ipv4.addresses ${br0_fixed_ip},${br0_fixed_ip2}
+# eth0 network configuration
+[ -f /etc/systemd/network/eth0.network ] || cat > /etc/systemd/network/eth0.network << EOF
+[Match]
+Name=eth0
+
+[Network]
+Address=${eth0_fixed_ip}
+Address=${eth0_fixed_ip2}
+DHCP=yes
+EOF
+
+if [[ -f /etc/systemd/network/eth0.network && -n "$eth0_fixed_ip" && -n "$eth0_fixed_ip2" ]]; then
+	eth0_fixed_ip_OS=$(grep -m 1 -oP '(?<=Address=).*' /etc/systemd/network/eth0.network)
+	eth0_fixed_ip_OS2=$(tac /etc/systemd/network/eth0.network | grep -m 1 -oP '(?<=Address=).*')
+	[ "${eth0_fixed_ip_OS}" == "${eth0_fixed_ip}" ] || sed -i "s^${eth0_fixed_ip_OS}^${eth0_fixed_ip}^" /etc/systemd/network/eth0.network
+	[ "${eth0_fixed_ip_OS2}" == "${eth0_fixed_ip2}" ] || sed -i "s^${eth0_fixed_ip_OS2}^${eth0_fixed_ip2}^" /etc/systemd/network/eth0.network
+	systemctl restart systemd-networkd
 fi
-[ -f /etc/NetworkManager/system-connections/br0-slave-eth0.nmconnection ] || nmcli con add type bridge-slave con-name br0-slave-eth0 ifname eth0 master br0
-[ -f /etc/NetworkManager/system-connections/br0-slave-usb0.nmconnection ] || nmcli con add type bridge-slave con-name br0-slave-usb0 ifname usb0 master br0
-ip ro add 224.0.0.0/4 dev br0
+echo "eth0 configure done"
+
+# br0 network configuration
+[ -f /etc/systemd/network/br0.netdev ] || cat > /etc/systemd/network/br0.netdev << EOF
+[NetDev]
+Name=br0
+Kind=bridge
+EOF
+
+[ -f /etc/systemd/network/br0.network ] || cat > /etc/systemd/network/br0.network << EOF
+[Match]
+Name=br0
+
+[Network]
+Address=${br0_fixed_ip}
+DHCP=yes
+EOF
+
+[ -f /etc/systemd/network/usb0.network ] || cat > /etc/systemd/network/usb0.network << EOF
+[Match]
+Name=usb0
+
+[Network]
+Bridge=br0
+EOF
+
+if [[ -f /etc/systemd/network/br0.network && -n "$br0_fixed_ip" ]]; then
+	br0_fixed_ip_OS=$(grep -m 1 -oP '(?<=Address=).*' /etc/systemd/network/br0.network)
+	[ "${br0_fixed_ip_OS}" == "${br0_fixed_ip}" ] || sed -i "s^${br0_fixed_ip_OS}^${br0_fixed_ip}^" /etc/systemd/network/br0.network
+	systemctl restart systemd-networkd
+fi
 echo "br0 configure done"
 
+# wlan0 configuration
 if [ -z "$wfb_integrated_wnic" ]; then
 	# managed wlan0 by NetworkManager
 	[ -f /etc/network/interfaces.d/wfb-wlan0 ] && rm /etc/network/interfaces.d/wfb-wlan0
@@ -147,7 +186,7 @@ fi
 if [[ -n $gadget_net_fixed_ip ]]; then
 	# Check whether the configuration in gs.conf is consistent with radxa0. If not, update it.
 	radxa0_fixed_ip_OS=$(grep -oP "(?<=address\s).*" /etc/network/interfaces.d/radxa0)
-	[ "$radxa0_fixed_ip_OS" == "${gadget_net_fixed_ip}" ] || sed -i "s^${radxa0_fixed_ip_OS}^${gadget_net_fixed_ip^}" /etc/network/interfaces.d/radxa0
+	[ "$radxa0_fixed_ip_OS" == "${gadget_net_fixed_ip}" ] || sed -i "s^${radxa0_fixed_ip_OS}^${gadget_net_fixed_ip}^" /etc/network/interfaces.d/radxa0
 	grep -q "${gadget_net_fixed_ip_addr}" /etc/network/interfaces.d/radxa0 || sed -i "s/--listen-address=.*,12h/--listen-address=${gadget_net_fixed_ip_addr} --dhcp-range=${gadget_net_fixed_ip_sub}.11,${gadget_net_fixed_ip_sub}.20,12h/" /etc/network/interfaces.d/radxa0
 fi
 echo "radxa0 usb gadget network configure done"
@@ -171,6 +210,7 @@ if [ "$wfb_rx_mode" == "aggregator" ]; then
 	fi
 fi
 echo "run wfb.sh once in standalone mode"
+ip ro add 224.0.0.0/4 dev br0
 [ "$wfb_rx_mode" == "standalone" ] && /home/radxa/gs/wfb.sh &
 
 # If video_on_boot=yes, video playback will be automatically started
