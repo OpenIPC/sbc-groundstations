@@ -2,69 +2,25 @@
 
 set -e
 
-if [ -f /config/before.txt ]; then
-	sleep 15
-	setfont /usr/share/consolefonts/CyrAsia-TerminusBold32x16.psf.gz
-	cat | tee /dev/ttyFIQ0 /dev/tty1 << EOF
+# run init script on first boot
+[ -f /config/before.txt ] && /home/radxa/gs/init.sh
 
-############################### Welcome to SBC Ground Station ##################################
-#                                                                                              #
-# WARING: Thist is init startup, may take few minuts, system will auto restart when init done. #
-# WARING: Do not turn off the power during the initialization process.                         #
-#                                                                                              #
-################################################################################################
-
-EOF
-fi
-while [ -f /config/before.txt ]; do sleep 1; done
+# load config
 source /config/gs.conf
 need_u_boot_update=0
 need_reboot=0
-
-# Create a partition(exfat) to save record videos
-[ -d $REC_Dir ] || mkdir -p $REC_Dir
-os_dev=$(df / | grep -oP "/dev/.+(?=p\d+)")
-if [ ! -b ${os_dev}p4 ]; then
-	sgdisk -ge $os_dev
-	root_partirion_size=$(parted -s $os_dev p | grep -oP "\d+(?=MB\s*ext4)")
-	root_partirion_size_new=$(( root_partirion_size + $rootfs_reserved_space ))
-	cat << EOF | parted ---pretend-input-tty $os_dev > /dev/null 2>&1
-resizepart 3 ${root_partirion_size_new}MiB
-yes
-EOF
-	resize2fs ${os_dev}p3
-	root_partirion_end=$(parted -s $os_dev p | grep rootfs | tr -s ' ' | cut -d ' ' -f 4)
-	parted -s $os_dev mkpart videos fat32 ${root_partirion_end} 100%
-	mkfs.exfat ${os_dev}p4
-fi
-# mount /dev/disk/by-partlabel/videos $REC_Dir
-mount ${os_dev}p4 $REC_Dir
 
 # dtbo configuration
 if [[ "$enable_external_antenna" == "yes" && ! -f /boot/dtbo/radxa-zero3-external-antenna.dtbo && -d /sys/class/net/wlan0 ]]; then
 	mv /boot/dtbo/radxa-zero3-external-antenna.dtbo.disabled /boot/dtbo/radxa-zero3-external-antenna.dtbo
 	need_u_boot_update=1
 	need_reboot=1
-elif [[ "$enable_external_antenna" != "yes" && -f /boot/dtbo/radxa-zero3-external-antenna.dtbo && -d /sys/class/net/wlan0 ]] ; then
+elif [[ "$enable_external_antenna" == "no" && -f /boot/dtbo/radxa-zero3-external-antenna.dtbo && -d /sys/class/net/wlan0 ]] ; then
 	mv /boot/dtbo/radxa-zero3-external-antenna.dtbo /boot/dtbo/radxa-zero3-external-antenna.dtbo.disabled
 	need_u_boot_update=1
 	need_reboot=1
 fi
-ftdoverlays_extlinux=$(grep fdtoverlays /boot/extlinux/extlinux.conf | head -n 1)
-if [[ -f /boot/dtbo/rk3566-dwc3-otg-role-switch.dtbo && "$ftdoverlays_extlinux" == *rk3566-dwc3-otg-role-switch.dtbo* ]]; then
-	echo "dwc3-otg-role-switch dtb overlay is enabled"
-else
-	dtc -I dts -O dtb -o /boot/dtbo/rk3566-dwc3-otg-role-switch.dtbo /home/radxa/gs/rk3566-dwc3-otg-role-switch.dts
-	need_u_boot_update=1
-	need_reboot=1
-fi
-if [[ -f /boot/dtbo/rk3566-hdmi-max-resolution-4k.dtbo && "$ftdoverlays_extlinux" == *rk3566-hdmi-max-resolution-4k.dtbo* ]]; then
-        echo "rk3566-hdmi-max-resolution-4k dtb overlay is enabled"
-else
-        dtc -I dts -O dtb -o /boot/dtbo/rk3566-hdmi-max-resolution-4k.dtbo /home/radxa/gs/rk3566-hdmi-max-resolution-4k.dts
-        need_u_boot_update=1
-        need_reboot=1
-fi
+
 dtbo_enable_array=($dtbo_enable_list)
 for dtbo in "${dtbo_enable_array[@]}"; do
 	if [ -f /boot/dtbo/rk3568-${dtbo}.dtbo.disabled ]; then
@@ -75,21 +31,18 @@ for dtbo in "${dtbo_enable_array[@]}"; do
 	fi
 done
 
+# Update REC_Dir in fstab
+[ -d $REC_Dir ] || mkdir -p $REC_Dir
+if [ "${REC_Dir}" != "$(grep -oP '(?<=^/dev/mmcblk1p4\t).*?(?=\t)' /etc/fstab)" ]; then
+	sed -i "s#^\(/dev/mmcblk1p4\t\)[^\t]*#\1${REC_Dir}#" /etc/fstab
+	need_reboot=1
+fi
+
 # some configuration need reboot to take effect
 [ "$need_u_boot_update" == "1" ] && u-boot-update
 [ "$need_reboot" == "1" ] && reboot
 
-# eth0 network configuration
-[ -f /etc/systemd/network/eth0.network ] || cat > /etc/systemd/network/eth0.network << EOF
-[Match]
-Name=eth0
-
-[Network]
-Address=${eth0_fixed_ip}
-Address=${eth0_fixed_ip2}
-DHCP=yes
-EOF
-
+# Update eth0 configuration
 if [[ -f /etc/systemd/network/eth0.network && -n "$eth0_fixed_ip" && -n "$eth0_fixed_ip2" ]]; then
 	eth0_fixed_ip_OS=$(grep -m 1 -oP '(?<=Address=).*' /etc/systemd/network/eth0.network)
 	eth0_fixed_ip_OS2=$(tac /etc/systemd/network/eth0.network | grep -m 1 -oP '(?<=Address=).*')
@@ -99,30 +52,7 @@ if [[ -f /etc/systemd/network/eth0.network && -n "$eth0_fixed_ip" && -n "$eth0_f
 fi
 echo "eth0 configure done"
 
-# br0 network configuration
-[ -f /etc/systemd/network/br0.netdev ] || cat > /etc/systemd/network/br0.netdev << EOF
-[NetDev]
-Name=br0
-Kind=bridge
-EOF
-
-[ -f /etc/systemd/network/br0.network ] || cat > /etc/systemd/network/br0.network << EOF
-[Match]
-Name=br0
-
-[Network]
-Address=${br0_fixed_ip}
-DHCP=yes
-EOF
-
-[ -f /etc/systemd/network/usb0.network ] || cat > /etc/systemd/network/usb0.network << EOF
-[Match]
-Name=usb0
-
-[Network]
-Bridge=br0
-EOF
-
+# Update br0 configuration
 if [[ -f /etc/systemd/network/br0.network && -n "$br0_fixed_ip" ]]; then
 	br0_fixed_ip_OS=$(grep -m 1 -oP '(?<=Address=).*' /etc/systemd/network/br0.network)
 	[ "${br0_fixed_ip_OS}" == "${br0_fixed_ip}" ] || sed -i "s^${br0_fixed_ip_OS}^${br0_fixed_ip}^" /etc/systemd/network/br0.network
@@ -167,29 +97,17 @@ if [ -z "$wfb_integrated_wnic" ]; then
 	echo "wlan0 hotspot mode configure done"
 fi
 
-# radxa0 usb gadget network configuration
-echo "start configure radxa0 usb gadget network"
-gadget_net_fixed_ip_addr=${gadget_net_fixed_ip%/*}
-gadget_net_fixed_ip_sub=${gadget_net_fixed_ip%.*}
-if [ ! -f /etc/network/interfaces.d/radxa0 ]; then
-	cat > /etc/network/interfaces.d/radxa0 << EOF
-auto radxa0
-allow-hotplug radxa0
-iface radxa0 inet static
-	address $gadget_net_fixed_ip
-	# post-up mount -o remount,ro /home/radxa/Videos && link mass
-	# post-down remove mass && mount -o remount,rw /home/radxa/Videos
-	up /usr/sbin/dnsmasq --conf-file=/dev/null --no-hosts --bind-interfaces --except-interface=lo --clear-on-reload --strict-order --listen-address=${gadget_net_fixed_ip_addr} --dhcp-range=${gadget_net_fixed_ip_sub}.11,${gadget_net_fixed_ip_sub}.19,12h --dhcp-lease-max=5 --pid-file=/run/dnsmasq-radxa0.pid --dhcp-option=3 --dhcp-option=6
-EOF
-fi
-# radxa0 dnsmasq configuration
-if [[ -n $gadget_net_fixed_ip ]]; then
+# Update radxa0 dnsmasq configuration
+if [[ -f /etc/network/interfaces.d/radxa0 && -n "$gadget_net_fixed_ip" ]]; then
 	# Check whether the configuration in gs.conf is consistent with radxa0. If not, update it.
 	radxa0_fixed_ip_OS=$(grep -oP "(?<=address\s).*" /etc/network/interfaces.d/radxa0)
 	[ "$radxa0_fixed_ip_OS" == "${gadget_net_fixed_ip}" ] || sed -i "s^${radxa0_fixed_ip_OS}^${gadget_net_fixed_ip}^" /etc/network/interfaces.d/radxa0
 	grep -q "${gadget_net_fixed_ip_addr}" /etc/network/interfaces.d/radxa0 || sed -i "s/--listen-address=.*,12h/--listen-address=${gadget_net_fixed_ip_addr} --dhcp-range=${gadget_net_fixed_ip_sub}.11,${gadget_net_fixed_ip_sub}.20,12h/" /etc/network/interfaces.d/radxa0
 fi
 echo "radxa0 usb gadget network configure done"
+
+# Update REC_Dir in smb.conf
+grep -q "$REC_Dir" /etc/samba/smb.conf || ( sed -i "/\[Videos\]/{n;s|.*|   ${REC_Dir}|;}" /etc/samba/smb.conf && systemctl restart smbd nmbd )
 
 # pwm fan service
 [ "$fan_service_enable" == "yes" ] && ( echo "start fan service"; systemd-run --unit=fan /home/radxa/gs/fan.sh )
@@ -202,8 +120,8 @@ mount --bind /tmp/wifibroadcast.default /etc/default/wifibroadcast
 # Start wfb_rx aggregator on boot if using aggregator mode
 if [ "$wfb_rx_mode" == "aggregator" ]; then
 	echo "start wfb_rx aggregator in aggregator mode"
-        wfb_rx -a $wfb_listen_port_video -K $wfb_key -i $wfb_link_id -c $wfb_outgoing_ip -u $wfb_outgoing_port_video 2>&1 > /dev/null &
-        wfb_rx -a $wfb_listen_port_telemetry -K $wfb_key -i $wfb_link_id -c $wfb_outgoing_ip -u $wfb_outgoing_port_telemetry 2>&1 > /dev/null &
+	wfb_rx -a $wfb_listen_port_video -K $wfb_key -i $wfb_link_id -c $wfb_outgoing_ip -u $wfb_outgoing_port_video 2>&1 > /dev/null &
+	wfb_rx -a $wfb_listen_port_telemetry -K $wfb_key -i $wfb_link_id -c $wfb_outgoing_ip -u $wfb_outgoing_port_telemetry 2>&1 > /dev/null &
 	if [[ "$wfb_integrated_wnic" == "wlan0" && -d /sys/class/net/wlan0 ]]; then
 		nmcli device set wlan0 managed no
 		/home/radxa/gs/wfb.sh wlan0 &
@@ -218,36 +136,13 @@ ip ro add 224.0.0.0/4 dev br0
 
 # If otg mode is device, start adbd and ncm on boot
 if [ "$otg_mode" == "device" ]; then
-        echo device > /sys/kernel/debug/usb/fcc00000.dwc3/mode
+	echo device > /sys/kernel/debug/usb/fcc00000.dwc3/mode
 	( sleep 1 && systemctl start radxa-adbd@fcc00000.dwc3.service radxa-ncm@fcc00000.dwc3.service ) &
 fi
 
 # start button service
 echo "start button service"
 systemd-run --unit=button /home/radxa/gs/button.sh
-
-# samba configuration
-grep -q "\[config\]" /etc/samba/smb.conf || cat >> /etc/samba/smb.conf << EOF
-[Videos]
-   path = /home/radxa/Videos
-   writable = yes
-   browseable = yes
-   create mode = 0777
-   directory mode = 0777
-   guest ok = yes
-   force user = root
-
-[config]
-   path = /config
-   writable = yes
-   browseable = yes
-   create mode = 0777
-   directory mode = 0777
-   guest ok = yes
-   force user = root
-EOF
-
-grep -q "$REC_Dir" /etc/samba/smb.conf || sed -i "/\[Videos\]/{n;s|.*|   ${REC_Dir}|;}" /etc/samba/smb.conf
 
 # show wallpaper
 sleep 10 && fbi -d /dev/fb0 -a -fitwidth -T 1 --noverbose /home/radxa/gs/wallpaper.png &

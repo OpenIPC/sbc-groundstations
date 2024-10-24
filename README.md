@@ -78,6 +78,7 @@ GS Directory Tree
         │   ├── button.sh
         │   ├── fan.sh
         │   ├── gs.sh
+        │   ├── init.sh
         │   ├── rk3566-dwc3-otg-role-switch.dts
         │   ├── stream.sh
         │   └── wfb.sh
