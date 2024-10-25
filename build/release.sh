@@ -6,13 +6,18 @@ source config
 apt update
 apt install -y qemu-user-static
 
-if [[ "$IMAGE_URL" == /* ]]; then
+IMAGE=$(basename "$IMAGE_URL" .xz)
+if [ -f ${IMAGE} ]; then
+	echo "Image file already exist just use it."
+elif [ -f ${IMAGE}.xz ]; then
+	echo "Image xz file already exist just use it."
+elif [[ "$IMAGE_URL" == /* ]]; then
 	cp $IMAGE_URL .
 else
-	wget -q "$IMAGE_URL"
+	wget -q "$IMAGE_URL" --show-progress
 fi
-IMAGE=$(basename "$IMAGE_URL" .xz)
-unxz -T0 ${IMAGE}.xz
+
+[ -f ${IMAGE}.xz ] && unxz -v -T0 ${IMAGE}.xz
 
 # expand disk size
 truncate -s 16G $IMAGE
@@ -72,13 +77,7 @@ echo "==============show gs-release============"
 cat $ROOTFS/etc/gs-release
 
 # umount
-umount $ROOTFS/dev/pts
-umount $ROOTFS/run
-umount $ROOTFS/dev
-umount $ROOTFS/sys
-umount $ROOTFS/proc
-umount $ROOTFS/config
-umount $ROOTFS
+umount -R $ROOTFS
 rm -r $ROOTFS
 
 # shrink image
@@ -108,7 +107,7 @@ sgdisk -v $IMAGE > /dev/null
 echo "Image shrunked from ${TOTAL_BLOCKS} to ${TOTAL_BLOCKS_SHRINKED}."
 
 # compression image and rename xz file
-xz -T0 $IMAGE
+xz -v -T0 $IMAGE
 mv *.xz Radxa-Zero-3_GroundStation_${BUILD_DATE}_${VERSION}.img.xz
 
 exit 0
