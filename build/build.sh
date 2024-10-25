@@ -121,7 +121,7 @@ pushd SBC-GS/gs
 popd
 
 # install useful packages
-apt -y install lrzsz net-tools socat netcat exfatprogs ifstat fbi minicom bridge-utils console-setup psmisc ethtool drm-info libdrm-tests proxychains4
+DEBIAN_FRONTEND=noninteractive apt -y install lrzsz net-tools socat netcat exfatprogs ifstat fbi minicom bridge-utils console-setup psmisc ethtool drm-info libdrm-tests proxychains4
 
 # enable services
 sed -i "s/disable_service systemd-networkd/# disable_service systemd-networkd/" /config/before.txt
