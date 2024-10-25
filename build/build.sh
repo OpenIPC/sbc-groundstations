@@ -136,6 +136,13 @@ sed -i "s/resize_root/# resize_root/" /config/before.txt
 # disable services
 sed -i '/disable_service systemd-networkd/a disable_service dnsmasq' /config/before.txt
 
+# umanage NICs from NetwrkManager
+cat >> /etc/NetworkManager/NetworkManager.conf << EOF
+
+[keyfile]
+unmanaged-devices=interface-name:eth0,interface-name:br0,interface-name:usb0,interface-name:radxa0
+EOF
+
 rm -rf /home/radxa/SourceCode
 rm /etc/resolv.conf
 chown -R 1000:1000 /home/radxa
