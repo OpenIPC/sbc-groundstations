@@ -109,27 +109,34 @@ echo "radxa0 usb gadget network configure done"
 # Update REC_Dir in smb.conf
 grep -q "$REC_Dir" /etc/samba/smb.conf || ( sed -i "/\[Videos\]/{n;s|.*|   ${REC_Dir}|;}" /etc/samba/smb.conf && systemctl restart smbd nmbd )
 
+# [ TODO ] Check and Update /etc/wifibroadcast.conf
+
 # pwm fan service
 [ "$fan_service_enable" == "yes" ] && ( echo "start fan service"; systemd-run --unit=fan /home/radxa/gs/fan.sh )
 
-# Bind mount the wifibroadcast configuration file to the memory file to prevent frequent writing to the memory card and ensure that the original file is not modified
-touch /tmp/wifibroadcast.cfg /tmp/wifibroadcast.default
-mount --bind /tmp/wifibroadcast.cfg /etc/wifibroadcast.cfg
-mount --bind /tmp/wifibroadcast.default /etc/default/wifibroadcast
 
-# Start wfb_rx aggregator on boot if using aggregator mode
-if [ "$wfb_rx_mode" == "aggregator" ]; then
-	echo "start wfb_rx aggregator in aggregator mode"
-	wfb_rx -a $wfb_listen_port_video -K $wfb_key -i $wfb_link_id -c $wfb_outgoing_ip -u $wfb_outgoing_port_video 2>&1 > /dev/null &
-	wfb_rx -a $wfb_listen_port_telemetry -K $wfb_key -i $wfb_link_id -c $wfb_outgoing_ip -u $wfb_outgoing_port_telemetry 2>&1 > /dev/null &
+# add route to 224.0.0.1
+ip ro add 224.0.0.0/4 dev br0
+# Start wfb
+if [ "$wfb_mode" == "standalone" ]; then
+	echo "start wfb in standalone mode"
+	# Bind mount the wifibroadcast configuration file
+	touch /tmp/wifibroadcast.cfg /tmp/wifibroadcast.default
+	mount --bind /tmp/wifibroadcast.cfg /etc/wifibroadcast.cfg
+	mount --bind /tmp/wifibroadcast.default /etc/default/wifibroadcast
+	/home/radxa/gs/wfb.sh &
+elif [ "$wfb_mode" == "cluster" ]; then
+	echo "start wfb in cluster mode"
+	systemctl start wfb-cluster-manager@gs.service &
+	/home/radxa/gs/wfb.sh &
+elif [ "$wfb_mode" == "aggregator" ]; then
+	echo "start wfb in aggregator mode"
+	wfb_rx -a 10000 -K $wfb_key -i $wfb_link_id -c $wfb_outgoing_ip -u $wfb_outgoing_port_video 2>&1 > /dev/null &
+	wfb_rx -a 10001 -K $wfb_key -i $wfb_link_id -c $wfb_outgoing_ip -u $wfb_outgoing_port_mavlink 2>&1 > /dev/null &
 	if [[ "$wfb_integrated_wnic" == "wlan0" && -d /sys/class/net/wlan0 ]]; then
-		nmcli device set wlan0 managed no
 		/home/radxa/gs/wfb.sh wlan0 &
 	fi
 fi
-echo "run wfb.sh once in standalone mode"
-ip ro add 224.0.0.0/4 dev br0
-[ "$wfb_rx_mode" == "standalone" ] && /home/radxa/gs/wfb.sh &
 
 # If video_on_boot=yes, video playback will be automatically started
 [ "$video_on_boot" == "yes" ] && ( echo "start stream service"; systemd-run --unit=stream /home/radxa/gs/stream.sh )

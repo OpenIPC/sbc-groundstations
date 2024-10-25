@@ -118,6 +118,32 @@ grep -q "\[config\]" /etc/samba/smb.conf || cat >> /etc/samba/smb.conf << EOF
    force user = root
 EOF
 
+# wfb default configuration
+cat > /etc/wifibroadcast.cfg << EOF
+[common]
+wifi_channel = '${wfb_channel}'
+wifi_region = '${wfb_region}'
+
+[gs_mavlink]
+peer = 'connect://${wfb_outgoing_ip}:${wfb_outgoing_port_mavlink}'
+
+[gs_video]
+peer = 'connect://${wfb_outgoing_ip}:${wfb_outgoing_port_video}'
+
+[cluster]
+
+nodes = {
+          '127.0.0.1': { 'wlans': ['wlan'], 'wifi_txpower': None, 'server_address': '127.0.0.1' },
+          # Remote cards:
+          #'192.168.1.123' : { 'wlans': ['wlan0', 'wlan1'], 'wifi_txpower': 'off'},    # rx-only node
+          #'192.168.1.155' : { 'wlans': ['wlan0', 'wlan1']},     # rx/tx node
+        }
+
+server_address = '${eth0_fixed_ip%/*}'
+
+EOF
+
+
 while [ -f /config/before.txt ]; do sleep 1; done
 sync
 sleep 1 && reboot &
