@@ -1,13 +1,13 @@
 #!/bin/bash
 
 source /config/gs.conf
-wfb_nics=$(echo /sys/class/net/wl* | sed -r -e "s^/sys/class/net/^^g" -e "s/wlan0\s{0,1}//")
+wfb_nics=$(echo /sys/class/net/wl* | sed -r -e "s^/sys/class/net/^^g" -e "s/wlan0\s{0,1}//" -e "s/wl\*//")
 [ -n "$wfb_integrated_wnic" ] && wfb_nics="$wfb_integrated_wnic $wfb_nics"
 
 monitor_wnic(){
 	# Unmanage USB WiFi from NetworkManager
 	# [ -f /etc/network/interfaces.d/wfb-$1 ] || echo -e "allow-hotplug $1\niface $1 inet manual" > /etc/network/interfaces.d/wfb-$1
-	if ! nmcli device show wlx1cbfce9e3519 | grep -q '(unmanaged)'; then
+	if ! nmcli device show $1 | grep -q '(unmanaged)'; then
 		nmcli device set $1 managed no
 		sleep 1
 	fi
@@ -30,13 +30,13 @@ if [ "$wfb_mode" == "cluster" ]; then
 	# run wfb local_node
 	systemd-run --unit=local_node.service bash -c "
 	# gs_video
-	systemd-run /usr/bin/wfb_rx -f -c 127.0.0.1 -u 10000 -p $wfb_stream_id_video -i 7669206 -R 2097152 $wfb_nics &
+	wfb_rx -f -c 127.0.0.1 -u 10000 -p $wfb_stream_id_video -i 7669206 -R 2097152 $wfb_nics &
 	# gs_mavlink
-	systemd-run /usr/bin/wfb_rx -f -c 127.0.0.1 -u 10001 -p $wfb_stream_id_mavlink -i 7669206 -R 2097152 $wfb_nics &
-	systemd-run /usr/bin/wfb_tx -I 11001 -R 2097152  $wfb_nics &
+	wfb_rx -f -c 127.0.0.1 -u 10001 -p $wfb_stream_id_mavlink -i 7669206 -R 2097152 $wfb_nics &
+	wfb_tx -I 11001 -R 2097152  $wfb_nics &
 	# gs_tunnel
-	systemd-run /usr/bin/wfb_rx -f -c 127.0.0.1 -u 10002 -p $wfb_stream_id_tunnel -i 7669206 -R 2097152 $wfb_nics &
-	systemd-run /usr/bin/wfb_tx -I 11002 -R 2097152 $wfb_nics &
+	wfb_rx -f -c 127.0.0.1 -u 10002 -p $wfb_stream_id_tunnel -i 7669206 -R 2097152 $wfb_nics &
+	wfb_tx -I 11002 -R 2097152 $wfb_nics &
 	wait
 	"
 elif [ "$wfb_mode" == "standalone" ]; then
