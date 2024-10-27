@@ -39,7 +39,6 @@ Files and Services
 ```bash
 GS Directory Tree
 /
-tree/
 ├── boot
 │   └── dtbo
 │       ├── rk3566-dwc3-otg-role-switch.dtbo
@@ -55,6 +54,8 @@ tree/
 │   │   └── interfaces.d
 │   │       └── radxa0
 │   ├── NetworkManager
+│   │   ├── conf.d
+│   │   │   └── 00-gs-unmanaged.conf
 │   │   └── system-connections
 │   │       ├── hotspot.nmconnection
 │   │       └── wlan0.nmconnection

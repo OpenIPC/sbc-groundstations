@@ -6,14 +6,15 @@ set -x
 source /config/gs.conf
 wfb_nics=$(echo /sys/class/net/wl* | sed -r -e "s^/sys/class/net/^^g" -e "s/wlan0\s{0,1}//" -e "s/wl\*//")
 [ -n "$wfb_integrated_wnic" ] && wfb_nics="$wfb_integrated_wnic $wfb_nics"
+[ -z "$wfb_nics" ] && exit 0
 
 monitor_wnic(){
 	# Unmanage USB WiFi from NetworkManager
 	# [ -f /etc/network/interfaces.d/wfb-$1 ] || echo -e "allow-hotplug $1\niface $1 inet manual" > /etc/network/interfaces.d/wfb-$1
-	if ! nmcli device show $1 | grep -q '(unmanaged)'; then
-		nmcli device set $1 managed no
-		sleep 1
-	fi
+	# if ! nmcli device show $1 | grep -q '(unmanaged)'; then
+	# 	nmcli device set $1 managed no
+	# 	sleep 1
+	# fi
 
 	ip link set $1 down
 	iw dev $1 set monitor otherbss
