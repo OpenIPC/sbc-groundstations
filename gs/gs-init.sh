@@ -82,6 +82,20 @@ Name=usb0
 Bridge=br0
 EOF
 
+[ -f /etc/systemd/network/dummy0.netdev ] || cat > /etc/systemd/network/dummy0.netdev << EOF
+[NetDev]
+Name=dummy0
+Kind=dummy
+EOF
+
+[ -f /etc/systemd/network/dummy0.network ] || cat > /etc/systemd/network/dummy0.network << EOF
+[Match]
+Name=dummy0
+
+[Network]
+Bridge=br0
+EOF
+
 # Add radxa0 usb gadget network configuration
 echo "start configure radxa0 usb gadget network"
 gadget_net_fixed_ip_addr=${gadget_net_fixed_ip%/*}

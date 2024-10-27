@@ -65,6 +65,8 @@ GS Directory Tree
 │   │   ├── network
 │   │   │   ├── br0.netdev
 │   │   │   ├── br0.network
+│   │   │   ├── dummy0.netdev
+│   │   │   ├── dummy0.network
 │   │   │   ├── eth0.network
 │   │   │   └── usb0.network
 │   │   └── system

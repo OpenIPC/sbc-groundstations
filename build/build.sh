@@ -140,7 +140,7 @@ sed -i "s/resize_root/# resize_root/" /config/before.txt
 # umanage NICs from NetwrkManager
 cat > /etc/NetworkManager/conf.d/00-gs-unmanaged.conf << EOF
 [keyfile]
-unmanaged-devices=interface-name:eth0;interface-name:br0;interface-name:usb0;interface-name:radxa0;interface-name:wlx*
+unmanaged-devices=interface-name:eth0;interface-name:br0;interface-name:usb0;interface-name:dummy0;interface-name:radxa0;interface-name:wlx*
 EOF
 
 rm -rf /home/radxa/SourceCode
