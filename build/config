@@ -1,4 +1,4 @@
 # The IMAGE_URL must be a local absolute path or a network download URL and iamge muse be .xz file
 IMAGE_URL="https://github.com/radxa-build/radxa-zero3/releases/download/b6/radxa-zero3_debian_bullseye_xfce_b6.img.xz"
-IMAGE_URL="https://github.com/zhouruixi/rbuild/releases/download/image/radxa-zero-3_debian_bullseye_cli.img.xz"
+IMAGE_URL="https://github.com/zhouruixi/rbuild/releases/download/image/radxa-zero3_debian_bullseye_cli.img.xz"
 ROOTFS="rootfs"
