@@ -1,6 +1,7 @@
 #!/bin/bash
 
 set -e
+set -x
 
 source /config/gs.conf
 export DISPLAY=:0

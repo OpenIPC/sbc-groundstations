@@ -1,5 +1,8 @@
 #!/bin/bash
 
+set -e
+set -x
+
 source /config/gs.conf
 wfb_nics=$(echo /sys/class/net/wl* | sed -r -e "s^/sys/class/net/^^g" -e "s/wlan0\s{0,1}//" -e "s/wl\*//")
 [ -n "$wfb_integrated_wnic" ] && wfb_nics="$wfb_integrated_wnic $wfb_nics"
