@@ -34,6 +34,7 @@ echo "cpoy ../pics/OpenIPC.png ${install_dir}/wallpaper.png"
 cp ../pics/OpenIPC.png ${install_dir}/wallpaper.png
 echo -e "\033[31msystemctl enable gs-init.service \033[0m"
 systemctl enable gs-init.service
+systemctl enable gs.service
 echo -e "\033[31mCopy FPVue.key to /config/gs.key and linked to /etc/gs.key\033[0m"
 cp FPVue.key /config/gs.key
 [ $(readlink -f /etc/gs.key) == "/config/gs.key" ] || ( [ -f /etc/gs.key ] && rm /etc/gs.key; ln -s /config/gs.key /etc/gs.key )

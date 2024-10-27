@@ -1,6 +1,6 @@
 [Unit]
 Description=OpenIPC GS init
-After=getty@tty1.service
+After=getty@tty1.service network.target
 
 [Service]
 ExecStart=/home/radxa/gs/gs-init.sh

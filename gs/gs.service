@@ -1,7 +1,6 @@
 [Unit]
-Description=OpenIPC GS
-After=network.target
-Before=wfb.service
+Description=Single Board Computer Ground Station Main Service
+After=network.target gs-init.service
 
 [Service]
 ExecStart=/home/radxa/gs/gs.sh
