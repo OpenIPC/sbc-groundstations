@@ -4,7 +4,7 @@ set -e
 set -x
 source /config/gs.conf
 
-sleep 12
+sleep 15
 setfont /usr/share/consolefonts/CyrAsia-TerminusBold32x16.psf.gz
 cat | tee /dev/ttyFIQ0 /dev/tty1 << EOF
 
@@ -144,8 +144,9 @@ server_address = '${eth0_fixed_ip%/*}'
 
 EOF
 
+systemctl enable gs.service
+systemctl disable gs-init.service
 
-while [ -f /config/before.txt ]; do sleep 1; done
+while [ -f /config/before.txt ]; do sleep 2; done
 sync
-sleep 1 && reboot &
-exit 1
+reboot

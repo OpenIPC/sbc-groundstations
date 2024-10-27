@@ -1,0 +1,11 @@
+[Unit]
+Description=OpenIPC GS init
+After=getty@tty1.service
+
+[Service]
+ExecStart=/home/radxa/gs/gs-init.sh
+Type=oneshot
+RemainAfterExit=true
+
+[Install]
+WantedBy=multi-user.target

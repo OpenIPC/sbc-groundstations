@@ -3,9 +3,6 @@
 set -e
 set -x
 
-# run init script on first boot
-[ -f /config/before.txt ] && /home/radxa/gs/init.sh
-
 # load config
 source /config/gs.conf
 need_u_boot_update=0
