@@ -130,10 +130,10 @@ Configuration [ gs.conf for details ]
 1. __WiFi:__ `wlan0`
     * `station mode:` Default connect to an open WiFi named `OpenIPC` if not configured.
     * `hotspot mode:` Default SSID is `SBC-GS` with password `12345678`, IP is `192.168.4.1/24`
-2. __Ethernet:__ `eth0` Default slave of br0.
+2. __Ethernet:__ `eth0` Default `DHCP client` with static IP `192.168.1.20/24, 10.0.36.254/24`
 3. __USB Net:__ `radxa0` Default `DHCP server` with static IP `192.168.2.20/24`
 4. __USB tethering:__ `usb0` Default slave of br0.
-5. __Bridge:__ `br0` Default `DHCP client` with static IP `192.168.1.20/24, 10.0.36.254/24`
+5. __Bridge:__ `br0` Default `DHCP client` with static IP `192.168.3.20/24`
 
 ### 4. Video Configuration
 
