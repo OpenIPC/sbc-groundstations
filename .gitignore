@@ -1,0 +1,4 @@
+rootfs/
+*.img
+*.xz
+*.7z

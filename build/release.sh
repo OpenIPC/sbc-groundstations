@@ -5,7 +5,7 @@ set -x
 source config
 
 apt update
-apt install -y qemu-user-static
+apt install -y qemu-user-static gdisk
 
 IMAGE=$(basename "$IMAGE_URL" .xz)
 if [ -f ${IMAGE} ]; then
