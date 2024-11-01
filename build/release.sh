@@ -69,6 +69,9 @@ if [ ! -f "$IMAGE"  ]; then
 	exit 1
 fi
 
+# Unmounts previously mounted devices
+$(mount | grep -q "build/${ROOTFS}") && umount -R $ROOTFS
+	
 # expand disk size
 truncate -s ${diskNewSize}G $IMAGE
 
