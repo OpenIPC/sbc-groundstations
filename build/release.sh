@@ -71,7 +71,16 @@ fi
 
 # Unmounts previously mounted devices
 $(mount | grep -q "build/${ROOTFS}") && umount -R $ROOTFS
-	
+
+# Disabling losetup for previously created
+losetupList=$(losetup | grep "$IMAGE") || true
+if [ -n "$losetupList" ]; then
+	while IFS= read -r line
+	do
+		losetup -d $(echo $line | cut -d ' ' -f 1)
+	done < <(printf '%s\n' "$losetupList")
+fi
+
 # expand disk size
 truncate -s ${diskNewSize}G $IMAGE
 
