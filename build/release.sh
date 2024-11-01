@@ -7,18 +7,54 @@ source config
 apt update
 apt install -y qemu-user-static gdisk
 
-IMAGE=$(basename "$IMAGE_URL" .xz)
-if [ -f ${IMAGE} ]; then
-	echo "Image file already exist just use it."
-elif [ -f ${IMAGE}.xz ]; then
-	echo "Image xz file already exist just use it."
-elif [[ "$IMAGE_URL" == /* ]]; then
-	cp $IMAGE_URL .
+IMAGE=$(ls | grep $(basename "$IMAGE_URL" ${IMAGE_URL: -3}) | grep .img$ ) || true # Search basename.img
+if [ -f "$IMAGE" ]; then
+	echo "Warning: Image '${IMAGE}' file already exist just use it."
 else
-	wget -q "$IMAGE_URL" --show-progress
+	# URL or Local file
+	if $(echo $IMAGE_URL | grep -q "^http"); then # if URL
+		BASENAME=$(basename "$IMAGE_URL")
+
+		# check if the file has been downloaded before
+		if [ -f "$BASENAME" ]; then 
+			echo "Warning: Archive file '$BASENAME' already exist just use it"
+		else
+			wget -q "$IMAGE_URL" --show-progress 
+		fi
+		IMAGE_ARCHIVE=$BASENAME
+	else
+		if [ -n "$(echo "$IMAGE_URL" | grep .img$)" ]; then # if .img
+			cp $IMAGE_URL .
+			IMAGE=$(basename "$IMAGE_URL")
+		else
+			IMAGE_ARCHIVE=$IMAGE_URL
+		fi
+	fi
+
+	if [ -n "$IMAGE_ARCHIVE" ]; then # if archive
+		# archive unpack
+		if file $IMAGE_ARCHIVE | grep -q "XZ compressed"; then
+			unxz -vf -T0 --keep "${IMAGE_ARCHIVE}"
+		elif file $IMAGE_ARCHIVE | grep -q "7-zip archive data" ; then
+			7z x "${IMAGE_ARCHIVE}" -y -sdel
+		else
+			echo_red "Exception: Unknown archive type '${IMAGE_ARCHIVE}'"
+			exit 1
+		fi
+		rm -f *.sha
+		IMAGE=$(ls | grep $(basename "$IMAGE_ARCHIVE" ${IMAGE_ARCHIVE: -3}) | grep .img$) || true # Search image
+		if [ $(echo $IMAGE | wc -l) -gt 1 ]; then
+			echo_red "Exception: There are more than one files $IMAGE_ARCHIVE"
+			echo "$IMAGE"
+			exit 1
+		fi
+	fi
 fi
 
-[ -f ${IMAGE}.xz ] && unxz -v -T0 ${IMAGE}.xz
+if [ ! -f "$IMAGE"  ]; then
+	echo_red "Image '$IMAGE' not found"
+	exit 1
+fi
 
 # expand disk size
 truncate -s 16G $IMAGE
