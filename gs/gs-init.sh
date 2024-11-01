@@ -19,7 +19,7 @@ EOF
 
 # Create a partition(exfat) to save record videos
 [ -d $REC_Dir ] || mkdir -p $REC_Dir
-os_dev=$(df / | grep -oP "/dev/.+(?=p\d+)")
+os_dev=$(blkid | grep rootfs | grep -oP "/dev/.+(?=p\d+)") || true
 if [ ! -b ${os_dev}p4 ]; then
         sgdisk -ge $os_dev
         root_partirion_size=$(parted -s $os_dev p | grep -oP "\d+(?=MB\s*ext4)")
