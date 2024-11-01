@@ -8,6 +8,15 @@ echo_blue()  { printf "\033[1;34m$*\033[m\n"; }
 
 source config
 
+# Checking free space
+diskFreeSpace=$(df -P . | tail -1 | awk '{print $4}')
+diskNewSize=16 # GB
+diskFreeSpaceGB=$(( $diskFreeSpace/1048576 )) 
+if [ $diskFreeSpaceGB -lt $diskNewSize ];then
+	echo "Error: not enough free space. Not enough $(( $diskNewSize - $diskFreeSpaceGB ))G"
+	exit 1
+fi
+
 apt update
 apt install -y qemu-user-static gdisk
 
@@ -61,7 +70,7 @@ if [ ! -f "$IMAGE"  ]; then
 fi
 
 # expand disk size
-truncate -s 16G $IMAGE
+truncate -s ${diskNewSize}G $IMAGE
 
 LOOPDEV=$(losetup -P --show -f $IMAGE)
 ROOT_PART=$(sgdisk -p $LOOPDEV | grep "rootfs" | tail -n 1 | tr -s ' ' | cut -d ' ' -f 2)
