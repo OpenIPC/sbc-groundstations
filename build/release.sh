@@ -11,7 +11,7 @@ source config
 # Checking free space
 diskFreeSpace=$(df -P . | tail -1 | awk '{print $4}')
 diskNewSize=16 # GB
-diskFreeSpaceGB=$(( $diskFreeSpace/1048576 )) 
+diskFreeSpaceGB=$(( $diskFreeSpace/1048576 - 4 )) # 4GB for .xz
 if [ $diskFreeSpaceGB -lt $diskNewSize ];then
 	echo "Error: not enough free space. Not enough $(( $diskNewSize - $diskFreeSpaceGB ))G"
 	exit 1
