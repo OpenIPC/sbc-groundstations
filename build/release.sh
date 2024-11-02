@@ -32,7 +32,7 @@ else
 		if [ -f "$BASENAME" ]; then 
 			echo "Warning: Archive file '$BASENAME' already exist just use it"
 		else
-			wget -q "$IMAGE_URL" --show-progress 
+			wget -q "$IMAGE_URL"
 		fi
 		IMAGE_ARCHIVE=$BASENAME
 	else
