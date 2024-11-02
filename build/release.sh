@@ -47,7 +47,7 @@ else
 	if [ -n "$IMAGE_ARCHIVE" ]; then # if archive
 		# archive unpack
 		if file $IMAGE_ARCHIVE | grep -q "XZ compressed"; then
-			unxz -vf -T0 --keep "${IMAGE_ARCHIVE}"
+			unxz -vf -T0 "${IMAGE_ARCHIVE}"
 		elif file $IMAGE_ARCHIVE | grep -q "7-zip archive data" ; then
 			7z x "${IMAGE_ARCHIVE}" -y -sdel
 		else
