@@ -17,6 +17,8 @@ cat | tee /dev/ttyFIQ0 /dev/tty1 << EOF
 
 EOF
 
+BOARD=$(cat /etc/hostname)
+
 # Create a partition(exfat) to save record videos
 [ -d $REC_Dir ] || mkdir -p $REC_Dir
 os_dev=$(blkid | grep rootfs | grep -oP "/dev/.+(?=p\d+)") || true
@@ -34,7 +36,9 @@ EOF
         mkfs.exfat ${os_dev}p4
 fi
 # mount /dev/disk/by-partlabel/videos $REC_Dir
-echo -e "${os_dev}p4\t${REC_Dir}\texfat\tdefaults\t0\t0" >> /etc/fstab
+if [ "${REC_Dir}" != "$(grep -oP '(?<=^/dev/mmcblk1p4\t).*?(?=\t)' /etc/fstab)" ]; then
+	echo -e "${os_dev}p4\t${REC_Dir}\texfat\tdefaults\t0\t0" >> /etc/fstab
+fi
 
 # Enable dtbo
 # set max resolution to 4k
