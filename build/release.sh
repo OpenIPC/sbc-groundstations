@@ -25,7 +25,7 @@ if [ -f "$IMAGE" ]; then
 	echo "Warning: Image '${IMAGE}' file already exist just use it."
 else
 	# URL or Local file
-	if $(echo $IMAGE_URL | grep -q "^http"); then # if URL
+	if [[ "$IMAGE_URL" == http* ]]; then # if URL
 		BASENAME=$(basename "$IMAGE_URL")
 
 		# check if the file has been downloaded before
@@ -36,7 +36,7 @@ else
 		fi
 		IMAGE_ARCHIVE=$BASENAME
 	else
-		if [ -n "$(echo "$IMAGE_URL" | grep .img$)" ]; then # if .img
+		if [[ "$IMAGE_URL" == *.img ]]; then # if .img
 			cp $IMAGE_URL .
 			IMAGE=$(basename "$IMAGE_URL")
 		else
