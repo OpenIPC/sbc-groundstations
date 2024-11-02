@@ -6,6 +6,8 @@ echo_red()   { printf "\033[1;31m$*\033[m\n"; }
 echo_green() { printf "\033[1;32m$*\033[m\n"; }
 echo_blue()  { printf "\033[1;34m$*\033[m\n"; }
 
+cd "$(dirname "$0")"
+
 source config
 
 # Checking free space
