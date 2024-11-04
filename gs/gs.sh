@@ -40,6 +40,18 @@ fi
 [ "$need_u_boot_update" == "1" ] && u-boot-update
 [ "$need_reboot" == "1" ] && reboot
 
+# RTC configuration
+if [ "$use_external_rtc" == "yes" ]; then
+	if [ -c /dev/i2c-4 ]; then
+		modprobe i2c-dev
+		echo ds3231 0x68 >  /sys/class/i2c-adapter/i2c-4/new_device
+		[ -c /dev/rtc1 ] && hwclock -s -f /dev/rtc1 || echo "no ds3231 found"
+	else
+		echo "i2c-4 is not enabled"
+	fi
+
+fi
+
 # Update eth0 configuration
 if [[ -f /etc/systemd/network/eth0.network && -n "$eth0_fixed_ip" && -n "$eth0_fixed_ip2" ]]; then
 	eth0_fixed_ip_OS=$(grep -m 1 -oP '(?<=Address=).*' /etc/systemd/network/eth0.network)
