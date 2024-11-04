@@ -1,12 +1,12 @@
 #!/bin/bash
 
-set -e
-set -x
+set -ex
 echo_red()   { printf "\033[1;31m$*\033[m\n"; }
 echo_green() { printf "\033[1;32m$*\033[m\n"; }
 echo_blue()  { printf "\033[1;34m$*\033[m\n"; }
 
-cd "$(dirname "$0")"
+build_dir=$(dirname "$0")
+cd $build_dir
 
 source config
 
@@ -17,6 +17,15 @@ diskFreeSpaceGB=$(( $diskFreeSpace/1048576 - 4 )) # 4GB for .xz
 if [ $diskFreeSpaceGB -lt $diskNewSize ];then
 	echo "Error: not enough free space. Not enough $(( $diskNewSize - $diskFreeSpaceGB ))G"
 	exit 1
+fi
+
+# cleanup build env
+mount | grep -q "${build_dir}/${ROOTFS}" && umount -R $ROOTFS
+losetupList=$(losetup | grep "${build_dir}" | cut -d ' ' -f 1)
+if [ -n "$losetupList" ]; then
+	for loopdev in $losetupList; do
+		losetup -d $loopdev
+	done
 fi
 
 apt update
@@ -69,18 +78,6 @@ fi
 if [ ! -f "$IMAGE"  ]; then
 	echo_red "Image '$IMAGE' not found"
 	exit 1
-fi
-
-# Unmounts previously mounted devices
-$(mount | grep -q "build/${ROOTFS}") && umount -R $ROOTFS
-
-# Disabling losetup for previously created
-losetupList=$(losetup | grep "$IMAGE") || true
-if [ -n "$losetupList" ]; then
-	while IFS= read -r line
-	do
-		losetup -d $(echo $line | cut -d ' ' -f 1)
-	done < <(printf '%s\n' "$losetupList")
 fi
 
 # expand disk size
