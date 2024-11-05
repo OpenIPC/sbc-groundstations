@@ -143,6 +143,11 @@ cat > /etc/NetworkManager/conf.d/00-gs-unmanaged.conf << EOF
 unmanaged-devices=interface-name:eth0;interface-name:br0;interface-name:usb0;interface-name:dummy0;interface-name:radxa0;interface-name:wlx*
 EOF
 
+# set root password to root
+echo "root:root" | chpasswd
+# permit root login over ssh
+sed -i "s/#PermitRootLogin.*/PermitRootLogin yes/" /etc/ssh/sshd_config
+
 rm -rf /home/radxa/SourceCode
 rm /etc/resolv.conf
 chown -R 1000:1000 /home/radxa
