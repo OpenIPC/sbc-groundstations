@@ -8,17 +8,28 @@ source /config/gs.conf
 need_u_boot_update=0
 need_reboot=0
 
-# kernel cmdline configuration
-if [[ ${system_wide_screen_mode} == "yes" && ! $(grep -q "video=HDMI-A-1:" /etc/kernel/cmdline) ]]; then
-	if [ -z "${screen_mode}" ];then
+# system wide screen mode configuration
+if [[ ${system_wide_screen_mode} == "yes" ]]; then
+	if [ -z "${screen_mode}" ]; then
 		echo "waring: screen_mode is not setting in gs.conf"
-	else
+	elif ! grep -q "video=HDMI-A-1:" /etc/kernel/cmdline; then
+		echo "add screen mode to cmdline"
 		sed -i "1s/$/ video=HDMI-A-1:${screen_mode}/" /etc/kernel/cmdline
 		need_u_boot_update=1
 		need_reboot=1
+	elif ! grep -q "video=HDMI-A-1:${screen_mode}" /etc/kernel/cmdline; then
+		echo "update screen mode in cmdline"
+		sed -i 's/video=HDMI-A-1:[^ ]*/video=HDMI-A-1:${screen_mode}/' /etc/kernel/cmdline
+		need_u_boot_update=1
+		need_reboot=1
 	fi
-elif [[ ${system_wide_screen_mode} == "no" && $(grep -q "video=HDMI-A-1:" /etc/kernel/cmdline) ]]; then
-	sed -i 's/ video=HDMI-A-1:[^ ]*//' /etc/kernel/cmdline
+elif [[ ${system_wide_screen_mode} == "no" ]]; then
+	if grep -q "video=HDMI-A-1:" /etc/kernel/cmdline; then
+		echo "delete screen mode in cmdline"
+		sed -i 's/ video=HDMI-A-1:[^ ]*//' /etc/kernel/cmdline
+		need_u_boot_update=1
+		need_reboot=1
+	fi
 else
 	echo "error: system_wide_screen_mode must yes or no"
 fi
