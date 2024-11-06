@@ -60,7 +60,7 @@ if [ "$use_external_rtc" == "yes" ]; then
 	if [ -c /dev/i2c-4 ]; then
 		modprobe i2c-dev
 		echo ds3231 0x68 >  /sys/class/i2c-adapter/i2c-4/new_device
-		[ -c /dev/rtc1 ] && hwclock -s -f /dev/rtc1 || echo "no ds3231 found"
+		( sleep 1 && [ -c /dev/rtc1 ] && hwclock -s -f /dev/rtc1 || echo "no ds3231 found" ) &
 	else
 		echo "i2c-4 is not enabled"
 	fi
