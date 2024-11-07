@@ -162,6 +162,15 @@ server_address = '${eth0_fixed_ip%/*}'
 
 EOF
 
+# gpsd and chrony configuration
+cat > /etc/default/gpsd << EOF
+stty -F /dev/${gps_uart} ${gps_uart_baudrate}
+START_DAEMON="true"
+DEVICES="/dev/${gps_uart}"
+GPSD_OPTIONS="-n -b -G -r"
+USBAUTO="true"
+EOF
+
 systemctl disable gs-init.service
 
 while [ -f /config/before.txt ]; do sleep 2; done

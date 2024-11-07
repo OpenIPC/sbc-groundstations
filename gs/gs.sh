@@ -78,6 +78,22 @@ if [ "$use_external_rtc" == "yes" ]; then
 
 fi
 
+# GPS configuration
+if [ "$use_gps" == "yes" ]; then
+	if [[ $(grep -q "stty -F /dev/${gps_uart} ${gps_uart_baudrate}" /etc/default/gpsd) && $(grep -q "DEVICES=\"/dev/${gps_uart}\"" /etc/default/gpsd) ]]; then
+		systemctl start chrony gpsd
+	else
+		cat > /etc/default/gpsd << EOF
+stty -F /dev/${gps_uart} ${gps_uart_baudrate}
+START_DAEMON="true"
+DEVICES="/dev/${gps_uart}"
+GPSD_OPTIONS="-n -b -G -r"
+USBAUTO="true"
+EOF
+		systemctl start chrony gpsd
+	fi
+fi
+
 # Update eth0 configuration
 if [[ -f /etc/systemd/network/eth0.network && -n "$eth0_fixed_ip" && -n "$eth0_fixed_ip2" ]]; then
 	eth0_fixed_ip_OS=$(grep -m 1 -oP '(?<=Address=).*' /etc/systemd/network/eth0.network)

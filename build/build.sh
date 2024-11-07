@@ -122,7 +122,7 @@ pushd SBC-GS/gs
 popd
 
 # install useful packages
-DEBIAN_FRONTEND=noninteractive apt -y install lrzsz net-tools socat netcat exfatprogs ifstat fbi minicom bridge-utils console-setup psmisc ethtool drm-info libdrm-tests proxychains4
+DEBIAN_FRONTEND=noninteractive apt -y install lrzsz net-tools socat netcat exfatprogs ifstat fbi minicom bridge-utils console-setup psmisc ethtool drm-info libdrm-tests proxychains4 chrony gpsd gpsd-clients
 
 # disable services
 sed -i '/disable_service systemd-networkd/a disable_service dnsmasq' /config/before.txt
@@ -147,6 +147,10 @@ EOF
 echo "root:root" | chpasswd
 # permit root login over ssh
 sed -i "s/#PermitRootLogin.*/PermitRootLogin yes/" /etc/ssh/sshd_config
+# set gpsd not listen on ipv6
+sed sed -i "/ListenStream=\[::1\]:2947/s/^/# /" /lib/systemd/system/gpsd.socket
+# set chrony use gps time
+echo "refclock SHM 0 refid GPS offset 0.1 delay 0.1" >> /etc/chrony/chrony.conf
 
 rm -rf /home/radxa/SourceCode
 rm /etc/resolv.conf
