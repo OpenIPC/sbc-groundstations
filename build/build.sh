@@ -107,7 +107,7 @@ popd
 
 # PixelPilot_rk / fpvue
 # From JohnDGodwin
-apt -y install librockchip-mpp-dev libdrm-dev libcairo-dev gstreamer1.0-rockchip1 librga-dev librga2 librockchip-mpp1 librockchip-vpu0 libv4l-rkmpp libgl4es libgl4es-dev libspdlog-dev
+apt -y install librockchip-mpp-dev libdrm-dev libcairo-dev gstreamer1.0-rockchip1 librga-dev librga2 librockchip-mpp1 librockchip-vpu0 libv4l-rkmpp libgl4es libgl4es-dev libspdlog-dev nlohmann-json3-dev
 apt --no-install-recommends -y install libgstreamer1.0-dev libgstreamer-plugins-base1.0-dev libgstreamer-plugins-bad1.0-dev gstreamer1.0-plugins-base gstreamer1.0-plugins-good gstreamer1.0-plugins-bad gstreamer1.0-plugins-ugly gstreamer1.0-libav gstreamer1.0-tools
 
 git clone --depth=1 https://github.com/OpenIPC/PixelPilot_rk.git
@@ -148,7 +148,7 @@ echo "root:root" | chpasswd
 # permit root login over ssh
 sed -i "s/#PermitRootLogin.*/PermitRootLogin yes/" /etc/ssh/sshd_config
 # set gpsd not listen on ipv6
-sed sed -i "/ListenStream=\[::1\]:2947/s/^/# /" /lib/systemd/system/gpsd.socket
+sed -i "/ListenStream=\[::1\]:2947/s/^/# /" /lib/systemd/system/gpsd.socket
 # set chrony use gps time
 echo "refclock SHM 0 refid GPS offset 0.1 delay 0.1" >> /etc/chrony/chrony.conf
 
