@@ -1,7 +1,6 @@
 #!/bin/bash
 
-set -e
-set -x
+set -ex
 
 install_dir='/home/radxa/gs'
 script_dir=$(dirname $(readlink -f $0))
@@ -18,9 +17,9 @@ echo -e "\033[31mRemove /etc/NetworkManager/system-connections/*\033[0m"
 [ "$(ls -A /etc/NetworkManager/system-connections/)" ] && rm /etc/NetworkManager/system-connections/*
 echo -e "\033[31mDisable wifibroadcast.service wifibroadcast@gs.service\033[0m"
 systemctl disable wifibroadcast.service wifibroadcast@gs.service
-echo -e "\033[31mcopy gs.sh wfb.sh stream.sh fan.sh button.sh gs-init.sh rk3566-dwc3-otg-role-switch.dts rk3566-hdmi-max-resolution-4k.dts to ${install_dir}/\033[0m"
-chmod +x gs.sh wfb.sh stream.sh fan.sh button.sh gs-init.sh
-cp gs.sh wfb.sh stream.sh fan.sh button.sh gs-init.sh rk3566-dwc3-otg-role-switch.dts rk3566-hdmi-max-resolution-4k.dts ${install_dir}/
+echo -e "\033[31mcopy gs.sh wfb.sh stream.sh fan.sh button.sh gs-init.sh channel-scan.sh rk3566-dwc3-otg-role-switch.dts rk3566-hdmi-max-resolution-4k.dts to ${install_dir}/\033[0m"
+chmod +x gs.sh wfb.sh stream.sh fan.sh button.sh gs-init.sh channel-scan.sh
+cp gs.sh wfb.sh stream.sh fan.sh button.sh gs-init.sh channel-scan.sh rk3566-dwc3-otg-role-switch.dts rk3566-hdmi-max-resolution-4k.dts ${install_dir}/
 echo -e "\033[31mcopy gs.conf to /config/gs.conf\033[0m"
 cp gs.conf /config/
 echo -e "\033[31mcopy gs.service gs-init.service to /etc/systemd/system/\033[0m"

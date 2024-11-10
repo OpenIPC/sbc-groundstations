@@ -122,7 +122,7 @@ pushd SBC-GS/gs
 popd
 
 # install useful packages
-DEBIAN_FRONTEND=noninteractive apt -y install lrzsz net-tools socat netcat exfatprogs ifstat fbi minicom bridge-utils console-setup psmisc ethtool drm-info libdrm-tests proxychains4 chrony gpsd gpsd-clients
+DEBIAN_FRONTEND=noninteractive apt -y install lrzsz net-tools socat netcat exfatprogs ifstat fbi minicom bridge-utils console-setup psmisc ethtool drm-info libdrm-tests proxychains4 chrony gpsd gpsd-clients tcpdump
 
 # disable services
 sed -i '/disable_service systemd-networkd/a disable_service dnsmasq' /config/before.txt
