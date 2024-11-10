@@ -5,6 +5,7 @@ source /config/gs.conf
 
 # wifi mode switch button
 (
+[ -z "$WIFI_mode_switch_PIN" ] && exit 0
 if [ ! -d /sys/class/net/wlan0 ]; then
 	echo "WARING: no wlan0 found, can't switch wifi mode."
 	exit 0
@@ -32,6 +33,7 @@ done
 
 # otg mode switch button
 (
+[ -z "$otg_mode_switch_PIN" ] && exit 0
 otg_mode_switch_PIN_info=$(gpiofind PIN_${otg_mode_switch_PIN})
 otg_mode_file="/sys/kernel/debug/usb/fcc00000.dwc3/mode"
 otg_mode_LED_PIN_info=$(gpiofind PIN_${otg_mode_LED_PIN})

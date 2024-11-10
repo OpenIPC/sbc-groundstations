@@ -11,7 +11,7 @@ video_record="0"
 video_play_cmd=""
 video_rec_cmd=""
 [ -n "$screen_mode" ] && screen_mode="--screen-mode $screen_mode"
-GPIO_REC=$(gpiofind PIN_${REC_GPIO_PIN})
+[ -n "$REC_GPIO_PIN" ] && GPIO_REC=$(gpiofind PIN_${REC_GPIO_PIN})
 GPIO_REC_LED=$(gpiofind PIN_${REC_LED_PIN})
 
 function gencmd(){
@@ -37,6 +37,9 @@ gencmd norecord
 bash -c "$video_play_cmd" &
 pid_player=$!
 while gpiomon -r -s -n 1 -B pull-down ${GPIO_REC}; do
+	# do a 50ms simple software de-bounce
+	sleep 0.05
+	[ "$(gpioget $GPIO_REC)" == "1" ] || break
 	if [ "$video_record" == "0" ]; then
 		if [ "$video_player" == "pixelpilot" ]; then
 			kill -SIGUSR1 $pid_player
