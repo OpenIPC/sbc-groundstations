@@ -84,6 +84,7 @@ GS Directory Tree
         ├── gs
         │   ├── button.sh
         │   ├── channel-scan.sh
+        │   ├── custom-sample.conf
         │   ├── fan.sh
         │   ├── gs-init.service
         │   ├── gs-init.sh
@@ -145,6 +146,8 @@ Configuration [ gs.conf for details ]
 ### 7. Cooling Configuration
 
 ### 8. Wifibroadcast Configuration
+
+### 9. GPIO Configuration
 
 
 TODO
