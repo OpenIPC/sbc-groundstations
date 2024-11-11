@@ -15,19 +15,21 @@ elif [ "$wfb_integrated_wnic" == "wlan0" ]; then
 fi
 WIFI_mode_switch_PIN_info=$(gpiofind PIN_${WIFI_mode_switch_PIN})
 while gpiomon -r -s -n 1 -B pull-down $WIFI_mode_switch_PIN_info; do
-		wlan0_connected_connection=$(nmcli device status | grep '^wlan0.*connected' | tr -s ' ' | cut -d ' ' -f 4)
-		case "$wlan0_connected_connection" in
-			hotspot)
-				nmcli connection up wlan0
-				sleep 5
-				;;
-			wlan0)
-				nmcli connection up hotspot
-				sleep 5
-				;;
-			*)  echo "connection is unknow"
-				;;
-		esac
+	sleep 0.05
+	[ "$(gpioget $WIFI_mode_switch_PIN_info)" == "1" ] || break
+	wlan0_connected_connection=$(nmcli device status | grep '^wlan0.*connected' | tr -s ' ' | cut -d ' ' -f 4)
+	case "$wlan0_connected_connection" in
+		hotspot)
+			nmcli connection up wlan0
+			sleep 5
+			;;
+		wlan0)
+			nmcli connection up hotspot
+			sleep 5
+			;;
+		*)  echo "connection is unknow"
+			;;
+	esac
 done
 ) &
 
@@ -38,6 +40,8 @@ otg_mode_switch_PIN_info=$(gpiofind PIN_${otg_mode_switch_PIN})
 otg_mode_file="/sys/kernel/debug/usb/fcc00000.dwc3/mode"
 otg_mode_LED_PIN_info=$(gpiofind PIN_${otg_mode_LED_PIN})
 while gpiomon -r -s -n 1 -B pull-down $otg_mode_switch_PIN_info; do
+	sleep 0.05
+	[ "$(gpioget $otg_mode_switch_PIN_info)" == "1" ] || break
 	otg_mode=$(cat $otg_mode_file)
 	if [ "$otg_mode" == "host" ]; then
 		echo device > $otg_mode_file
@@ -70,6 +74,8 @@ done
 [ -z "$wfb_channel_scan_PIN" ] && exit 0
 wfb_channel_scan_PIN_info=$(gpiofind PIN_${wfb_channel_scan_PIN})
 while gpiomon -r -s -n 1 -B pull-down $wfb_channel_scan_PIN_info; do
+	sleep 0.05
+	[ "$(gpioget $wfb_channel_scan_PIN_info)" == "1" ] || break
 	/home/radxa/gs/channel-scan.sh
 done
 ) &
