@@ -64,4 +64,14 @@ while gpiomon -r -s -n 1 -B pull-down $otg_mode_switch_PIN_info; do
 	fi
 done
 ) &
+
+# wfb channel scan button
+(
+[ -z "$wfb_channel_scan_PIN" ] && exit 0
+wfb_channel_scan_PIN_info=$(gpiofind PIN_${wfb_channel_scan_PIN})
+while gpiomon -r -s -n 1 -B pull-down $wfb_channel_scan_PIN_info; do
+	/home/radxa/gs/channel-scan.sh
+done
+) &
+
 wait

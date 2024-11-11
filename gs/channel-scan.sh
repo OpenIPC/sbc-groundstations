@@ -3,7 +3,10 @@
 set -e
 source /etc/gs.conf
 
-iface_name=$1
+wfb_nics=$(echo /sys/class/net/wl* | sed -r -e "s^/sys/class/net/^^g" -e "s/wlan0\s{0,1}//" -e "s/wl\*//")
+[ -n "$wfb_integrated_wnic" ] && wfb_nics="$wfb_integrated_wnic $wfb_nics"
+[ -n "$wfb_nics" ] && iface_name=${iface_scan%% *} || exit 0
+
 if [ -z "$iface_name"]; then
 	echo "A wifi card must be specified for scanning"
 	exit 1
@@ -65,8 +68,6 @@ for channel in $channel_available; do
 	fi
 done
 
-wfb_nics=$(echo /sys/class/net/wl* | sed -r -e "s^/sys/class/net/^^g" -e "s/wlan0\s{0,1}//" -e "s/wl\*//")
-[ -n "$wfb_integrated_wnic" ] && wfb_nics="$wfb_integrated_wnic $wfb_nics"
 for nic in $wfb_nics; do
 	iw dev $nic set channel $channel_wfb_used HT${wfb_bandwidth}
 done
