@@ -28,7 +28,7 @@ Files and Services
 * __gs files:__
   1. Configuration file `/config/gs.conf`
   2. wfb key file `/config/gs.key`
-  3. script files `/home/radxa/gs/[button.sh, fan.sh, gs.sh, stream.sh, wfb.sh]`
+  3. script files `/home/radxa/gs/[button.sh, channel-scan.sh, fan.sh, gs-init.sh, gs.sh, stream.sh, wfb.sh]`
   4. udev rule files `/etc/udev/rules.d/[98-gadget.rules, 99-wfb.rules]`
 * __Services:__
   1. `gs`.service
@@ -83,6 +83,7 @@ GS Directory Tree
     └── radxa
         ├── gs
         │   ├── button.sh
+        │   ├── channel-scan.sh
         │   ├── fan.sh
         │   ├── gs-init.service
         │   ├── gs-init.sh
@@ -113,8 +114,8 @@ __Designed for and tested on Radxa Zero 3W/3E only.__
 DEBUG
 -----
 
-1. ssh over hotspot, ethernet or usb net
-2. serial console
+1. ssh over hotspot, ethernet or usb net. Default username/password is radxa/radxa and root/root
+2. [serial console](https://docs.radxa.com/en/zero/zero3/low-level-dev/serial)
 3. keyboard
 4. adb
 
