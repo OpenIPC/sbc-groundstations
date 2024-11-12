@@ -1,0 +1,355 @@
+{
+    "format": "0.0.1",
+    "assets_dir": "/usr/local/share/pixelpilot/",
+    "widgets": [
+        {
+            "name": "WFB RSSI chart",
+            "type": "BarChartWidget",
+            "x": -320,
+            "y": 300,
+            "width": 310,
+            "height": 80,
+            "__comment": "stats_kind can be min, max, sum, count, avg",
+            "stats_kind": "avg",
+            "window_s": 10,
+            "num_buckets": 10,
+            "facts": [
+                {
+                    "name": "mavlink.radio_status.rssi",
+                    "tags": {
+                        "sysid": "3",
+                        "compid": "68"
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Video link throughput chart",
+            "type": "BarChartWidget",
+            "x": -320,
+            "y": 200,
+            "width": 310,
+            "height": 80,
+            "__comment": "stats_kind can be min, max, sum, count, avg",
+            "stats_kind": "sum",
+            "window_s": 10,
+            "num_buckets": 10,
+            "facts": [
+                {
+                    "name": "gstreamer.received_bytes"
+                }
+            ]
+        },
+        {
+            "name": "Metrics background",
+            "type": "BoxWidget",
+            "x": -320,
+            "y": 0,
+            "width": 320,
+            "height": 150,
+            "color": {
+                "r": 0.0,
+                "g": 0.0,
+                "b": 0.0,
+                "alpha": 0.4
+            },
+            "facts": []
+        },
+        {
+            "name": "Video FPS and resolution",
+            "type": "VideoWidget",
+            "x": -300,
+            "y": 20,
+            "icon_path": "framerate.png",
+            "template": "%u fps | %ux%u",
+            "per_second_window_s": 2,
+            "per_second_bucket_ms": 200,
+            "facts": [
+                {
+                    "__comment": "Will be converted to per-second",
+                    "name": "video.displayed_frame"
+                },
+                {
+                    "name": "video.width"
+                },
+                {
+                    "name": "video.height"
+                }
+            ]
+        },
+        {
+            "name": "Video decode&display latency",
+            "type": "VideoDecodeLatencyWidget",
+            "x": -300,
+            "y": 50,
+            "icon_path": "latency.png",
+            "template": "avg%f (min%d, max%d) ms",
+            "per_second_window_s": 2,
+            "per_second_bucket_ms": 100,
+            "facts": [
+                {
+                    "__comment": "Avg, min, max per-second",
+                    "name": "video.decode_and_handover_ms"
+                }
+            ]
+        },
+        {
+            "name": "Video link throughput",
+            "type": "VideoBitrateWidget",
+            "x": -300,
+            "y": 80,
+            "icon_path": "network.png",
+            "template": "%f Mbps",
+            "per_second_window_s": 2,
+            "per_second_bucket_ms": 100,
+            "facts": [
+                {
+                    "__comment": "Should be sum per-second, scaled to Megs",
+                    "name": "gstreamer.received_bytes"
+                }
+            ]
+        },
+        {
+            "name": "WFB radio",
+            "type": "TplTextWidget",
+            "x": -300,
+            "y": 110,
+            "template": "WFB %d F%u L%u",
+            "facts": [
+                {
+                    "name": "mavlink.radio_status.rssi",
+                    "tags": {
+                        "sysid": "3",
+                        "compid": "68"
+                    }
+                },
+                {
+                    "name": "mavlink.radio_status.fixed",
+                    "tags": {
+                        "sysid": "3",
+                        "compid": "68"
+                    }
+                },
+                {
+                    "name": "mavlink.radio_status.rxerrors",
+                    "tags": {
+                        "sysid": "3",
+                        "compid": "68"
+                    }
+                }
+            ]
+        },
+        {
+            "name": "DVR status",
+            "type": "DvrStatusWidget",
+            "x": -300,
+            "y": 140,
+            "icon_path": "sdcard-white.png",
+            "text": "Recording",
+            "facts": [
+                {
+                    "name": "dvr.recording"
+                }
+            ]
+        },
+        {
+            "name": "Altitude",
+            "type": "TplTextWidget",
+            "x": 10,
+            "y": 20,
+            "template": "Alt:%fM",
+            "facts": [
+                {
+                    "name": "mavlink.vfr_hud.alt"
+                }
+            ]
+        },
+        {
+            "name": "Speed",
+            "type": "TplTextWidget",
+            "x": 10,
+            "y": 50,
+            "template": "Spd:%fkm/h",
+            "facts": [
+                {
+                    "name": "mavlink.vfr_hud.groundspeed"
+                }
+            ]
+        },
+        {
+            "name": "Vertical speed",
+            "type": "TplTextWidget",
+            "x": 10,
+            "y": 80,
+            "template": "VSpd:%fm/h",
+            "facts": [
+                {
+                    "name": "mavlink.vfr_hud.climb"
+                }
+            ]
+        },
+
+
+
+        {
+            "name": "Satellite number",
+            "type": "TplTextWidget",
+            "x": 10,
+            "y": 110,
+            "template": "Sats:%u",
+            "facts": [
+                {
+                    "name": "mavlink.gps_raw.satellites_visible"
+                }
+            ]
+        },
+        {
+            "name": "GPS coordinates",
+            "type": "GPSWidget",
+            "x": 10,
+            "y": 140,
+            "facts": [
+                {
+                    "name": "mavlink.gps_raw.fix_type"
+                },
+                {
+                    "name": "mavlink.gps_raw.lat"
+                },
+                {
+                    "name": "mavlink.gps_raw.lon"
+                }
+            ]
+        },
+
+        {
+            "name": "Pitch",
+            "type": "TplTextWidget",
+            "x": 10,
+            "y": 170,
+            "template": "Pitch:%f",
+            "facts": [
+                {
+                    "name": "mavlink.attitude.pitch"
+                }
+            ]
+        },
+        {
+            "name": "Roll",
+            "type": "TplTextWidget",
+            "x": 10,
+            "y": 200,
+            "template": "Roll:%f",
+            "facts": [
+                {
+                    "name": "mavlink.attitude.roll"
+                }
+            ]
+        },
+        {
+            "name": "Battery voltage",
+            "type": "TplTextWidget",
+            "x": 10,
+            "y": 230,
+            "template": "BAT:%umV",
+            "facts": [
+                {
+                    "name": "mavlink.sys_status.voltage_battery"
+                }
+            ]
+        },
+        {
+            "name": "Battery consumed",
+            "type": "TplTextWidget",
+            "x": 10,
+            "y": 260,
+            "template": "CONS:%imAh",
+            "facts": [
+                {
+                    "name": "mavlink.battery_status.current_consumed"
+                }
+            ]
+        },
+        {
+            "name": "Battery current",
+            "type": "TplTextWidget",
+            "x": 10,
+            "y": 290,
+            "template": "CUR:%i/100 A",
+            "facts": [
+                {
+                    "name": "mavlink.sys_status.current_battery"
+                }
+            ]
+        },
+        {
+            "name": "Custom fading message",
+            "type": "PopupWidget",
+            "x": 400,
+            "y": 50,
+            "timeout_ms": 10000,
+            "facts": [
+                {
+                    "name": "osd.custom_message"
+                }
+            ]
+        },
+        {
+            "name": "Dump raw facts to the scren (remove `--` from `type` to enable)",
+            "type": "---DebugWidget",
+            "x": 10,
+            "y": -100,
+            "facts": [
+                {
+                    "name": "mavlink.heartbeet.base_mode.armed"
+                },
+                {
+                    "name": "mavlink.radio_status.rssi",
+                    "tags": {
+                        "sysid": "3",
+                        "compid": "68"
+                    }
+                },
+                {
+                    "name": "mavlink.gps_raw.lat"
+                },
+                {
+                    "name": "mavlink.gps_raw.lon"
+                },
+                {
+                    "name": "mavlink.gps_raw.fix_type"
+                },
+                {
+                    "name": "mavlink.global_position_int.lat"
+                },
+                {
+                    "name": "mavlink.global_position_int.lon"
+                }
+            ]
+        },
+        {
+            "name": "Distance",
+            "type": "DistanceWidget",
+            "x": 10,
+            "y": 230,
+            "template": "Pitch:%f",
+            "facts": [
+                {
+                    "__comment": "Assuming arm is on channel 5",
+                    "name": "mavlink.rc_channels_raw.chan5"
+                },
+                {
+                    "__comment": "Arms state from heartbeat",
+                    "name": "mavlink.heartbeet.base_mode.armed"
+                },
+                {
+                    "__comment": "Lat",
+                    "name": "mavlink.gps_raw.lat"
+                },
+                {
+                    "__comment": "Lon",
+                    "name": "mavlink.gps_raw.lon"
+                }
+            ]
+        }
+    ]
+}

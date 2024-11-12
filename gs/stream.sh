@@ -17,19 +17,12 @@ GPIO_REC_LED=$(gpiofind PIN_${REC_LED_PIN})
 function gencmd(){
 	if [ "$video_player" == "pixelpilot" ]; then
 		video_play_cmd="pixelpilot $screen_mode --codec $video_codec --dvr-framerate $REC_FPS --dvr-fmp4 --dvr-template ${REC_Dir}/record_%Y-%m-%d_%H-%M-%S.mp4"
-		[ "$osd_enable" == "no" ] || video_play_cmd="$video_play_cmd --osd --osd-elements $osd_elements --osd-telem-lvl $osd_telem_lvl"
+		[ "$osd_enable" == "no" ] || video_play_cmd="$video_play_cmd --osd --osd-elements '' --osd-config $osd_config_file --osd-custom-message"
 	elif [ "$video_player" == "gstreamer" ]; then
 		video_play_cmd="gst-launch-1.0 -e udpsrc port=5600 caps='application/x-rtp, media=(string)video, clock-rate=(int)90000, encoding-name=(string)H${video_codec:1:4}' ! rtp${video_codec}depay ! ${video_codec}parse ! mppvideodec ! kmssink"
 		video_rec_cmd="gst-launch-1.0 -e udpsrc port=5600 caps='application/x-rtp, media=(string)video, clock-rate=(int)90000, encoding-name=(string)H${video_codec:1:4}' ! rtp${video_codec}depay ! ${video_codec}parse ! tee name=t ! mppvideodec ! kmssink t. ! queue ! matroskamux ! filesink location=${1}"
 	else
-		# use fpvue as default
-		video_rec_cmd="fpvue $screen_mode --codec $video_codec --dvr $1"
-		video_play_cmd="fpvue $screen_mode --codec $video_codec"
-		if [ "$osd_enable" == "yes" ];then
-			video_rec_cmd="$video_rec_cmd --osd --osd-elements $osd_elements --osd-telem-lvl $osd_telem_lvl"
-			video_play_cmd="$video_play_cmd --osd --osd-elements $osd_elements --osd-telem-lvl $osd_telem_lvl"
-		fi
-
+		echo "wrong video player, only support pixelpilot and gstreamer"
 	fi
 }
 
