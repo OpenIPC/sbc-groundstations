@@ -56,6 +56,7 @@ for channel in $channel_available; do
 			udp_receive_bytes=$(($udp_stop_bytes - $udp_start_bytes))
 			if [ $udp_receive_bytes -ge 30 ]; then
 				echo "wfb channel found: channel $channel "
+				echo "found channel: $channel" > /run/pixelpilot.msg
 				channel_wfb_used=$channel
 				sed -i "s/wfb_channel='[0-9]\+'/wfb_channel='${channel_wfb_used}'/" /etc/gs.conf
 				break 
