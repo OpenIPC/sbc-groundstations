@@ -32,13 +32,13 @@ pid_player=$!
 while gpiomon -r -s -n 1 -B pull-down ${GPIO_REC}; do
 	# do a 50ms simple software de-bounce
 	sleep 0.05
-	[ "$(gpioget $GPIO_REC)" == "1" ] || break
+	[ "$(gpioget $GPIO_REC)" == "1" ] || continue
 	if [ "$video_record" == "0" ]; then
 		rec_dir_freespace=$(df $REC_Dir | grep $REC_Dir | awk '{print $4}')
 		rec_dir_freespace_MB=$((${rec_dir_freespace} / 1024))
 		if [ $rec_dir_freespace_MB -lt $rec_dir_freespace_min ]; then
 			echo "No enough record space!" > /run/pixelpilot.msg
-			break
+			continue
 		fi
 		if [ "$video_player" == "pixelpilot" ]; then
 			kill -SIGUSR1 $pid_player
