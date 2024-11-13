@@ -1,13 +1,14 @@
 #!/bin/bash
 
 set -e
-source /etc/gs.conf
+echo "start channel scan" > /run/pixelpilot.msg
+source /config/gs.conf
 
 wfb_nics=$(echo /sys/class/net/wl* | sed -r -e "s^/sys/class/net/^^g" -e "s/wlan0\s{0,1}//" -e "s/wl\*//")
 [ -n "$wfb_integrated_wnic" ] && wfb_nics="$wfb_integrated_wnic $wfb_nics"
 [ -n "$wfb_nics" ] && iface_name=${wfb_nics%% *} || exit 0
 
-if [ -z "$iface_name"]; then
+if [ -z "$iface_name" ]; then
 	echo "A wifi card must be specified for scanning"
 	exit 1
 fi
@@ -58,7 +59,7 @@ for channel in $channel_available; do
 				echo "wfb channel found: channel $channel "
 				echo "found channel: $channel" > /run/pixelpilot.msg
 				channel_wfb_used=$channel
-				sed -i "s/wfb_channel='[0-9]\+'/wfb_channel='${channel_wfb_used}'/" /etc/gs.conf
+				sed -i "s/wfb_channel='[0-9]\+'/wfb_channel='${channel_wfb_used}'/" /config/gs.conf
 				break 
 			else
 				echo "channel $channel is wfb but key is not matched"
@@ -69,6 +70,10 @@ for channel in $channel_available; do
 	fi
 done
 
-for nic in $wfb_nics; do
-	iw dev $nic set channel $channel_wfb_used HT${wfb_bandwidth}
-done
+if [ -n "${channel_wfb_used}" ]; then
+	for nic in $wfb_nics; do
+		iw dev $nic set channel $channel_wfb_used HT${wfb_bandwidth}
+	done
+else
+	echo "no channel found" > /run/pixelpilot.msg
+fi
