@@ -122,7 +122,7 @@ pushd SBC-GS/gs
 popd
 
 # install useful packages
-DEBIAN_FRONTEND=noninteractive apt -y install lrzsz net-tools socat netcat exfatprogs ifstat fbi minicom bridge-utils console-setup psmisc ethtool drm-info libdrm-tests proxychains4 chrony gpsd gpsd-clients tcpdump
+DEBIAN_FRONTEND=noninteractive apt -y install lrzsz net-tools socat netcat exfatprogs ifstat fbi minicom bridge-utils console-setup psmisc ethtool drm-info libdrm-tests proxychains4 chrony gpsd gpsd-clients tcpdump iptables-persistent
 
 # disable services
 sed -i '/disable_service systemd-networkd/a disable_service dnsmasq' /config/before.txt
@@ -151,6 +151,16 @@ sed -i "s/#PermitRootLogin.*/PermitRootLogin yes/" /etc/ssh/sshd_config
 sed -i "/ListenStream=\[::1\]:2947/s/^/# /" /lib/systemd/system/gpsd.socket
 # set chrony use gps time
 echo "refclock SHM 0 refid GPS offset 0.1 delay 0.1" >> /etc/chrony/chrony.conf
+
+# Forward SBC port 2222/8080 to IPC port 22/80
+cat > /etc/iptables/rules.v4 << EOF
+*nat
+-A PREROUTING -p tcp -m tcp --dport 2222 -j DNAT --to-destination 10.5.0.10:22
+-A PREROUTING -p tcp -m tcp --dport 8080 -j DNAT --to-destination 10.5.0.10:80
+-A POSTROUTING -p tcp -m tcp --dport 22 -j SNAT --to-source 10.5.0.1
+-A POSTROUTING -p tcp -m tcp --dport 80 -j SNAT --to-source 10.5.0.1
+COMMIT
+EOF
 
 rm -rf /home/radxa/SourceCode
 rm /etc/resolv.conf

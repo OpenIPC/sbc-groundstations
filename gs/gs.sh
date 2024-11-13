@@ -206,12 +206,6 @@ systemd-run --unit=button /home/radxa/gs/button.sh
 # show wallpaper
 sleep 10 && fbi -d /dev/fb0 -a -fitwidth -T 1 --noverbose /home/radxa/gs/wallpaper.png &
 
-# Forward SBC port 2222/8080 to IPC port 22/80
-iptables -t nat -A PREROUTING -p tcp --dport 2222 -j DNAT --to-destination 10.5.0.10:22
-iptables -t nat -A POSTROUTING -p tcp --dport 22 -j SNAT --to-source 10.5.0.1
-iptables -t nat -A PREROUTING -p tcp --dport 8080 -j DNAT --to-destination 10.5.0.10:80
-iptables -t nat -A POSTROUTING -p tcp --dport 80 -j SNAT --to-source 10.5.0.1
-
 # system boot complete, turn red record LED off
 gpioset -D $PWR_LED_drive $(gpiofind PIN_${REC_LED_PIN})=0
 echo "gs service start completed"

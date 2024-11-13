@@ -54,6 +54,8 @@ GS Directory Tree
 │   ├── gs.conf -> /config/gs.conf
 │   ├── gs.key -> /config/gs.key
 │   ├── gs-release
+│   ├── iptables
+│   │   └── rules.v4
 │   ├── network
 │   │   └── interfaces.d
 │   │       └── radxa0
