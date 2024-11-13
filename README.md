@@ -45,8 +45,11 @@ GS Directory Tree
 │       ├── rk3566-dwc3-otg-role-switch.dtbo
 │       └── rk3566-hdmi-max-resolution-4k.dtbo
 ├── config
+│   ├── custom-sample.conf
 │   ├── gs.conf
-│   └── gs.key
+│   ├── gs.key
+│   ├── pixelpilot_osd.json
+│   └── pixelpilot_osd_simple.json
 ├── etc
 │   ├── gs.conf -> /config/gs.conf
 │   ├── gs.key -> /config/gs.key
@@ -85,7 +88,6 @@ GS Directory Tree
         ├── gs
         │   ├── button.sh
         │   ├── channel-scan.sh
-        │   ├── custom-sample.conf
         │   ├── fan.sh
         │   ├── gs-init.service
         │   ├── gs-init.sh

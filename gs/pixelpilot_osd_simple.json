@@ -1,0 +1,118 @@
+{
+    "format": "0.0.1",
+    "assets_dir": "/usr/local/share/pixelpilot/",
+    "widgets": [
+        {
+            "name": "Metrics background",
+            "type": "BoxWidget",
+            "x": -320,
+            "y": 0,
+            "width": 320,
+            "height": 150,
+            "color": {
+                "r": 0.0,
+                "g": 0.0,
+                "b": 0.0,
+                "alpha": 0.4
+            },
+            "facts": []
+        },
+        {
+            "name": "Video FPS and resolution",
+            "type": "VideoWidget",
+            "x": -300,
+            "y": 20,
+            "icon_path": "framerate.png",
+            "template": "%u fps | %ux%u",
+            "per_second_window_s": 2,
+            "per_second_bucket_ms": 200,
+            "facts": [
+                {
+                    "__comment": "Will be converted to per-second",
+                    "name": "video.displayed_frame"
+                },
+                {
+                    "name": "video.width"
+                },
+                {
+                    "name": "video.height"
+                }
+            ]
+        },
+        {
+            "name": "Video decode&display latency",
+            "type": "VideoDecodeLatencyWidget",
+            "x": -300,
+            "y": 50,
+            "icon_path": "latency.png",
+            "template": "avg%f (min%d, max%d) ms",
+            "per_second_window_s": 2,
+            "per_second_bucket_ms": 100,
+            "facts": [
+                {
+                    "__comment": "Avg, min, max per-second",
+                    "name": "video.decode_and_handover_ms"
+                }
+            ]
+        },
+        {
+            "name": "Video link throughput",
+            "type": "VideoBitrateWidget",
+            "x": -300,
+            "y": 80,
+            "icon_path": "network.png",
+            "template": "%f Mbps",
+            "per_second_window_s": 2,
+            "per_second_bucket_ms": 100,
+            "facts": [
+                {
+                    "__comment": "Should be sum per-second, scaled to Megs",
+                    "name": "gstreamer.received_bytes"
+                }
+            ]
+        },
+        {
+            "name": "WFB radio",
+            "type": "TplTextWidget",
+            "x": -300,
+            "y": 110,
+            "template": "WFB %d F%u L%u",
+            "facts": [
+                {
+                    "name": "mavlink.radio_status.rssi",
+                    "tags": {
+                        "sysid": "3",
+                        "compid": "68"
+                    }
+                },
+                {
+                    "name": "mavlink.radio_status.fixed",
+                    "tags": {
+                        "sysid": "3",
+                        "compid": "68"
+                    }
+                },
+                {
+                    "name": "mavlink.radio_status.rxerrors",
+                    "tags": {
+                        "sysid": "3",
+                        "compid": "68"
+                    }
+                }
+            ]
+        },
+        {
+            "name": "DVR status",
+            "type": "DvrStatusWidget",
+            "x": -300,
+            "y": 140,
+            "icon_path": "sdcard-white.png",
+            "text": "Recording",
+            "facts": [
+                {
+                    "name": "dvr.recording"
+                }
+            ]
+        }
+    ]
+}
