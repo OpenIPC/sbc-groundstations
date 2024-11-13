@@ -57,6 +57,7 @@ while gpiomon -r -s -n 1 -B pull-down ${GPIO_REC}; do
 			bash -c "$video_rec_cmd" &
 			pid_player=$!
 		fi
+		echo "record start!" > /run/pixelpilot.msg
 		video_record='1'
 		# Todo: How to deal with led when system is overheat
 		(
@@ -80,6 +81,7 @@ while gpiomon -r -s -n 1 -B pull-down ${GPIO_REC}; do
 			bash -c "$video_play_cmd" &
 			pid_player=$!
 		fi
+		echo "record stop!" > /run/pixelpilot.msg
 		video_record='0'
 	fi
 	sleep 3

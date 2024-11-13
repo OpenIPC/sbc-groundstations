@@ -42,6 +42,7 @@ while true; do
 	if [ $temp_max -gt $fan_overheat_temperature ];then
 		echo "CATION: System is overheat! fan speed up to 100%!"
 		echo $period > ${pwmchip_path}/pwm${fan_PWM_channel}/duty_cycle
+		echo "System overheat!" > /run/pixelpilot.msg
 		# Turn on red record LED
 		gpioset -D $REC_LED_drive $(gpiofind PIN_${REC_GPIO_PIN})=1 && sleep $(($temperature_monitor_cycle - 1)) && gpioset -D $REC_LED_drive $(gpiofind PIN_${REC_GPIO_PIN})=0 &
 	elif [ $temp_max -gt $target_temp_max ]; then
