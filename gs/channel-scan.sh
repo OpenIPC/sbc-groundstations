@@ -4,18 +4,17 @@ set -e
 echo "start channel scan" > /run/pixelpilot.msg
 source /config/gs.conf
 
-wfb_nics=$(echo /sys/class/net/wl* | sed -r -e "s^/sys/class/net/^^g" -e "s/wlan0\s{0,1}//" -e "s/wl\*//")
-[ -n "$wfb_integrated_wnic" ] && wfb_nics="$wfb_integrated_wnic $wfb_nics"
-[ -n "$wfb_nics" ] && iface_name=${wfb_nics%% *} || exit 0
-
-if [ -z "$iface_name" ]; then
-	echo "A wifi card must be specified for scanning"
-	exit 1
-fi
-
-if [ ! -d /sys/class/net/${iface_name} ]; then
-	echo "no WINC $iface_name found"
-	exit 1
+if [ -z "$1" ]; then
+	wfb_nics=$(echo /sys/class/net/wl* | sed -r -e "s^/sys/class/net/^^g" -e "s/wlan0\s{0,1}//" -e "s/wl\*//")
+	[ -n "$wfb_integrated_wnic" ] && wfb_nics="$wfb_integrated_wnic $wfb_nics"
+	[ -n "$wfb_nics" ] && iface_name=${wfb_nics##* } || exit 0
+else
+	iface_name="$1"
+	echo "use specified WINC ${iface_name} for scanning"
+	if [ ! -d /sys/class/net/${iface_name} ]; then
+		echo "no WINC $iface_name found"
+		exit 1
+	fi
 fi
 
 # make sure WNIC in monitor mode
@@ -28,7 +27,7 @@ else
 	ip link set $iface_name up
 fi
 
-# get WINC phy number
+# get WINC phy name
 iface_phy=$(basename $(readlink /sys/class/net/${iface_name}/phy80211))
 
 # RTL8812AU BUG:
@@ -39,7 +38,8 @@ iface_phy=$(basename $(readlink /sys/class/net/${iface_name}/phy80211))
 #    + TX: iw dev wlxc8fe0f41d393 set channel 104 HT20
 #    + RX: iw dev wlx08107b91b856  set channel 136 HT20
 
-channel_available=$(iw phy $iface_phy info | grep -oP "\s*\*\s5.*\[\K\d+(?=\].*dBm)" | sort -nr)
+channel_available=$(iw phy $iface_phy info | grep -oP "\s*\*\s5.*\[\K\d+(?=\].*dBm)")
+[ $wfb_channel -gt 104 ] && channel_available=$(echo "$channel_available" | sort -nr)
 for channel in $channel_available; do
 	iw dev $iface_name set channel $channel HT${wfb_bandwidth}
 	iface_start_bytes=$(grep -oP "${iface_name}:\s+\d+\s+\K\d+" /proc/net/dev)
@@ -52,7 +52,7 @@ for channel in $channel_available; do
 			# Incompatible with wfb cluster and aggregation mode
 			# need judge by wfb cli api
 			udp_start_bytes=$(grep -oP "^Udp: \K\d+" /proc/net/snmp)
-			sleep 0.1
+			sleep 0.2
 			udp_stop_bytes=$(grep -oP "^Udp: \K\d+" /proc/net/snmp)
 			udp_receive_bytes=$(($udp_stop_bytes - $udp_start_bytes))
 			if [ $udp_receive_bytes -ge 30 ]; then
@@ -62,7 +62,8 @@ for channel in $channel_available; do
 				sed -i "s/wfb_channel='[0-9]\+'/wfb_channel='${channel_wfb_used}'/" /config/gs.conf
 				break 
 			else
-				echo "channel $channel is wfb but key is not matched"
+				echo "channel $channel is wfb but key may not matched"
+				channel_wfb_used=$channel
 			fi
 		else
 			echo "    * channel $channel have traffic but not wfb"
