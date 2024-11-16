@@ -94,21 +94,13 @@ EOF
 	fi
 fi
 
-# Update eth0 configuration
-if [[ -f /etc/systemd/network/eth0.network && -n "$eth0_fixed_ip" && -n "$eth0_fixed_ip2" ]]; then
-	eth0_fixed_ip_OS=$(grep -m 1 -oP '(?<=Address=).*' /etc/systemd/network/eth0.network)
-	eth0_fixed_ip_OS2=$(tac /etc/systemd/network/eth0.network | grep -m 1 -oP '(?<=Address=).*')
-	[ "${eth0_fixed_ip_OS}" == "${eth0_fixed_ip}" ] || sed -i "s^${eth0_fixed_ip_OS}^${eth0_fixed_ip}^" /etc/systemd/network/eth0.network
-	[ "${eth0_fixed_ip_OS2}" == "${eth0_fixed_ip2}" ] || sed -i "s^${eth0_fixed_ip_OS2}^${eth0_fixed_ip2}^" /etc/systemd/network/eth0.network
-	systemctl restart systemd-networkd
-fi
-echo "eth0 configure done"
-
 # Update br0 configuration
-if [[ -f /etc/systemd/network/br0.network && -n "$br0_fixed_ip" ]]; then
-	br0_fixed_ip_OS=$(grep -m 1 -oP '(?<=Address=).*' /etc/systemd/network/br0.network)
-	[ "${br0_fixed_ip_OS}" == "${br0_fixed_ip}" ] || sed -i "s^${br0_fixed_ip_OS}^${br0_fixed_ip}^" /etc/systemd/network/br0.network
-	systemctl restart systemd-networkd
+if [[ -f /etc/systemd/network/br0.network && -n "$br0_fixed_ip" && -n "$br0_fixed_ip2" ]]; then
+        br0_fixed_ip_OS=$(grep -m 1 -oP '(?<=Address=).*' /etc/systemd/network/br0.network)
+        br0_fixed_ip_OS2=$(tac /etc/systemd/network/br0.network | grep -m 1 -oP '(?<=Address=).*')
+        [ "${br0_fixed_ip_OS}" == "${br0_fixed_ip}" ] || sed -i "s^${br0_fixed_ip_OS}^${br0_fixed_ip}^" /etc/systemd/network/br0.network
+        [ "${br0_fixed_ip_OS2}" == "${br0_fixed_ip2}" ] || sed -i "s^${br0_fixed_ip_OS2}^${br0_fixed_ip2}^" /etc/systemd/network/br0.network
+        systemctl restart systemd-networkd
 fi
 echo "br0 configure done"
 

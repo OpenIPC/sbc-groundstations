@@ -51,17 +51,6 @@ for dtbo in "${dtbo_enable_array[@]}"; do
 done
 u-boot-update
 
-# Add eth0 network configuration
-[ -f /etc/systemd/network/eth0.network ] || cat > /etc/systemd/network/eth0.network << EOF
-[Match]
-Name=eth0
-
-[Network]
-Address=${eth0_fixed_ip}
-Address=${eth0_fixed_ip2}
-DHCP=yes
-EOF
-
 # Add br0 network configuration
 [ -f /etc/systemd/network/br0.netdev ] || cat > /etc/systemd/network/br0.netdev << EOF
 [NetDev]
@@ -75,7 +64,16 @@ Name=br0
 
 [Network]
 Address=${br0_fixed_ip}
+Address=${br0_fixed_ip2}
 DHCP=yes
+EOF
+
+[ -f /etc/systemd/network/eth0.network ] || cat > /etc/systemd/network/eth0.network << EOF
+[Match]
+Name=eth0
+
+[Network]
+Bridge=br0
 EOF
 
 [ -f /etc/systemd/network/usb0.network ] || cat > /etc/systemd/network/usb0.network << EOF
