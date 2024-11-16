@@ -11,7 +11,7 @@ video_record="0"
 video_play_cmd=""
 video_rec_cmd=""
 [ -n "$screen_mode" ] && screen_mode="--screen-mode $screen_mode"
-[ -n "$REC_GPIO_PIN" ] && GPIO_REC=$(gpiofind PIN_${REC_GPIO_PIN})
+[ -n "$BTN_Q1_PIN" ] && GPIO_REC=$(gpiofind PIN_${BTN_Q1_PIN})
 GPIO_REC_LED=$(gpiofind PIN_${REC_LED_PIN})
 
 function gencmd(){
