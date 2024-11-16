@@ -12,7 +12,7 @@ video_play_cmd=""
 video_rec_cmd=""
 [ -n "$screen_mode" ] && screen_mode="--screen-mode $screen_mode"
 [ -n "$BTN_Q1_PIN" ] && GPIO_REC=$(gpiofind PIN_${BTN_Q1_PIN})
-GPIO_REC_LED=$(gpiofind PIN_${REC_LED_PIN})
+GPIO_RED_LED=$(gpiofind PIN_${RED_LED_PIN})
 
 function gencmd(){
 	if [ "$video_player" == "pixelpilot" ]; then
@@ -76,15 +76,15 @@ while gpiomon -r -s -n 1 -B pull-down ${GPIO_REC}; do
 			(
 			while true; do
 				# Blink red record LED
-				gpioset -D $REC_LED_drive -m time -s 1 ${GPIO_REC_LED}=1
-				gpioset -D $REC_LED_drive -m time -s 1 ${GPIO_REC_LED}=0
+				gpioset -D $RED_LED_drive -m time -s 1 ${GPIO_RED_LED}=1
+				gpioset -D $RED_LED_drive -m time -s 1 ${GPIO_RED_LED}=0
 			done
 			) &
 			pid_led=$!
 		else
 			# turn off record LED
 			[ -z $pid_led ] || kill $pid_led
-			sleep 1.2 && gpioset -D $REC_LED_drive ${GPIO_REC_LED}=0 &
+			sleep 1.2 && gpioset -D $RED_LED_drive ${GPIO_RED_LED}=0 &
 			if [ "$video_player" == "pixelpilot" ]; then
 				kill -SIGUSR1 $pid_player
 			else
