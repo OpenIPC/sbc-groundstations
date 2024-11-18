@@ -17,10 +17,11 @@ cd ${pwmchip_path}/pwm${fan_PWM_channel}
 period=$((1000000000 / $fan_PWM_frequency))
 one_percent_period=$(($period / 100))
 echo $period > period
-echo $(($period / 2)) > duty_cycle
+echo $(($period / 5)) > duty_cycle
 echo 1 > enable
 # if direct connect pwm pin to fan, need set polarity to normal
 echo $fan_PWM_polarity > polarity
+sleep 10
 
 while true; do
 	temp_cpu=$(cat /sys/class/thermal/thermal_zone0/temp)
@@ -43,18 +44,16 @@ while true; do
 		echo "CATION: System is overheat! fan speed up to 100%!"
 		echo $period > ${pwmchip_path}/pwm${fan_PWM_channel}/duty_cycle
 		echo "System overheat!" > /run/pixelpilot.msg
-		# Turn on red record LED
-		gpioset -D $REC_LED_drive $(gpiofind PIN_${REC_GPIO_PIN})=1 && sleep $(($temperature_monitor_cycle - 1)) && gpioset -D $REC_LED_drive $(gpiofind PIN_${REC_GPIO_PIN})=0 &
 	elif [ $temp_max -gt $target_temp_max ]; then
-		if [ $duty_cycle_now -le $(($fan_PWM_MAX_duty_cycle * $one_percent_period)) ]; then
-			echo "$temp_max is greater than ${target_temp_max}, fan speed up 5%"
+		if [ $duty_cycle_now -lt $(($fan_PWM_MAX_duty_cycle * $one_percent_period)) ]; then
+			echo "$temp_max is greater than ${target_temp_max}, fan speed up ${fan_PWM_step_duty_cycle}%"
 			echo $(($duty_cycle_now + $fan_PWM_step_duty_cycle * $one_percent_period)) > ${pwmchip_path}/pwm${fan_PWM_channel}/duty_cycle
 		else
-			echo "$temp_max is greater than ${target_temp_max}, but max fan speed limited to ${$fan_PWM_MAX_duty_cycle}%"
+			echo "$temp_max is greater than ${target_temp_max}, but max fan speed limited to ${fan_PWM_MAX_duty_cycle}%"
 		fi
 	elif [ $temp_max -lt $target_temp_min ]; then
-		if [ $duty_cycle_now -ge $(($fan_PWM_MIN_duty_cycle * $one_percent_period)) ];then
-			echo "$temp_max is less than ${target_temp_min}, fan speed down 5%"
+		if [ $duty_cycle_now -gt $(($fan_PWM_MIN_duty_cycle * $one_percent_period)) ];then
+			echo "$temp_max is less than ${target_temp_min}, fan speed down ${fan_PWM_step_duty_cycle}%"
 			echo $(($duty_cycle_now - $fan_PWM_step_duty_cycle * $one_percent_period)) > ${pwmchip_path}/pwm${fan_PWM_channel}/duty_cycle
 		else
 			echo "$temp_max is less than ${target_temp_min}, but min fan speed limited to ${fan_PWM_MIN_duty_cycle}%"
