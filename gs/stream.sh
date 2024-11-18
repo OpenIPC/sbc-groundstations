@@ -18,9 +18,19 @@ function gencmd(){
 	if [ "$video_player" == "pixelpilot" ]; then
 		video_play_cmd="pixelpilot $screen_mode --codec $video_codec --dvr-framerate $REC_FPS --dvr-fmp4 --dvr-template ${REC_Dir}/record_%Y-%m-%d_%H-%M-%S.mp4"
 		[ "$osd_enable" == "no" ] || video_play_cmd="$video_play_cmd --osd --osd-elements '' --osd-config $osd_config_file --osd-custom-message"
+		[ "$record_on" == "arm" ] && video_play_cmd="$video_play_cmd --mavlink-dvr-on-arm"
+		video_rec_cmd="$video_play_cmd --dvr-start"
 	elif [ "$video_player" == "gstreamer" ]; then
+		# current_date=$(date +'%m-%d-%Y_%H-%M-%S')
+		# gencmd record_${current_date}.ts
+		rec_index=$(ls -1 $REC_Dir | grep -oP "^\d+(?=\.mkv)" | tail -n 1)
+		if [ -z $rec_index ]; then
+			rec_index="1000"
+		else
+			rec_index=$(($rec_index + 1))
+		fi
 		video_play_cmd="gst-launch-1.0 -e udpsrc port=5600 caps='application/x-rtp, media=(string)video, clock-rate=(int)90000, encoding-name=(string)H${video_codec:1:4}' ! rtp${video_codec}depay ! ${video_codec}parse ! mppvideodec ! kmssink"
-		video_rec_cmd="gst-launch-1.0 -e udpsrc port=5600 caps='application/x-rtp, media=(string)video, clock-rate=(int)90000, encoding-name=(string)H${video_codec:1:4}' ! rtp${video_codec}depay ! ${video_codec}parse ! tee name=t ! mppvideodec ! kmssink t. ! queue ! matroskamux ! filesink location=${1}"
+		video_rec_cmd="gst-launch-1.0 -e udpsrc port=5600 caps='application/x-rtp, media=(string)video, clock-rate=(int)90000, encoding-name=(string)H${video_codec:1:4}' ! rtp${video_codec}depay ! ${video_codec}parse ! tee name=t ! mppvideodec ! kmssink t. ! queue ! matroskamux ! filesink location=${rec_index}"
 	else
 		echo "wrong video player, only support pixelpilot and gstreamer"
 	fi
@@ -36,9 +46,15 @@ function check_record_freespace() {
 	fi
 }
 
-gencmd norecord
-bash -c "$video_play_cmd" &
-pid_player=$!
+gencmd
+if [[ "$record_on" == "boot" && "$(check_record_freespace)" == "sufficient" ]]; then
+	bash -c "$video_rec_cmd" &
+	pid_player=$!
+	video_record="1"
+else
+	bash -c "$video_play_cmd" &
+	pid_player=$!
+fi
 while gpiomon -r -s -n 1 -B pull-down ${GPIO_REC}; do
 	# do a 50ms simple software de-bounce
 	sleep 0.05
@@ -58,15 +74,7 @@ while gpiomon -r -s -n 1 -B pull-down ${GPIO_REC}; do
 			else
 				kill -15 $pid_player
 				sleep 0.2
-				# current_date=$(date +'%m-%d-%Y_%H-%M-%S')
-				# gencmd record_${current_date}.ts
-				rec_index=$(ls -1 $REC_Dir | grep -oP "^\d+(?=\.mkv)" | tail -n 1)
-				if [ -z $rec_index ]; then
-					rec_index="1000"
-				else
-					rec_index=$(($rec_index + 1))
-				fi
-				gencmd ${rec_index}.mkv
+				gencmd
 				bash -c "$video_rec_cmd" &
 				pid_player=$!
 			fi
@@ -90,7 +98,6 @@ while gpiomon -r -s -n 1 -B pull-down ${GPIO_REC}; do
 			else
 				kill -15 $pid_player
 				sleep 0.2
-				gencmd norecord
 				bash -c "$video_play_cmd" &
 				pid_player=$!
 			fi
