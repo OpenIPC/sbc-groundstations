@@ -7,12 +7,17 @@ source /config/gs.conf
 if [ -z "$1" ]; then
 	wfb_nics=$(echo /sys/class/net/wl* | sed -r -e "s^/sys/class/net/^^g" -e "s/wlan0\s{0,1}//" -e "s/wl\*//")
 	[ -n "$wfb_integrated_wnic" ] && wfb_nics="$wfb_integrated_wnic $wfb_nics"
-	[ -n "$wfb_nics" ] && iface_name=${wfb_nics##* } || exit 0
+	if [ -n "$wfb_nics" ]; then
+		iface_name=${wfb_nics##* }
+	else
+		echo "No USB WiFi Found!" > /run/pixelpilot.msg
+		exit 0
+	fi
 else
 	iface_name="$1"
 	echo "use specified WINC ${iface_name} for scanning"
 	if [ ! -d /sys/class/net/${iface_name} ]; then
-		echo "no WINC $iface_name found"
+		echo "no WINC $iface_name found" > /run/pixelpilot.msg
 		exit 1
 	fi
 fi
