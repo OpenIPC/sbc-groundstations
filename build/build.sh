@@ -157,8 +157,8 @@ cat > /etc/iptables/rules.v4 << EOF
 *nat
 -A PREROUTING -p tcp -m tcp --dport 2222 -j DNAT --to-destination 10.5.0.10:22
 -A PREROUTING -p tcp -m tcp --dport 8080 -j DNAT --to-destination 10.5.0.10:80
--A POSTROUTING -p tcp -m tcp --dport 22 -j SNAT --to-source 10.5.0.1
--A POSTROUTING -p tcp -m tcp --dport 80 -j SNAT --to-source 10.5.0.1
+-A POSTROUTING -p tcp -m tcp ! -s 10.5.0.0/24 -d 10.5.0.10 --dport 22 -j SNAT --to-source 10.5.0.1
+-A POSTROUTING -p tcp -m tcp ! -s 10.5.0.0/24 -d 10.5.0.10 --dport 80 -j SNAT --to-source 10.5.0.1
 COMMIT
 EOF
 
