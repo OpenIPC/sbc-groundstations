@@ -8,30 +8,24 @@ source /config/gs.conf
 need_u_boot_update=0
 need_reboot=0
 
-# system wide screen mode configuration
-if [[ ${system_wide_screen_mode} == "yes" ]]; then
-	if [ -z "${screen_mode}" ]; then
-		echo "waring: screen_mode is not setting in gs.conf"
-	elif ! grep -q "video=HDMI-A-1:" /etc/kernel/cmdline; then
-		echo "add screen mode to cmdline"
-		sed -i "1s/$/ video=HDMI-A-1:${screen_mode}/" /etc/kernel/cmdline
-		need_u_boot_update=1
-		need_reboot=1
-	elif ! grep -q "video=HDMI-A-1:${screen_mode}" /etc/kernel/cmdline; then
-		echo "update screen mode in cmdline"
-		sed -i 's/video=HDMI-A-1:[^ ]*/video=HDMI-A-1:${screen_mode}/' /etc/kernel/cmdline
-		need_u_boot_update=1
-		need_reboot=1
-	fi
-elif [[ ${system_wide_screen_mode} == "no" ]]; then
-	if grep -q "video=HDMI-A-1:" /etc/kernel/cmdline; then
-		echo "delete screen mode in cmdline"
-		sed -i 's/ video=HDMI-A-1:[^ ]*//' /etc/kernel/cmdline
-		need_u_boot_update=1
-		need_reboot=1
-	fi
-else
-	echo "error: system_wide_screen_mode must yes or no"
+# kernel cmdline configuration
+[ -f /etc/kernel/cmdline.bak ] || cp /etc/kernel/cmdline /etc/kernel/cmdline.bak
+kernel_cmdline_now=$(< /etc/kernel/cmdline)
+kernel_cmdline_base=$(< /etc/kernel/cmdline.bak)
+kernel_cmdline_config=$kernel_cmdline_base
+
+# append kernel cmdline
+[ -n "$append_kernel_cmdline" ] && kernel_cmdline_config="$kernel_cmdline_config $append_kernel_cmdline"
+
+# system wide screen mode
+if [ "$system_wide_screen_mode" == "yes" ]; then
+	[ -n "$screen_mode" ] && kernel_cmdline_config="$kernel_cmdline_config video=HDMI-A-1:${screen_mode}"
+fi
+
+if [ "$kernel_cmdline_config" != "$kernel_cmdline_now" ]; then
+	echo "$kernel_cmdline_config" > /etc/kernel/cmdline
+	need_u_boot_update=1
+	need_reboot=1
 fi
 
 # dtbo configuration
