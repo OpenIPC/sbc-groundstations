@@ -103,6 +103,8 @@ apt install firmware-atheros
 git clone -b master --depth=1 https://github.com/svpcom/wfb-ng.git
 pushd wfb-ng
 ./scripts/install_gs.sh wlanx
+echo "options rtl88x2cu rtw_tx_pwr_by_rate=0 rtw_tx_pwr_lmt_enable=0" >> /etc/modprobe.d/wfb.conf
+echo "options 8733bu rtw_tx_pwr_by_rate=0 rtw_tx_pwr_lmt_enable=0" >> /etc/modprobe.d/wfb.conf
 popd
 
 # PixelPilot_rk / fpvue
