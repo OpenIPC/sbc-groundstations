@@ -35,7 +35,18 @@ else
 fi
 
 # dtbo configuration
-if [[ "$enable_external_antenna" == "yes" && ! -f /boot/dtbo/radxa-zero3-external-antenna.dtbo && -d /sys/class/net/wlan0 ]]; then
+if [[ "$disable_integrated_wifi" == "yes" && -f /boot/dtbo/radxa-zero3-disabled-wireless.dtbo.disabled ]]; then
+	mv /boot/dtbo/radxa-zero3-disabled-wireless.dtbo.disabled /boot/dtbo/radxa-zero3-disabled-wireless.dtbo
+	need_u_boot_update=1
+	need_reboot=1
+elif [[ "$disable_integrated_wifi" == "no" && -f /boot/dtbo/radxa-zero3-disabled-wireless.dtbo ]]; then
+	mv /boot/dtbo/radxa-zero3-disabled-wireless.dtbo /boot/dtbo/radxa-zero3-disabled-wireless.dtbo.disabled
+	need_u_boot_update=1
+	need_reboot=1
+
+fi
+
+if [[ "$enable_external_antenna" == "yes" && -f /boot/dtbo/radxa-zero3-external-antenna.dtbo.disabled && -d /sys/class/net/wlan0 ]]; then
 	mv /boot/dtbo/radxa-zero3-external-antenna.dtbo.disabled /boot/dtbo/radxa-zero3-external-antenna.dtbo
 	need_u_boot_update=1
 	need_reboot=1
