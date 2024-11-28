@@ -8,7 +8,7 @@ wfb_nics=$(echo /sys/class/net/wl* | sed -r -e "s^/sys/class/net/^^g" -e "s/wlan
 [ -n "$wfb_integrated_wnic" ] && wfb_nics="$wfb_integrated_wnic $wfb_nics"
 [ -z "$wfb_nics" ] && exit 0
 
-monitor_wnic(){
+monitor_wnic() {
 	# Unmanage USB WiFi from NetworkManager
 	# [ -f /etc/network/interfaces.d/wfb-$1 ] || echo -e "allow-hotplug $1\niface $1 inet manual" > /etc/network/interfaces.d/wfb-$1
 	# if ! nmcli device show $1 | grep -q '(unmanaged)'; then
@@ -23,12 +23,27 @@ monitor_wnic(){
 	iw dev $1 set channel $wfb_channel HT$wfb_bandwidth
 }
 
+set_txpower() {
+	local driver_name=$(basename $(readlink /sys/class/net/${1}/device/driver))
+	case "$driver_name" in
+		"rtl88xxau_wfb")
+			iw dev $1 set txpower fixed -${2}
+			;;
+		"8812eu" | "rtl88x2cu" | "8733bu")
+			iw dev $1 set txpower fixed $2
+			;;
+		*)
+			echo "not set txpower for $1"
+			;;
+		esac
+}
+
 if [ "$wfb_mode" == "cluster" ]; then
 	[ -h "/run/systemd/units/invocation:gs.service" ] || exit 0
 	# stop local_node.service if exist
 	[ -h "/run/systemd/units/invocation:local_node.service" ] && systemctl stop local_node.service
 	# set all wnic to monitor
-	for wnic in $wfb_nics;do
+	for wnic in $wfb_nics; do
 		monitor_wnic $wnic
 	done
 	# run wfb local_node
@@ -67,4 +82,12 @@ elif [[ "$wfb_mode" == "aggregator" && -n $1 ]]; then
 	systemd-run /usr/bin/wfb_rx -f -p $wfb_stream_id_mavlink -c 127.0.0.1 -u 10001 -i $wfb_link_id $1
 else
 	exit 0
+fi
+
+# set tx power for each WNIC
+if [ -n "$wfb_txpower" ]; then
+	for wnic in $wfb_nics; do
+		# wait 20s for wnic up to monitor mode
+		sleep 20 && set_txpower $wnic $wfb_txpower &
+	done
 fi
