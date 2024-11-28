@@ -29,6 +29,16 @@ if [ "$kernel_cmdline_config" != "$kernel_cmdline_now" ]; then
 fi
 
 # dtbo configuration
+# set max resolution to 4k
+if [[ "$max_resolution_4k" == "yes" && -f /boot/dtbo/rk3566-hdmi-max-resolution-4k.dtbo.disabled ]]; then
+        mv /boot/dtbo/rk3566-hdmi-max-resolution-4k.dtbo.disabled /boot/dtbo/rk3566-hdmi-max-resolution-4k.dtbo
+        need_u_boot_update=1
+        need_reboot=1
+elif [[ "$max_resolution_4k" == "no" && -f /boot/dtbo/rk3566-hdmi-max-resolution-4k.dtbo ]]; then
+        mv /boot/dtbo/rk3566-hdmi-max-resolution-4k.dtbo /boot/dtbo//boot/dtbo/rk3566-hdmi-max-resolution-4k.dtbo.disabled
+        need_u_boot_update=1
+        need_reboot=1
+# disable integrated wifi of radxa zero 3W
 if [[ "$disable_integrated_wifi" == "yes" && -f /boot/dtbo/radxa-zero3-disabled-wireless.dtbo.disabled ]]; then
 	mv /boot/dtbo/radxa-zero3-disabled-wireless.dtbo.disabled /boot/dtbo/radxa-zero3-disabled-wireless.dtbo
 	need_u_boot_update=1
@@ -39,7 +49,7 @@ elif [[ "$disable_integrated_wifi" == "no" && -f /boot/dtbo/radxa-zero3-disabled
 	need_reboot=1
 
 fi
-
+# enable external antenna of radxa zero 3W
 if [[ "$enable_external_antenna" == "yes" && -f /boot/dtbo/radxa-zero3-external-antenna.dtbo.disabled && -d /sys/class/net/wlan0 ]]; then
 	mv /boot/dtbo/radxa-zero3-external-antenna.dtbo.disabled /boot/dtbo/radxa-zero3-external-antenna.dtbo
 	need_u_boot_update=1

@@ -41,8 +41,8 @@ if [ "${REC_Dir}" != "$(grep -oP '(?<=^/dev/mmcblk1p4\t).*?(?=\t)' /etc/fstab)" 
 fi
 
 # Enable dtbo
-# set max resolution to 4k
-dtc -I dts -O dtb -o /boot/dtbo/rk3566-hdmi-max-resolution-4k.dtbo /home/radxa/gs/rk3566-hdmi-max-resolution-4k.dts
+# set max resolution to 4k, disabled by default
+dtc -I dts -O dtb -o /boot/dtbo/rk3566-hdmi-max-resolution-4k.dtbo.disabled /home/radxa/gs/rk3566-hdmi-max-resolution-4k.dts
 # enbale USB OTG role switch
 dtc -I dts -O dtb -o /boot/dtbo/rk3566-dwc3-otg-role-switch.dtbo /home/radxa/gs/rk3566-dwc3-otg-role-switch.dts
 dtbo_enable_array=($dtbo_enable_list)
