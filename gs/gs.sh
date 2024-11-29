@@ -28,7 +28,7 @@ if [ "$kernel_cmdline_config" != "$kernel_cmdline_now" ]; then
 	need_reboot=1
 fi
 
-# dtbo configuration
+## dtbo configuration
 # set max resolution to 4k
 if [[ "$max_resolution_4k" == "yes" && -f /boot/dtbo/rk3566-hdmi-max-resolution-4k.dtbo.disabled ]]; then
         mv /boot/dtbo/rk3566-hdmi-max-resolution-4k.dtbo.disabled /boot/dtbo/rk3566-hdmi-max-resolution-4k.dtbo
@@ -59,16 +59,29 @@ elif [[ "$enable_external_antenna" == "no" && -f /boot/dtbo/radxa-zero3-external
 	need_u_boot_update=1
 	need_reboot=1
 fi
-
-dtbo_enable_array=($dtbo_enable_list)
-for dtbo in "${dtbo_enable_array[@]}"; do
-	if [ -f /boot/dtbo/rk3568-${dtbo}.dtbo.disabled ]; then
-		echo "enable ${dtbo}"
-		mv /boot/dtbo/rk3568-${dtbo}.dtbo.disabled /boot/dtbo/rk3568-${dtbo}.dtbo
-		need_u_boot_update=1
-		need_reboot=1
-	fi
-done
+# check if need enable or disable dtbo
+dtbo_enable_array=$(echo $dtbo_enable_list | tr -s ' ' | tr ' ' '\n' | sort)
+dtbo_enabled_array=$(ls /boot/dtbo/rk3568-*.dtbo 2>/dev/null | sed -e "s^/boot/dtbo/rk3568-^^g" -e "s/.dtbo//g" | sort)
+dtbo_need_enable=$(comm -23 <(echo "$dtbo_enable_array") <(echo "$dtbo_enabled_array"))
+dtbo_need_disable=$(comm -13 <(echo "$dtbo_enable_array") <(echo "$dtbo_enabled_array"))
+# enable dtbo
+if [ -n "$dtbo_need_enable"]; then
+	for dtboe in "$dtbo_need_enable"; do
+		if [ -f /boot/dtbo/rk3568-${dtboe}.dtbo.disabled ]; then
+			mv /boot/dtbo/rk3568-${dtboe}.dtbo.disabled /boot/dtbo/rk3568-${dtboe}.dtbo
+			need_u_boot_update=1
+			need_reboot=1
+		fi
+	done
+fi
+# disable dtbo
+if [ -n "$dtbo_need_disable"]; then
+	for dtbod in "$dtbo_need_disable"; do
+		mv /boot/dtbo/rk3568-${dtbod}.dtbo /boot/dtbo/rk3568-${dtbod}.dtbo.disabled
+	done
+	need_u_boot_update=1
+	need_reboot=1
+fi
 
 # Update REC_Dir in fstab
 [ -d $REC_Dir ] || mkdir -p $REC_Dir
