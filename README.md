@@ -92,6 +92,7 @@ GS Directory Tree
         │   ├── channel-scan.sh
         │   ├── fan.sh
         │   ├── gs-init.sh
+        │   ├── gs-applyconf.sh
         │   ├── gs.sh
         │   ├── rk3566-dwc3-otg-role-switch.dts
         │   ├── rk3566-hdmi-max-resolution-4k.dts
@@ -156,13 +157,10 @@ Configuration [ gs.conf for details ]
 
 TODO
 ----
-* Check remaining space before recording
 * Automatically select the video storage location according to the priority of external storage > TF card > emmc
-* [wfb-ng](https://github.com/svpcom/wfb-ng) cluster mode support
 * [Adaptive-Link](https://github.com/sickgreg/OpenIPC-Adaptive-Link) support
 * [improver](https://github.com/OpenIPC/improver) support
 * Change the built-in LED to a normal GPIO LED
-* USB WiFi tx power Configuration
 * Screenshots
 * Record video playback
 * Unify variable names

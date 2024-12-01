@@ -45,11 +45,6 @@ fi
 dtc -I dts -O dtb -o /boot/dtbo/rk3566-hdmi-max-resolution-4k.dtbo.disabled /home/radxa/gs/rk3566-hdmi-max-resolution-4k.dts
 # enbale USB OTG role switch
 dtc -I dts -O dtb -o /boot/dtbo/rk3566-dwc3-otg-role-switch.dtbo /home/radxa/gs/rk3566-dwc3-otg-role-switch.dts
-dtbo_enable_array=($dtbo_enable_list)
-for dtbo in "${dtbo_enable_array[@]}"; do
-	mv /boot/dtbo/rk3568-${dtbo}.dtbo.disabled /boot/dtbo/rk3568-${dtbo}.dtbo
-done
-u-boot-update
 
 # Add br0 network configuration
 [ -f /etc/systemd/network/br0.netdev ] || cat > /etc/systemd/network/br0.netdev << EOF
@@ -170,6 +165,9 @@ USBAUTO="true"
 EOF
 
 systemctl disable gs-init.service
+
+# check and apply configuration in gs.conf
+source /home/radxa/gs/gs-applyconf.sh
 
 while [ -f /config/before.txt ]; do sleep 2; done
 sync
