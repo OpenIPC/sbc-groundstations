@@ -47,6 +47,14 @@ function check_record_freespace() {
 }
 
 gencmd
+# wait monitor connected
+while true; do
+	monitor_status=$(cat /sys/class/drm/card0-HDMI-A-1/status)
+	[ "$monitor_status" == "connected" ] && break
+	sleep 1
+done
+# show wallpaper
+fbi -d /dev/fb0 -a -fitwidth -T 1 --noverbose /home/radxa/gs/wallpaper.png &
 if [[ "$record_on" == "boot" && "$(check_record_freespace)" == "sufficient" ]]; then
 	bash -c "$video_rec_cmd" &
 	pid_player=$!
