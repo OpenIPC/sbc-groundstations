@@ -113,7 +113,7 @@ while gpiomon -r -s -n 1 -B pull-down ${GPIO_REC}; do
 			video_record='0'
 		fi
 		sleep 3
-	elif [ $button_pressed_time -ge 200 ]; then
+	elif [[ $button_pressed_time -ge 200 && "$BTN_Q1_long_press" == "cleanup_record" ]]; then
 		# first long press cleanup record until have enough space
 		# secord long press in 60s remove all record files
 		record_file_list=$(find $REC_Dir -maxdepth 1 -type f \( -name '*.mp4' -o -name '*.mkv' \))
