@@ -29,7 +29,7 @@ if [ -n "$losetupList" ]; then
 fi
 
 apt update
-apt install -y qemu-user-static gdisk
+apt install -y qemu-user-static gdisk dosfstools
 
 IMAGE=$(ls | grep $(basename "$IMAGE_URL" ${IMAGE_URL: -3}) | grep .img$ ) || true # Search basename.img
 if [ -f "$IMAGE" ]; then
@@ -109,6 +109,15 @@ mount -t sysfs /sys $ROOTFS/sys
 mount -o bind /dev $ROOTFS/dev
 mount -o bind /run $ROOTFS/run
 mount -t devpts devpts $ROOTFS/dev/pts
+
+# reformat config partition to fat16 for macos compatible
+[ -d config_tmp ] || mkdir config_tmp
+cp -a $ROOTFS/config/* config_tmp/
+umount $ROOTFS/config
+mkfs.fat -F 16 -n config -i 78067914 ${LOOPDEV}p1
+mount ${LOOPDEV}p1 $ROOTFS/config
+mv config_tmp/* $ROOTFS/config/
+rmdir config_tmp
 
 # copy gs code to target rootfs
 mkdir -p $ROOTFS/home/radxa/SourceCode/SBC-GS
