@@ -53,8 +53,6 @@ while true; do
 	[ "$monitor_status" == "connected" ] && break
 	sleep 1
 done
-# show wallpaper
-fbi -d /dev/fb0 -a -fitwidth -T 1 --noverbose /home/radxa/gs/wallpaper.png &
 if [[ "$record_on" == "boot" && "$(check_record_freespace)" == "sufficient" ]]; then
 	bash -c "$video_rec_cmd" &
 	pid_player=$!
@@ -63,6 +61,8 @@ else
 	bash -c "$video_play_cmd" &
 	pid_player=$!
 fi
+# show wallpaper
+( sleep 10 && fbi -d /dev/fb0 -a -fitwidth -T 1 --noverbose /home/radxa/gs/wallpaper.png ) &
 while gpiomon -r -s -n 1 -B pull-down ${GPIO_REC}; do
 	# do a 50ms simple software de-bounce
 	sleep 0.05
@@ -88,7 +88,6 @@ while gpiomon -r -s -n 1 -B pull-down ${GPIO_REC}; do
 			fi
 			echo "record start!" > /run/pixelpilot.msg
 			video_record='1'
-			# Todo: How to deal with led when system is overheat
 			(
 			while true; do
 				# Blink red record LED
