@@ -63,80 +63,46 @@ else
 fi
 # show wallpaper
 ( sleep 10 && fbi -d /dev/fb0 -a -fitwidth -T 1 --noverbose /home/radxa/gs/wallpaper.png ) &
-while gpiomon -r -s -n 1 -B pull-down ${GPIO_REC}; do
-	# do a 50ms simple software de-bounce
-	sleep 0.05
-	[ "$(gpioget $GPIO_REC)" == "1" ] || continue
-	button_press_uptime=$(cut -d ' ' -f 1 /proc/uptime | tr -d .)
-	gpiomon -f -s -n 1 -B pull-down ${GPIO_REC}
-	button_release_uptime=$(cut -d ' ' -f 1 /proc/uptime | tr -d .)
-	button_pressed_time=$((${button_release_uptime} - ${button_press_uptime}))
-	if [ $button_pressed_time -lt 200 ]; then
-		if [ "$video_record" == "0" ]; then
-			if [ "$(check_record_freespace)" == "insufficient" ]; then
-				echo "No enough record space!" > /run/pixelpilot.msg
-				continue
-			fi
-			if [ "$video_player" == "pixelpilot" ]; then
-				kill -SIGUSR1 $pid_player
-			else
-				kill -15 $pid_player
-				sleep 0.2
-				gencmd
-				bash -c "$video_rec_cmd" &
-				pid_player=$!
-			fi
-			echo "record start!" > /run/pixelpilot.msg
-			video_record='1'
-			(
-			while true; do
-				# Blink red record LED
-				gpioset -D $RED_LED_drive -m time -s 1 ${GPIO_RED_LED}=1
-				gpioset -D $RED_LED_drive -m time -s 1 ${GPIO_RED_LED}=0
-			done
-			) &
-			pid_led=$!
-		else
-			# turn off record LED
-			[ -z $pid_led ] || kill $pid_led
-			sleep 1.2 && gpioset -D $RED_LED_drive ${GPIO_RED_LED}=0 &
-			if [ "$video_player" == "pixelpilot" ]; then
-				kill -SIGUSR1 $pid_player
-			else
-				kill -15 $pid_player
-				sleep 0.2
-				bash -c "$video_play_cmd" &
-				pid_player=$!
-			fi
-			echo "record stop!" > /run/pixelpilot.msg
-			video_record='0'
+while read record_button_action < /run/record_button.fifo; do
+	[ "$record_button_action" == "single" ] || continue
+	if [ "$video_record" == "0" ]; then
+		if [ "$(check_record_freespace)" == "insufficient" ]; then
+			echo "No enough record space!" > /run/pixelpilot.msg
+			continue
 		fi
-		sleep 3
-	elif [[ $button_pressed_time -ge 200 && "$BTN_Q1_long_press" == "cleanup_record" ]]; then
-		# first long press cleanup record until have enough space
-		# secord long press in 60s remove all record files
-		record_file_list=$(find $REC_Dir -maxdepth 1 -type f \( -name '*.mp4' -o -name '*.mkv' \))
-		if [ -n "$record_file_list" ];then
-			if [ ! -f ${REC_Dir}/cleanup_record ]; then
-				for record_file in $record_file_list; do
-					[ "$(check_record_freespace)" == "sufficient" ] && break
-					rm $record_file
-				done
-				echo "cleanup record done!" > /run/pixelpilot.msg
-				(
-				touch ${REC_Dir}/cleanup_record
-				sleep 60
-				[ -f ${REC_Dir}/cleanup_record ] && rm ${REC_Dir}/cleanup_record
-				) &
-			else
-				for record_file in $record_file_list; do
-					rm $record_file
-				done
-				[ -f ${REC_Dir}/cleanup_record ] && rm ${REC_Dir}/cleanup_record
-				echo "All record file deleted!" > /run/pixelpilot.msg
-			fi
+		if [ "$video_player" == "pixelpilot" ]; then
+			kill -SIGUSR1 $pid_player
 		else
-			echo "no record file found!" > /run/pixelpilot.msg
+			kill -15 $pid_player
+			sleep 0.2
+			gencmd
+			bash -c "$video_rec_cmd" &
+			pid_player=$!
 		fi
+		echo "record start!" > /run/pixelpilot.msg
+		video_record='1'
+		(
+		while true; do
+			# Blink red record LED
+			gpioset -D $RED_LED_drive -m time -s 1 ${GPIO_RED_LED}=1
+			gpioset -D $RED_LED_drive -m time -s 1 ${GPIO_RED_LED}=0
+		done
+		) &
+		pid_led=$!
+	else
+		# turn off record LED
+		[ -z $pid_led ] || kill $pid_led
+		sleep 1.2 && gpioset -D $RED_LED_drive ${GPIO_RED_LED}=0 &
+		if [ "$video_player" == "pixelpilot" ]; then
+			kill -SIGUSR1 $pid_player
+		else
+			kill -15 $pid_player
+			sleep 0.2
+			bash -c "$video_play_cmd" &
+			pid_player=$!
+		fi
+		echo "record stop!" > /run/pixelpilot.msg
+		video_record='0'
 	fi
+	sleep 3
 done

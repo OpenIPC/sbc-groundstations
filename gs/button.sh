@@ -64,6 +64,40 @@ function scan_wfb_channel() {
 	/home/radxa/gs/channel-scan.sh
 }
 
+# start or stop recording
+function toggle_record() {
+	echo "single" > /run/record_button.fifo
+}
+
+# cleanup record files
+function cleanup_record_files() {
+	# first long press cleanup record files until have enough space
+	# secord long press in 60s will remove all record files
+	record_file_list=$(find $REC_Dir -maxdepth 1 -type f \( -name '*.mp4' -o -name '*.mkv' \))
+	if [ -n "$record_file_list" ];then
+		if [ ! -f /tmp/cleanup_record ]; then
+			for record_file in $record_file_list; do
+				[ "$(check_record_freespace)" == "sufficient" ] && break
+				rm $record_file
+			done
+			echo "cleanup record done!" > /run/pixelpilot.msg
+			(
+			touch /tmp/cleanup_record
+			sleep 60
+			[ -f /tmp/cleanup_record ] && rm /tmp/cleanup_record
+			) &
+		else
+			for record_file in $record_file_list; do
+				rm $record_file
+			done
+			[ -f /tmp/cleanup_record ] && rm /tmp/cleanup_record
+			echo "All record file deleted!" > /run/pixelpilot.msg
+		fi
+	else
+		echo "no record file found!" > /run/pixelpilot.msg
+	fi
+}
+
 # Add more custom functions above
 
 function button_action() {
@@ -86,9 +120,9 @@ function button_action() {
 
 function execute_button_function() {
 	local gpio_pin="${1}_PIN"
+	[ -z "${!gpio_pin}" ] && exit 0
 	local single_press_function="${1}_single_press"
 	local long_press_function="${1}_long_press"
-	[ -z "${!gpio_pin}" ] && exit 0
 	[ -z "${!single_press_function}" ] && [ -z "${!long_press_function}" ] && exit 0
 	while true; do
 		local action=$(button_action ${!gpio_pin})
@@ -106,6 +140,7 @@ function execute_button_function() {
 	done
 }
 
+execute_button_function BTN_Q1 &
 execute_button_function BTN_Q2 &
 execute_button_function BTN_Q3 &
 execute_button_function BTN_CU &

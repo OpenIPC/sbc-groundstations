@@ -58,6 +58,9 @@ elif [ "$wfb_mode" == "aggregator" ]; then
 	fi
 fi
 
+# Passing record button state from button.sh to stream.sh
+[ -p /run/record_button.fifo ] || mkfifo /run/record_button.fifo
+
 # If video_on_boot=yes, video playback will be automatically started
 [ "$video_on_boot" == "yes" ] && ( echo "start stream service"; systemd-run --unit=stream /home/radxa/gs/stream.sh )
 

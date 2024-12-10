@@ -42,7 +42,6 @@ There are some built-in functions that can be bound to button behaviors.
         - single press: start/stop record.
         - long press: cleanup record files in order of file names until remaining space(MB) of record partition is large than `rec_dir_freespace_min` settings.
         - second long press: delete all record files(in 60 seconds after first long press).
-        - __CAUTION:__ Quick button 1 is used for record and cannot be customized.
     + Q2
         - single press: scan_wfb_channel
         - long press: change_otg_mode
