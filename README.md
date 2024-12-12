@@ -16,10 +16,10 @@ Main Features
 * __Auto extend root partition and rootfs.__ The root partition and rootfs will automatically `expand to the size specified in gs.conf->rootfs_reserved_space` on initial startup.
 * __exfat partition for video recordings.__ Automatically create an `exfat partition` using all remaining space during initial startup. The partition will be `mounted to /home/radxa/Videos` for storing video recordings, can get the record files through smb or insert the TF card into the computer.
 * __Sequentially increasing video file names.__ SBC has incorrect time without Internet, The gstreamer record video files name sequentially starting from 1000.mkv, Finally video files will be like this: `1000.mkv, 1001.mkv, etc.` PixelPilot record file name use template since this [commit](https://github.com/OpenIPC/PixelPilot_rk/commit/eab6c59e203c22c468a4ce99ff8461ec00d56fc3), Finally video files will be like record_%Y-%m-%d_%H-%M-%S.mp4.
-* __send stream over USB tethering and Ethernet__ Video and telemetry stream can send to other device over USB tethering or Ethernet, witch can be played with Android QGroundControl,PixelPilot etc. Notice: share stream using multicast by default, not working with windows QGroundControl.
-* __Forward SBC port to IPC over wfb tun__ Forward SBC port 2222/8080 to IPC port 22/80 over wfb tun.
-* __WFB channel scan__
-* __Version in /etc/gs-release__
+* __send stream over USB tethering and Ethernet.__ Video and telemetry stream can send to other device over USB tethering or Ethernet, witch can be played with Android QGroundControl,PixelPilot etc. Notice: share stream using multicast by default, not working with windows QGroundControl.
+* __Forward SBC port to IPC over wfb tun.__ Forward SBC port 2222/8080 to IPC port 22/80 over wfb tun.
+* __WFB channel scan.__
+* __Version in /etc/gs-release.__
 * __Auto build with github action.__
 
 
@@ -27,21 +27,27 @@ Configuration [ gs.conf for details ]
 -------------------------------------
 
 ### 1. Button Configuration
-There are some built-in functions that can be bound to button behaviors.
+There are some built-in functions that can bind to button behaviors.
 * Buttons
-    + Q1, Q2, Q3, CU, CD, CL, CR. PIN configured in the GPIO section.
+    + Q1, Q2, Q3, CU, CD, CL, CR. (PIN configured in the GPIO section.)
 * Button behaviors
     + single press
-    + long press(Pressing for more than 2 seconds)
+    + long press (Pressing for more than 2 seconds)
 * Button functions
-    + change_wifi_mode: change wifi mode between station and hotspot.(Radxa zero 3W)
-    + change_otg_mode: change usb otg port between host and device.
-    + scan_wfb_channel: search wifi channel used by drone.
+    + __change_wifi_mode:__ change wifi mode between station and hotspot.(Radxa zero 3W)
+    + __change_otg_mode:__ change usb otg port between host and device.
+    + __scan_wfb_channel:__ search wifi channel used by drone.
+    + __toggle_record:__ start or stop record.
+    + __cleanup_record_files:__ cleanup record files in order of file names until remaining space(MB) of record partition is large than `rec_dir_freespace_min` settings.  
+      **CAUTION:** Second long press in 60 seconds after first long press will delete all record files.
+    + __apply_conf:__ check and apply configuration in gs.conf.
+    + __shutdown_gs:__ shutdown ground station.
+    + __reboot_gs:__ reboot ground station.
 * Default button behavior function
     + Q1
-        - single press: start/stop record.
-        - long press: cleanup record files in order of file names until remaining space(MB) of record partition is large than `rec_dir_freespace_min` settings.
-        - second long press: delete all record files(in 60 seconds after first long press).
+        - single press: toggle_record
+        - long press: cleanup_record_files
+        - second long press: delete all record files(second long press in 60 seconds after first long press).
     + Q2
         - single press: scan_wfb_channel
         - long press: change_otg_mode

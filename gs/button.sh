@@ -98,6 +98,26 @@ function cleanup_record_files() {
 	fi
 }
 
+# check and apply configuration in gs.conf
+function apply_conf() {
+	(
+	source /config/gs.conf
+	source /home/radxa/gs/gs-applyconf.sh
+	) &
+}
+
+# shutdown Ground Station
+function shutdown_gs() {
+	echo "Ground Station going to shutdown in 2 seconds!" > /run/pixelpilot.msg
+	( sleep 2 && poweroff) &
+}
+
+# reboot Ground Station
+function reboot_gs() {
+	echo "Ground Station going to reboot in 2 seconds!" > /run/pixelpilot.msg
+	( sleep 2 && reboot) &
+}
+
 # Add more custom functions above
 
 # Pass function name to script to execute the function
