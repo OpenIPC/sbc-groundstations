@@ -100,6 +100,14 @@ function cleanup_record_files() {
 
 # Add more custom functions above
 
+# Pass function name to script to execute the function
+if [ -n "$1" ] && declare -f $1 > /dev/null; then
+	$1
+	exit 0
+else
+	echo "function $1 not found"
+fi
+
 function button_action() {
 	local gpio_info=$(gpiofind PIN_${1})
 	while gpiomon -r -s -n 1 -B pull-down ${gpio_info}; do
