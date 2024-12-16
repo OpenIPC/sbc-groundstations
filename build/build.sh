@@ -32,8 +32,8 @@ apt install -y git cmake dkms build-essential
 dpkg -l | grep -q "linux-image-5.10.160-26-rk356x" && apt purge -y linux-image-5.10.160-26-rk356x linux-headers-5.10.160-26-rk356x
 
 ## 
-[ -d /home/radxa/SourceCode ] || mkdir -p /home/radxa/SourceCode
-cd /home/radxa/SourceCode
+[ -d /root/SourceCode ] || mkdir -p /root/SourceCode
+cd /root/SourceCode
 
 # 8812au
 git clone -b v5.2.20 --depth=1 https://github.com/svpcom/rtl8812au.git
@@ -166,8 +166,8 @@ cat > /etc/iptables/rules.v4 << EOF
 COMMIT
 EOF
 
-rm -rf /home/radxa/SourceCode
+rm -rf /root/SourceCode
 rm /etc/resolv.conf
-chown -R 1000:1000 /home/radxa
+chown -R 1000:1000 /home/*
 
 exit 0

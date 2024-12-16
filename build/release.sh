@@ -120,8 +120,8 @@ mv config_tmp/* $ROOTFS/config/
 rmdir config_tmp
 
 # copy gs code to target rootfs
-mkdir -p $ROOTFS/home/radxa/SourceCode/SBC-GS
-cp -r ../gs ../pics $ROOTFS/home/radxa/SourceCode/SBC-GS
+mkdir -p $ROOTFS/root/SourceCode/SBC-GS
+cp -r ../gs ../pics $ROOTFS/root/SourceCode/SBC-GS
 
 # run build script
 # chroot $ROOTFS /bin/bash
