@@ -1,0 +1,1 @@
+ACTION=="add", SUBSYSTEM=="input", KERNEL=="event*", ENV{ID_INPUT_KEYBOARD}=="1", RUN+="/usr/bin/systemd-run /home/radxa/gs/button-kbd.py $devnode"

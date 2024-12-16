@@ -11,18 +11,14 @@ if [ "$(id -u)" -ne 0 ]; then
   echo -e "This script must be run as root.\033[0m"
   exit 1
 fi
-
-[ -d ${install_dir}/udev-rules-bak ] || mkdir -p ${install_dir}/udev-rules-bak
-
+[ -d ${install_dir} ] || mkdir -p ${install_dir}
 [ "$(ls -A /etc/NetworkManager/system-connections/)" ] && rm /etc/NetworkManager/system-connections/*
 systemctl disable wifibroadcast.service wifibroadcast@gs.service
-chmod +x gs.sh wfb.sh stream.sh fan.sh button.sh gs-init.sh channel-scan.sh
-cp gs.sh wfb.sh stream.sh fan.sh button.sh gs-applyconf.sh gs-init.sh channel-scan.sh rk3566-dwc3-otg-role-switch.dts rk3566-hdmi-max-resolution-4k.dts ${install_dir}/
+chmod +x gs.sh wfb.sh stream.sh fan.sh button.sh button-kbd.py gs-init.sh channel-scan.sh
+cp gs.sh wfb.sh stream.sh fan.sh button.sh button-kbd.py gs-applyconf.sh gs-init.sh channel-scan.sh rk3566-dwc3-otg-role-switch.dts rk3566-hdmi-max-resolution-4k.dts ${install_dir}/
 cp gs.conf custom-sample.conf pixelpilot_osd.json pixelpilot_osd_simple.json /config/
 cp gs.service gs-init.service /etc/systemd/system/
-[ -f /etc/udev/rules.d/98-custom-wifi.rules ] && mv /etc/udev/rules.d/98-custom-wifi.rules ${install_dir}/udev-rules-bak/
-[ -f /etc/udev/rules.d/99-custom-wifi.rules ] && mv /etc/udev/rules.d/99-custom-wifi.rules ${install_dir}/udev-rules-bak/
-cp 99-wfb.rules 98-gadget.rules /etc/udev/rules.d/
+cp 99-wfb.rules 98-gadget.rules 99-kbd.rules /etc/udev/rules.d/
 cp ../pics/OpenIPC.png ${install_dir}/wallpaper.png
 systemctl enable gs-init.service
 systemctl enable gs.service

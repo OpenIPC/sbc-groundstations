@@ -4,6 +4,7 @@ Main Features
 * __Centralize configuration file in fat32 partition.__ Use a single configuration file to configure almost everything you need. The configuration file path is `/config/gs.conf` and linked to `/etc/gs.conf`. The partition mount to /config is fat32 format, configuration file can be accessed and edited directly on Windows PC. See configuration part for detial.
 * __Default wfb key file in fat32 partition.__ `/config/gs.key` and linked to `/etc/gs.key`.
 * __Button support.__ There are 8 buttons in plan, they are `up, down, left, right, middle and quick 1, 2, 3` buttons.
+* __Keyboard support.__ Map keyboard key UP, DOWN, LEFT, RIGHT, 1, 2, 3 to button up, down, left, right, quick 1, 2, 3.
 * __LED support.__ Currently support `video record LED (Red)` and `power LED (Green)`. The green and red LED turn on after the SBC is powered on. Red LED turn off after the system is startup completed. The red LED will blink when video record is turn on. The green LED will blink when OTG mode is switched to device.
 * __Multiple types of network support.__ Support `WiFi`, `Ethernet` and `USB Net`, See Network Configuration for details.
 * __Optional video player.__ Support pixelpilot, fpvue, gstreamer as Video player. Gstreamer not support OSD.
@@ -54,6 +55,15 @@ There are some built-in functions that can bind to button behaviors.
     + Q3
         - single press: null
         - long press: change_wifi_mode
+    + KEY_Q
+        - single press: null
+        - long press: Stop monitoring and use the keyboard as normal. Reseat the keyboard to using as buttons.
+    + KEY_S
+        - single press: null
+        - long press: shutdown_gs
+    + KEY_R
+        - single press: null
+        - long press: reboot_gs
 
 ### 2. GPIO Configuration
 Default buttons and LEDs PIN number.
@@ -185,15 +195,17 @@ GS Directory Tree
 │   └── udev
 │       └── rules.d
 │           ├── 98-gadget.rules
+│           ├── 99-kbd.rules
 │           └── 99-wfb.rules
 └── home
     └── radxa
         ├── gs
+        │   ├── button-kbd.py
         │   ├── button.sh
         │   ├── channel-scan.sh
         │   ├── fan.sh
-        │   ├── gs-init.sh
         │   ├── gs-applyconf.sh
+        │   ├── gs-init.sh
         │   ├── gs.sh
         │   ├── rk3566-dwc3-otg-role-switch.dts
         │   ├── rk3566-hdmi-max-resolution-4k.dts
