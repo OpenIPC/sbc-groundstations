@@ -62,7 +62,7 @@ else
 	pid_player=$!
 fi
 # show wallpaper
-( sleep 10 && fbi -d /dev/fb0 -a -fitwidth -T 1 --noverbose /home/radxa/gs/wallpaper.png ) &
+( sleep 10 && fbi -d /dev/fb0 -a -fitwidth -T 1 --noverbose /gs/wallpaper.png ) &
 while read record_button_action < /run/record_button.fifo; do
 	[ "$record_button_action" == "single" ] || continue
 	if [ "$video_record" == "0" ]; then

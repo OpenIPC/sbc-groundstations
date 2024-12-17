@@ -1,6 +1,6 @@
 #!/bin/bash
 
-install_dir='/home/radxa/gs'
+install_dir='/gs'
 script_dir=$(dirname $(readlink -f $0))
 cd $script_dir
 
@@ -17,6 +17,6 @@ echo "Remove files"
 rm /config/gs.conf
 rm /etc/NetworkManager/system-connections/*
 rm /etc/network/interfaces.d/wfb*
-rm -rf /home/radxa/gs
+rm -rf /gs
 
 echo "uninstall done, need reboot!"

@@ -3,7 +3,7 @@ Description=Single Board Computer Ground Station Main Service
 After=network.target gs-init.service
 
 [Service]
-ExecStart=/home/radxa/gs/gs.sh
+ExecStart=/gs/gs.sh
 Type=oneshot
 RemainAfterExit=true
 

@@ -197,21 +197,19 @@ GS Directory Tree
 │           ├── 98-gadget.rules
 │           ├── 99-kbd.rules
 │           └── 99-wfb.rules
-└── home
-    └── radxa
-        ├── gs
-        │   ├── button-kbd.py
-        │   ├── button.sh
-        │   ├── channel-scan.sh
-        │   ├── fan.sh
-        │   ├── gs-applyconf.sh
-        │   ├── gs-init.sh
-        │   ├── gs.sh
-        │   ├── rk3566-dwc3-otg-role-switch.dts
-        │   ├── rk3566-hdmi-max-resolution-4k.dts
-        │   ├── stream.sh
-        │   └── wfb.sh
-        └── Videos
+├── gs
+│   ├── button-kbd.py
+│   ├── button.sh
+│   ├── channel-scan.sh
+│   ├── fan.sh
+│   ├── gs-applyconf.sh
+│   ├── gs-init.sh
+│   ├── gs.sh
+│   ├── rk3566-dwc3-otg-role-switch.dts
+│   ├── rk3566-hdmi-max-resolution-4k.dts
+│   ├── stream.sh
+│   └── wfb.sh
+└── Videos
 
 ```
 

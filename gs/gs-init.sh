@@ -42,9 +42,9 @@ fi
 
 # Enable dtbo
 # set max resolution to 4k, disabled by default
-dtc -I dts -O dtb -o /boot/dtbo/rk3566-hdmi-max-resolution-4k.dtbo.disabled /home/radxa/gs/rk3566-hdmi-max-resolution-4k.dts
+dtc -I dts -O dtb -o /boot/dtbo/rk3566-hdmi-max-resolution-4k.dtbo.disabled /gs/rk3566-hdmi-max-resolution-4k.dts
 # enbale USB OTG role switch
-dtc -I dts -O dtb -o /boot/dtbo/rk3566-dwc3-otg-role-switch.dtbo /home/radxa/gs/rk3566-dwc3-otg-role-switch.dts
+dtc -I dts -O dtb -o /boot/dtbo/rk3566-dwc3-otg-role-switch.dtbo /gs/rk3566-dwc3-otg-role-switch.dts
 
 # Add br0 network configuration
 [ -f /etc/systemd/network/br0.netdev ] || cat > /etc/systemd/network/br0.netdev << EOF
@@ -103,8 +103,8 @@ auto radxa0
 allow-hotplug radxa0
 iface radxa0 inet static
         address $gadget_net_fixed_ip
-        # post-up mount -o remount,ro /home/radxa/Videos && link mass
-        # post-down remove mass && mount -o remount,rw /home/radxa/Videos
+        # post-up mount -o remount,ro /Videos && link mass
+        # post-down remove mass && mount -o remount,rw /Videos
         up /usr/sbin/dnsmasq --conf-file=/dev/null --no-hosts --bind-interfaces --except-interface=lo --clear-on-reload --strict-order --listen-address=${gadget_net_fixed_ip_addr} --dhcp-range=${gadget_net_fixed_ip_sub}.21,${gadget_net_fixed_ip_sub}.199,12h --dhcp-lease-max=5 --pid-file=/run/dnsmasq-radxa0.pid --dhcp-option=3 --dhcp-option=6
 EOF
 fi
@@ -112,7 +112,7 @@ fi
 # Add samba configuration
 grep -q "\[config\]" /etc/samba/smb.conf || cat >> /etc/samba/smb.conf << EOF
 [Videos]
-   path = /home/radxa/Videos
+   path = /Videos
    writable = yes
    browseable = yes
    create mode = 0777
@@ -167,7 +167,7 @@ EOF
 systemctl disable gs-init.service
 
 # check and apply configuration in gs.conf
-source /home/radxa/gs/gs-applyconf.sh
+source /gs/gs-applyconf.sh
 
 while [ -f /config/before.txt ]; do sleep 2; done
 sync

@@ -168,6 +168,6 @@ EOF
 
 rm -rf /root/SourceCode
 rm /etc/resolv.conf
-chown -R 1000:1000 /home/*
+chown -R 1000:1000 /gs
 
 exit 0

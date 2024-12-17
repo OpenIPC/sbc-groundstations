@@ -24,7 +24,7 @@ LONG_PRESS_THRESHOLD = 1.0
 # Record the timestamp of the key pressed
 key_press_time = {}
 # button script location
-button_script="/home/radxa/gs/button.sh"
+button_script="/gs/button.sh"
 # Buttons mapped to keys
 BTN_Q1 = ecodes.KEY_1
 BTN_Q2 = ecodes.KEY_2

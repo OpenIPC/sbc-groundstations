@@ -61,7 +61,7 @@ function change_otg_mode() {
 
 # scan wfb wifi channel
 function scan_wfb_channel() {
-	/home/radxa/gs/channel-scan.sh
+	/gs/channel-scan.sh
 }
 
 # start or stop recording
@@ -102,7 +102,7 @@ function cleanup_record_files() {
 function apply_conf() {
 	(
 	source /config/gs.conf
-	source /home/radxa/gs/gs-applyconf.sh
+	source /gs/gs-applyconf.sh
 	) &
 }
 

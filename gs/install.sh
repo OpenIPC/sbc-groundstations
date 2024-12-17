@@ -3,7 +3,7 @@
 set -ex
 echo -e "\033[31mStart install gs\033[0m"
 
-install_dir='/home/radxa/gs'
+install_dir='/gs'
 script_dir=$(dirname $(readlink -f $0))
 cd $script_dir
 

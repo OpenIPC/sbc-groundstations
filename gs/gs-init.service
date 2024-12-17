@@ -3,7 +3,7 @@ Description=OpenIPC GS init
 After=getty@tty1.service network.target
 
 [Service]
-ExecStart=/home/radxa/gs/gs-init.sh
+ExecStart=/gs/gs-init.sh
 Type=oneshot
 RemainAfterExit=true
 

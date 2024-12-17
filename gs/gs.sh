@@ -7,7 +7,7 @@ set -x
 source /config/gs.conf
 
 # check and apply configuration in gs.conf
-source /home/radxa/gs/gs-applyconf.sh
+source /gs/gs-applyconf.sh
 
 # RTC
 if [ "$use_external_rtc" == "yes" ]; then
@@ -33,7 +33,7 @@ if [ -d /sys/class/net/wlan0 ]; then
 fi
 
 # pwm fan service
-[ "$fan_service_enable" == "yes" ] && ( echo "start fan service"; systemd-run --unit=fan /home/radxa/gs/fan.sh )
+[ "$fan_service_enable" == "yes" ] && ( echo "start fan service"; systemd-run --unit=fan /gs/fan.sh )
 
 # add route to 224.0.0.1
 ip ro add 224.0.0.0/4 dev br0
@@ -44,17 +44,17 @@ if [ "$wfb_mode" == "standalone" ]; then
 	touch /tmp/wifibroadcast.cfg /tmp/wifibroadcast.default
 	mount --bind /tmp/wifibroadcast.cfg /etc/wifibroadcast.cfg
 	mount --bind /tmp/wifibroadcast.default /etc/default/wifibroadcast
-	/home/radxa/gs/wfb.sh &
+	/gs/wfb.sh &
 elif [ "$wfb_mode" == "cluster" ]; then
 	echo "start wfb in cluster mode"
 	systemctl start wfb-cluster-manager@gs.service &
-	/home/radxa/gs/wfb.sh &
+	/gs/wfb.sh &
 elif [ "$wfb_mode" == "aggregator" ]; then
 	echo "start wfb in aggregator mode"
 	wfb_rx -a 10000 -K $wfb_key -i $wfb_link_id -c $wfb_outgoing_ip -u $wfb_outgoing_port_video 2>&1 > /dev/null &
 	wfb_rx -a 10001 -K $wfb_key -i $wfb_link_id -c $wfb_outgoing_ip -u $wfb_outgoing_port_mavlink 2>&1 > /dev/null &
 	if [[ "$wfb_integrated_wnic" == "wlan0" && -d /sys/class/net/wlan0 ]]; then
-		/home/radxa/gs/wfb.sh wlan0 &
+		/gs/wfb.sh wlan0 &
 	fi
 fi
 
@@ -62,7 +62,7 @@ fi
 [ -p /run/record_button.fifo ] || mkfifo /run/record_button.fifo
 
 # If video_on_boot=yes, video playback will be automatically started
-[ "$video_on_boot" == "yes" ] && ( echo "start stream service"; systemd-run --unit=stream /home/radxa/gs/stream.sh )
+[ "$video_on_boot" == "yes" ] && ( echo "start stream service"; systemd-run --unit=stream /gs/stream.sh )
 
 # If otg mode is device, start adbd and ncm on boot
 if [ "$otg_mode" == "device" ]; then
@@ -72,7 +72,7 @@ fi
 
 # start button service
 echo "start button service"
-systemd-run --unit=button /home/radxa/gs/button.sh
+systemd-run --unit=button /gs/button.sh
 
 # system boot complete, turn red record LED off
 gpioset -D $RED_LED_drive $(gpiofind PIN_${RED_LED_PIN})=0
