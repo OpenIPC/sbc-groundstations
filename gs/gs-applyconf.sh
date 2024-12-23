@@ -83,8 +83,8 @@ fi
 
 ## Update REC_Dir in fstab
 [ -d $REC_Dir ] || mkdir -p $REC_Dir
-if [ "${REC_Dir}" != "$(grep -oP '(?<=^/dev/mmcblk1p4\t).*?(?=\t)' /etc/fstab)" ]; then
-	sed -i "s#^\(/dev/mmcblk1p4\t\)[^\t]*#\1${REC_Dir}#" /etc/fstab
+if ! grep -Pq "^/dev/[^\t]*\t${REC_Dir}\texfat\tdefaults\t0\t0" /etc/fstab; then
+	sed -i "s#^\(/dev/[^\t]*\t\)[^\t]*#\1${REC_Dir}#" /etc/fstab
 	need_reboot=1
 fi
 

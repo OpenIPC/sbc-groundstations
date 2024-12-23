@@ -36,7 +36,7 @@ EOF
         mkfs.exfat ${os_dev}p4
 fi
 # mount /dev/disk/by-partlabel/videos $REC_Dir
-if [ "${REC_Dir}" != "$(grep -oP '(?<=^/dev/mmcblk1p4\t).*?(?=\t)' /etc/fstab)" ]; then
+if ! grep -Pq "^/dev/[^\t]*\t${REC_Dir}\texfat\tdefaults\t0\t0" /etc/fstab; then
 	echo -e "${os_dev}p4\t${REC_Dir}\texfat\tdefaults\t0\t0" >> /etc/fstab
 fi
 
