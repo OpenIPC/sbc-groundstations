@@ -15,6 +15,7 @@ monitor_wnic() {
 	# 	nmcli device set $1 managed no
 	# 	sleep 1
 	# fi
+	[[ "$wfb_bandwidth" == "40" ]] && wfb_bandwidth="40+"
 
 	ip link set $1 down
 	iw dev $1 set monitor otherbss
@@ -72,6 +73,8 @@ peer = 'connect://${wfb_outgoing_ip}:${wfb_outgoing_port_mavlink}'
 [gs_video]
 peer = 'connect://${wfb_outgoing_ip}:${wfb_outgoing_port_video}'
 
+[base]
+bandwidth = ${wfb_bandwidth}
 EOF
 	# grep -q "WFB_NICS=\"${wfb_nics}\"" /etc/default/wifibroadcast || echo "WFB_NICS=\"${wfb_nics}\"" > /tmp/wifibroadcast.default
 	echo "WFB_NICS=\"${wfb_nics}\"" > /etc/default/wifibroadcast

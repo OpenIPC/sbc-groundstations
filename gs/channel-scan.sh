@@ -3,6 +3,7 @@
 set -e
 echo "start channel scan" > /run/pixelpilot.msg
 source /config/gs.conf
+[[ "$wfb_bandwidth" == "40" ]] && wfb_bandwidth="40+"
 
 if [ -z "$1" ]; then
 	wfb_nics=$(echo /sys/class/net/wl* | sed -r -e "s^/sys/class/net/^^g" -e "s/wlan0\s{0,1}//" -e "s/wl\*//")
