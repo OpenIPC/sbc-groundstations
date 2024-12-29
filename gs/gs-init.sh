@@ -151,7 +151,7 @@ nodes = {
           #'192.168.1.155' : { 'wlans': ['wlan0', 'wlan1']},     # rx/tx node
         }
 
-server_address = '${eth0_fixed_ip%/*}'
+server_address = '${br0_fixed_ip%/*}'
 
 EOF
 
