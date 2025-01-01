@@ -18,7 +18,7 @@ chmod +x gs.sh wfb.sh stream.sh fan.sh button.sh button-kbd.py gs-init.sh channe
 cp gs.sh wfb.sh stream.sh fan.sh button.sh button-kbd.py gs-applyconf.sh gs-init.sh channel-scan.sh rk3566-dwc3-otg-role-switch.dts rk3566-hdmi-max-resolution-4k.dts ${install_dir}/
 cp gs.conf custom-sample.conf pixelpilot_osd.json pixelpilot_osd_simple.json /config/
 cp gs.service gs-init.service /etc/systemd/system/
-cp 99-wfb.rules 98-gadget.rules 99-kbd.rules /etc/udev/rules.d/
+cp 99-wfb.rules 98-rename.rules 99-kbd.rules /etc/udev/rules.d/
 cp ../pics/OpenIPC.png ${install_dir}/wallpaper.png
 systemctl enable gs-init.service
 systemctl enable gs.service

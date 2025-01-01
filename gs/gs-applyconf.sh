@@ -48,11 +48,11 @@ elif [[ "$disable_integrated_wifi" == "no" && -f /boot/dtbo/radxa-zero3-disabled
 
 fi
 # enable external antenna of radxa zero 3W
-if [[ "$enable_external_antenna" == "yes" && -f /boot/dtbo/radxa-zero3-external-antenna.dtbo.disabled && -d /sys/class/net/wlan0 ]]; then
+if [[ "$enable_external_antenna" == "yes" && -f /boot/dtbo/radxa-zero3-external-antenna.dtbo.disabled && -d /sys/class/net/wifi0 ]]; then
 	mv /boot/dtbo/radxa-zero3-external-antenna.dtbo.disabled /boot/dtbo/radxa-zero3-external-antenna.dtbo
 	need_u_boot_update=1
 	need_reboot=1
-elif [[ "$enable_external_antenna" == "no" && -f /boot/dtbo/radxa-zero3-external-antenna.dtbo && -d /sys/class/net/wlan0 ]] ; then
+elif [[ "$enable_external_antenna" == "no" && -f /boot/dtbo/radxa-zero3-external-antenna.dtbo && -d /sys/class/net/wifi0 ]] ; then
 	mv /boot/dtbo/radxa-zero3-external-antenna.dtbo /boot/dtbo/radxa-zero3-external-antenna.dtbo.disabled
 	need_u_boot_update=1
 	need_reboot=1
@@ -112,42 +112,42 @@ if [[ -f /etc/systemd/network/br0.network && -n "$br0_fixed_ip" && -n "$br0_fixe
 fi
 echo "br0 configure done"
 
-# wlan0 configuration
+# wifi0 configuration
 if [ -z "$wfb_integrated_wnic" ]; then
-	# managed wlan0 by NetworkManager
-	[ -f /etc/network/interfaces.d/wfb-wlan0 ] && rm /etc/network/interfaces.d/wfb-wlan0
-	nmcli device | grep -q "^wlan0.*unmanaged.*" && nmcli device set wlan0 managed yes
+	# managed wifi0 by NetworkManager
+	[ -f /etc/network/interfaces.d/wfb-wifi0 ] && rm /etc/network/interfaces.d/wfb-wifi0
+	nmcli device | grep -q "^wifi0.*unmanaged.*" && nmcli device set wifi0 managed yes
 
-	# wlan0 station mode configuration
-	echo "start configure wlan0 station mode"
+	# wifi0 station mode configuration
+	echo "start configure wifi0 station mode"
 	# If no connection named radxa, create one to automatically connect to the unencrypted WiFi named OpenIPC.
-	[ -f /etc/NetworkManager/system-connections/wlan0.nmconnection ] || nmcli con add type wifi ifname wlan0 con-name wlan0 ssid OpenIPC
+	[ -f /etc/NetworkManager/system-connections/wifi0.nmconnection ] || nmcli con add type wifi ifname wifi0 con-name wifi0 ssid OpenIPC
 	# If the WiFi configuration in gs.conf is not empty and changes, modify the WiFi connection information according to the configuration file
-	if [[ -f /etc/NetworkManager/system-connections/wlan0.nmconnection && -n $WIFI_SSID && -n $WIFI_Encryption && -n $WIFI_Password ]]; then
-		WIFI_SSID_OS=$(nmcli -g 802-11-wireless.ssid connection show wlan0)
-		WIFI_Encryption_OS=$(nmcli -g 802-11-wireless-security.key-mgmt connection show wlan0)
-		WIFI_Password_OS=$(nmcli -s -g 802-11-wireless-security.psk connection show wlan0)
-		[[ "$WIFI_SSID_OS" == "$WIFI_SSID" && "$WIFI_Encryption_OS" == "$WIFI_Encryption" && "$WIFI_Password_OS" == "$WIFI_Password" ]] || nmcli con modify wlan0 ssid ${WIFI_SSID} wifi-sec.key-mgmt ${WIFI_Encryption} wifi-sec.psk ${WIFI_Password}
-		nmcli con down wlan0 && nmcli con up wlan0
+	if [[ -f /etc/NetworkManager/system-connections/wifi0.nmconnection && -n $WIFI_SSID && -n $WIFI_Encryption && -n $WIFI_Password ]]; then
+		WIFI_SSID_OS=$(nmcli -g 802-11-wireless.ssid connection show wifi0)
+		WIFI_Encryption_OS=$(nmcli -g 802-11-wireless-security.key-mgmt connection show wifi0)
+		WIFI_Password_OS=$(nmcli -s -g 802-11-wireless-security.psk connection show wifi0)
+		[[ "$WIFI_SSID_OS" == "$WIFI_SSID" && "$WIFI_Encryption_OS" == "$WIFI_Encryption" && "$WIFI_Password_OS" == "$WIFI_Password" ]] || nmcli con modify wifi0 ssid ${WIFI_SSID} wifi-sec.key-mgmt ${WIFI_Encryption} wifi-sec.psk ${WIFI_Password}
+		nmcli con down wifi0 && nmcli con up wifi0
 	fi
-	echo "wlan0 station mode configure done"
+	echo "wifi0 station mode configure done"
 
-	# wlan0 hotspot mode configuration
-	echo "start configure wlan0 hotspot mode"
+	# wifi0 hotspot mode configuration
+	echo "start configure wifi0 hotspot mode"
 	if [[ -f /etc/NetworkManager/system-connections/hotspot.nmconnection && -n $Hotspot_SSID && -n $Hotspot_Password && -n $Hotspot_ip ]];then
 		Hotspot_SSID_OS=$(nmcli -g 802-11-wireless.ssid connection show hotspot)
 		Hotspot_Password_OS=$(nmcli -s -g 802-11-wireless-security.psk connection show hotspot)
 		Hotspot_ip_OS=$(nmcli -g ipv4.addresses con show hotspot)
 		[[ "$Hotspot_SSID_OS" == "$Hotspot_SSID" && "$Hotspot_Password_OS" == "$Hotspot_Password" ]] || nmcli connection modify hotspot ssid $Hotspot_SSID wifi-sec.psk $Hotspot_Password
 		[[ "$Hotspot_ip_OS" == $Hotspot_ip ]] || nmcli connection modify hotspot ipv4.method shared ipv4.addresses $Hotspot_ip
-	elif [[ -d /sys/class/net/wlan0 && -n $Hotspot_SSID && -n $Hotspot_Password && -n $Hotspot_ip ]]; then
-		nmcli dev wifi hotspot con-name hotspot ifname wlan0 ssid $Hotspot_SSID password $Hotspot_Password
+	elif [[ -d /sys/class/net/wifi0 && -n $Hotspot_SSID && -n $Hotspot_Password && -n $Hotspot_ip ]]; then
+		nmcli dev wifi hotspot con-name hotspot ifname wifi0 ssid $Hotspot_SSID password $Hotspot_Password
 		nmcli connection modify hotspot ipv4.method shared ipv4.addresses $Hotspot_ip autoconnect no
 	else
-		echo "no wlan0 or hotspot setting is blank"
+		echo "no wifi0 or hotspot setting is blank"
 	fi
-	[[ -d /sys/class/net/wlan0 && "$WIFI_mode" == "hotspot" ]] && ( sleep 15; nmcli connection up hotspot ) &
-	echo "wlan0 hotspot mode configure done"
+	[[ -d /sys/class/net/wifi0 && "$WIFI_mode" == "hotspot" ]] && ( sleep 15; nmcli connection up hotspot ) &
+	echo "wifi0 hotspot mode configure done"
 fi
 
 # radxa0 dnsmasq configuration

@@ -6,7 +6,7 @@ source /config/gs.conf
 [[ "$wfb_bandwidth" == "40" ]] && wfb_bandwidth="40+"
 
 if [ -z "$1" ]; then
-	wfb_nics=$(echo /sys/class/net/wl* | sed -r -e "s^/sys/class/net/^^g" -e "s/wlan0\s{0,1}//" -e "s/wl\*//")
+	wfb_nics=$(echo /sys/class/net/wl* | sed -r -e "s^/sys/class/net/^^g" -e "s/wifi0\s{0,1}//" -e "s/wl\*//")
 	[ -n "$wfb_integrated_wnic" ] && wfb_nics="$wfb_integrated_wnic $wfb_nics"
 	if [ -n "$wfb_nics" ]; then
 		iface_name=${wfb_nics##* }

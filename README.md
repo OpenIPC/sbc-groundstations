@@ -82,7 +82,7 @@ Default buttons and LEDs PIN number.
     + BLUE_LED_PIN='12'
 
 ### 3. Network Configuration
-* __WiFi:__ `wlan0`
+* __WiFi:__ `wifi0`
     + `station mode:` Default connect to an open WiFi named `OpenIPC` if not configured.
     + `hotspot mode:` Default SSID is `SBC-GS` with password `12345678`, IP is `192.168.4.1/24`
 * __Bridge:__ `br0` Default `DHCP client` with static IP `192.168.1.20/24, 10.0.36.254/24`
@@ -141,7 +141,7 @@ Files and Services
     1. Configuration file `/config/gs.conf`
     2. wfb key file `/config/gs.key`
     3. script files `/home/radxa/gs/[button.sh, channel-scan.sh, fan.sh, gs-init.sh, gs.sh, stream.sh, wfb.sh]`
-    4. udev rule files `/etc/udev/rules.d/[98-gadget.rules, 99-wfb.rules]`
+    4. udev rules in `/etc/udev/rules.d`
 * __Services:__
     1. `gs`.service
     2. `stream`.service (temporary unit)
@@ -175,7 +175,7 @@ GS Directory Tree
 │   │   │   └── 00-gs-unmanaged.conf
 │   │   └── system-connections
 │   │       ├── hotspot.nmconnection
-│   │       └── wlan0.nmconnection
+│   │       └── wifi0.nmconnection
 │   ├── samba
 │   │   └── smb.conf
 │   ├── systemd
@@ -194,7 +194,7 @@ GS Directory Tree
 │   │           └── gs.service -> /etc/systemd/system/gs.service
 │   └── udev
 │       └── rules.d
-│           ├── 98-gadget.rules
+│           ├── 98-rename.rules
 │           ├── 99-kbd.rules
 │           └── 99-wfb.rules
 ├── gs

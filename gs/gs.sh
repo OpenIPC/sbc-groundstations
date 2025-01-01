@@ -24,11 +24,11 @@ fi
 [ "$use_gps" == "yes" ] && systemctl start chrony gpsd &
 
 # WiFi
-if [ -d /sys/class/net/wlan0 ]; then
+if [ -d /sys/class/net/wifi0 ]; then
 	if [ "$WIFI_mode" == "hotspot" ]; then
 	       ( sleep 15; nmcli connection up hotspot ) &
        elif [ "$WIFI_mode" == "station" ]; then
-	       ( sleep 5; nmcli connection up wlan0 ) &
+	       ( sleep 5; nmcli connection up wifi0 ) &
 	fi
 fi
 
@@ -53,8 +53,8 @@ elif [ "$wfb_mode" == "aggregator" ]; then
 	echo "start wfb in aggregator mode"
 	wfb_rx -a 10000 -K $wfb_key -i $wfb_link_id -c $wfb_outgoing_ip -u $wfb_outgoing_port_video 2>&1 > /dev/null &
 	wfb_rx -a 10001 -K $wfb_key -i $wfb_link_id -c $wfb_outgoing_ip -u $wfb_outgoing_port_mavlink 2>&1 > /dev/null &
-	if [[ "$wfb_integrated_wnic" == "wlan0" && -d /sys/class/net/wlan0 ]]; then
-		/gs/wfb.sh wlan0 &
+	if [[ "$wfb_integrated_wnic" == "wifi0" && -d /sys/class/net/wifi0 ]]; then
+		/gs/wfb.sh wifi0 &
 	fi
 fi
 

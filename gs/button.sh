@@ -5,20 +5,20 @@ source /config/gs.conf
 
 # change wifi mode between station and hotspot
 function change_wifi_mode() {
-	if [ ! -d /sys/class/net/wlan0 ]; then
-		echo "WARING: no wlan0 found, can't switch wifi mode."
+	if [ ! -d /sys/class/net/wifi0 ]; then
+		echo "WARING: no wifi0 found, can't switch wifi mode."
 		exit 0
-	elif [ "$wfb_integrated_wnic" == "wlan0" ]; then
-		echo "WARING: wlan0 used by wfb, can't switch wifi mode."
+	elif [ "$wfb_integrated_wnic" == "wifi0" ]; then
+		echo "WARING: wifi0 used by wfb, can't switch wifi mode."
 		exit 0
 	else
-		wlan0_connected_connection=$(nmcli device status | grep '^wlan0.*connected' | tr -s ' ' | cut -d ' ' -f 4)
-		case "$wlan0_connected_connection" in
+		wifi0_connected_connection=$(nmcli device status | grep '^wifi0.*connected' | tr -s ' ' | cut -d ' ' -f 4)
+		case "$wifi0_connected_connection" in
 			hotspot)
-				nmcli connection up wlan0
+				nmcli connection up wifi0
 				sleep 5
 				;;
-			wlan0)
+			wifi0)
 				nmcli connection up hotspot
 				sleep 5
 				;;
