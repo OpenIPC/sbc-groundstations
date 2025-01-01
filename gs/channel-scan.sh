@@ -47,7 +47,7 @@ iface_phy=$(basename $(readlink /sys/class/net/${iface_name}/phy80211))
 channel_available=$(iw phy $iface_phy info | grep -oP "\s*\*\s5.*\[\K\d+(?=\].*dBm)")
 [ $wfb_channel -gt 104 ] && channel_available=$(echo "$channel_available" | sort -nr)
 for channel in $channel_available; do
-	iw dev $iface_name set channel $channel HT${wfb_bandwidth}
+	iw dev $iface_name set channel $channel HT${wfb_bandwidth} > /dev/null 2>&1 || continue
 	iface_start_bytes=$(grep -oP "${iface_name}:\s+\d+\s+\K\d+" /proc/net/dev)
 	sleep 0.1
 	iface_stop_bytes=$(grep -oP "${iface_name}:\s+\d+\s+\K\d+" /proc/net/dev)
