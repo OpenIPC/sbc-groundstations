@@ -16,10 +16,12 @@ function change_wifi_mode() {
 		case "$wifi0_connected_connection" in
 			hotspot)
 				nmcli connection up wifi0
+				echo "change wifi mode to station!" > /run/pixelpilot.msg
 				sleep 5
 				;;
 			wifi0)
 				nmcli connection up hotspot
+				echo "change wifi mode to hotspot!" > /run/pixelpilot.msg
 				sleep 5
 				;;
 			*)  echo "connection is unknow"
@@ -35,6 +37,7 @@ function change_otg_mode() {
 	local otg_mode=$(cat $otg_mode_file)
 	if [ "$otg_mode" == "host" ]; then
 		echo device > $otg_mode_file
+		echo "change otg mode to device!" > /run/pixelpilot.msg
 		sleep 0.2
 		[ -d /sys/kernel/config/usb_gadget/fcc00000.dwc3/functions/ffs.adb ] || systemctl start radxa-adbd@fcc00000.dwc3.service
 		[ -f /sys/class/net/radxa0 ] || systemctl start radxa-ncm@fcc00000.dwc3.service
@@ -50,6 +53,7 @@ function change_otg_mode() {
 		local pid_led=$!
 	elif [ "$otg_mode" == "device" ]; then
 		echo host > $otg_mode_file
+		echo "change otg mode to host!" > /run/pixelpilot.msg
 		[ -z "$pid_led" ] || kill $pid_led
 		sleep 1.2
 		gpioset -D $otg_mode_LED_drive -m time -s 1 $otg_mode_LED_PIN_info=1
@@ -101,6 +105,7 @@ function cleanup_record_files() {
 # check and apply configuration in gs.conf
 function apply_conf() {
 	(
+	echo "apply gs.conf!" > /run/pixelpilot.msg
 	source /config/gs.conf
 	source /gs/gs-applyconf.sh
 	) &
