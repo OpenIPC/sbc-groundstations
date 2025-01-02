@@ -123,10 +123,35 @@ function reboot_gs() {
 	( sleep 2 && reboot) &
 }
 
+# mount extdisk first partition to REC_Dir
+function mount_extdisk() {
+	# mount in root mnt namespace. Udev mount will use systemd-udevd mnt namespace by default.
+	if nsenter --mount=/proc/1/ns/mnt mount ${arg_2}1 ${REC_Dir} > /dev/null 2>&1; then
+		partitioninfo=$(df -hT ${REC_Dir} | tail -n 1 | tr -s ' ')
+		echo "$partitioninfo" > /run/pixelpilot.msg
+	else
+		echo "mount extdisk failed, check fstype and file system" > /run/pixelpilot.msg
+	fi
+}
+
+# unmount extdisk video partition
+function ummount_extdisk() {
+	if findmnt "$REC_Dir" | grep -q "/dev/sd?"; then
+		if umount -lf "$REC_Dir" > /dev/null 2>&1; then
+			echo "umount $REC_Dir success" > /run/pixelpilot.msg
+		else
+			echo "umount $REC_Dir failed, check record status" > /run/pixelpilot.msg
+		fi
+	else
+		echo "extdisk already umounted" > /run/pixelpilot.msg
+	fi
+}
+
 # Add more custom functions above
 
 # Pass function name to script to execute the function
 if [ -n "$1" ] && declare -f $1 > /dev/null; then
+	[ -n "$2" ] && arg_2=$2
 	$1
 	exit 0
 else

@@ -20,6 +20,7 @@ Main Features
 * __send stream over USB tethering and Ethernet.__ Video and telemetry stream can send to other device over USB tethering or Ethernet, witch can be played with Android QGroundControl,PixelPilot etc. Notice: share stream using multicast by default, not working with windows QGroundControl.
 * __Forward SBC port to IPC over wfb tun.__ Forward SBC port 2222/8080 to IPC port 22/80 over wfb tun.
 * __WFB channel scan.__
+* __Record to external disk.__ Save record files to the first partition of the external disk when plug in, support vfat, exfat, ext4 formats. Recommended to umount or shutdown SBC before unplugging the disk. **WARING:** Do not unplugging the disk when recoding, may corrupt the file system.
 * __Version in /etc/gs-release.__
 * __Auto build with github action.__
 
@@ -44,6 +45,8 @@ There are some built-in functions that can bind to button behaviors.
     + __apply_conf:__ check and apply configuration in gs.conf.
     + __shutdown_gs:__ shutdown ground station.
     + __reboot_gs:__ reboot ground station.
+    + __mount_extdisk:__ mount external disk first partition to record directory. **CAUTION:** This function will auto execute by udev rules when external disk is plug in. Do not use for other purposes.
+    + __ummount_extdisk:__ umount external disk.
 * Default button behavior function
     + Q1
         - single press: toggle_record
@@ -244,7 +247,6 @@ Troubleshooting
 TODO
 ----
 
-* Automatically select the video storage location according to the priority of external storage > TF card > emmc
 * [Adaptive-Link](https://github.com/sickgreg/OpenIPC-Adaptive-Link) support
 * [improver](https://github.com/OpenIPC/improver) support
 * Change the built-in LED to a normal GPIO LED

@@ -11,3 +11,6 @@ SUBSYSTEM=="net", KERNEL=="wl*", ACTION=="remove", RUN+="/gs/wfb.sh"
 
 ## keyboard
 ACTION=="add", SUBSYSTEM=="input", KERNEL=="event*", ENV{ID_INPUT_KEYBOARD}=="1", RUN+="/usr/bin/systemd-run /gs/button-kbd.py $devnode"
+
+## External disk
+ACTION=="add", SUBSYSTEM=="block", KERNEL=="sd?", RUN+="/gs/button.sh mount_extdisk $devnode"
