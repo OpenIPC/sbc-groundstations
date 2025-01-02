@@ -10,13 +10,31 @@ cd $REC_Dir
 video_record="0"
 video_play_cmd=""
 video_rec_cmd=""
-[ -n "$screen_mode" ] && screen_mode="--screen-mode $screen_mode"
+case "$screen_mode" in
+	"max-fps")
+		screen_mode=$(pixelpilot --screen-mode-list | sort -t @ -k 2,2nr -k 1,1nr | head -n 1)
+		echo "use max-fps screen_mode: $screen_mode"
+		;;
+	"max-res")
+		screen_mode=$(pixelpilot --screen-mode-list | sort -t @ -k 1,1nr -k 2,2nr | head -n 1)
+		echo "use max-resolution screen_mode: $screen_mode"
+		;;
+	*"x"*"@"*)
+		echo "use screen_mode in gs.conf: $screen_mode"
+		;;
+	*)
+		echo "auto screen_mode"
+		screen_mode=""
+		;;
+esac
+[ -n "$screen_mode" ] && screen_mode_cmdline="--screen-mode $screen_mode"
+
 [ -n "$BTN_Q1_PIN" ] && GPIO_REC=$(gpiofind PIN_${BTN_Q1_PIN})
 GPIO_RED_LED=$(gpiofind PIN_${RED_LED_PIN})
 
 function gencmd(){
 	if [ "$video_player" == "pixelpilot" ]; then
-		video_play_cmd="pixelpilot $screen_mode --codec $video_codec --dvr-framerate $REC_FPS --dvr-fmp4 --dvr-template ${REC_Dir}/record_%Y-%m-%d_%H-%M-%S.mp4"
+		video_play_cmd="pixelpilot $screen_mode_cmdline --codec $video_codec --dvr-framerate $REC_FPS --dvr-fmp4 --dvr-template ${REC_Dir}/record_%Y-%m-%d_%H-%M-%S.mp4"
 		[ "$osd_enable" == "no" ] || video_play_cmd="$video_play_cmd --osd --osd-elements '' --osd-config $osd_config_file --osd-custom-message"
 		[ "$record_on" == "arm" ] && video_play_cmd="$video_play_cmd --mavlink-dvr-on-arm"
 		video_rec_cmd="$video_play_cmd --dvr-start"

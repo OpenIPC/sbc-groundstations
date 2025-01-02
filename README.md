@@ -96,7 +96,7 @@ Default buttons and LEDs PIN number.
 ### 4. Video Configuration
 * `video_on_boot`: used to control showing video or terminal console after startup. Default is `yes`. Set it to `no` will boot into the terminal and only recommended for development and debugging.
 * `osd_config_file`: pixelpilot's osd config file. Default is `/config/pixelpilot_osd.json`. Use `/config/pixelpilot_osd_simple.json` for less osd elements when using msposd.
-* `screen_mode`: used to set the screen resolution and refresh rate. e.g. `1920x1080@60`. Default is blank and will auto detect by pixelpilot or SBC. Recommended set it manually only when preferred screen mode is not the best.
+* `screen_mode`: used to set the screen resolution and refresh rate. Support <width>x<heigth>@<fps>(e.g. 1920x1080@60), max-fps, max-res and empty. Default is empty and will auto detect by pixelpilot or SBC. Recommended set it manually only when preferred screen mode is not the best.
 * __CAUTION:__ Resolution is limited to 1920x1080 by radxa, can changed by setting `max_resolution_4k` to `yes` in `System Configuration` section.
 
 ### 5. Record Configuration
