@@ -195,8 +195,7 @@ GS Directory Tree
 │   └── udev
 │       └── rules.d
 │           ├── 98-rename.rules
-│           ├── 99-kbd.rules
-│           └── 99-wfb.rules
+│           └── 99-GS.rules
 ├── gs
 │   ├── button-kbd.py
 │   ├── button.sh
