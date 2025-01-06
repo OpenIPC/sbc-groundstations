@@ -11,23 +11,32 @@ function change_wifi_mode() {
 	elif [ "$wfb_integrated_wnic" == "wifi0" ]; then
 		echo "WARING: wifi0 used by wfb, can't switch wifi mode."
 		exit 0
-	else
-		wifi0_connected_connection=$(nmcli device status | grep '^wifi0.*connected' | tr -s ' ' | cut -d ' ' -f 4)
-		case "$wifi0_connected_connection" in
-			hotspot)
-				nmcli connection up wifi0
-				echo "change wifi mode to station!" > /run/pixelpilot.msg
-				sleep 5
-				;;
-			wifi0)
-				nmcli connection up hotspot
-				echo "change wifi mode to hotspot!" > /run/pixelpilot.msg
-				sleep 5
-				;;
-			*)  echo "connection is unknow"
-				;;
-		esac
 	fi
+	wifi0_connected_connection=$(nmcli device status | grep '^wifi0.*connected' | tr -s ' ' | cut -d ' ' -f 4)
+	case "$wifi0_connected_connection" in
+		"hotspot")
+			echo "Prepare connect to ${WIFI_SSID}!" > /run/pixelpilot.msg
+			if nmcli connection up wifi0 > /dev/null 2>&1; then
+				echo "WiFi connected to ${WIFI_SSID}!" > /run/pixelpilot.msg
+			else
+				nmcli connection up hotspot
+				echo "Failed connect to ${WIFI_SSID}, fallback to hotspot mode!" > /run/pixelpilot.msg
+			fi
+			sleep 3
+			;;
+		"wifi0"|"--")
+			echo "Prepare change to hotspot mode!" > /run/pixelpilot.msg
+			if nmcli connection up hotspot > /dev/null 2>&1; then
+				echo "WiFi changed to hotspot mode!" > /run/pixelpilot.msg
+			else
+				echo "Failed change to hotspot mode!" > /run/pixelpilot.msg
+			fi
+			sleep 3
+			;;
+		*)
+			echo "connection is unknow"
+			;;
+	esac
 }
 
 # change usb otg mode between host and device
