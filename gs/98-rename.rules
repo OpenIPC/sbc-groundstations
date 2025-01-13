@@ -1,9 +1,11 @@
 # force name radxa zero 3w onboard wifi to wifi0
-SUBSYSTEM=="net", KERNEL=="wl*", ACTION=="add", ENV{ID_NET_DRIVER}=="aicwf_sdio", NAME="wifi0"
+ACTION=="add", SUBSYSTEM=="net", KERNEL=="wl*", ENV{ID_NET_DRIVER}=="aicwf_sdio", NAME="wifi0"
 # SUBSYSTEM=="net", KERNEL=="wl*", ACTION=="add", DRIVERS=="aicwf_sdio", NAME="wifi0"
 # rename gadget usb net to radxa0
-SUBSYSTEM=="net", KERNELS=="gadget", NAME="radxa0"
+ACTION=="add", SUBSYSTEM=="net", KERNELS=="gadget", NAME="radxa0"
 # rename usb tethering ncm nic to usb0
 ACTION=="add", SUBSYSTEM=="net", ENV{ID_USB_DRIVER}=="cdc_ncm", NAME="usb0"
 # usb tethering rndis nic default name is usb0
 # ACTION=="add", SUBSYSTEM=="net", ENV{ID_USB_DRIVER}=="rndis_host", NAME="usb0"
+# rename usb wired nic to eth1
+ACTION=="add", SUBSYSTEM=="net", KERNEL=="eth*", ENV{ID_BUS}=="usb", NAME="eth1"

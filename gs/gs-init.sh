@@ -71,6 +71,14 @@ Name=eth0
 Bridge=br0
 EOF
 
+[ -f /etc/systemd/network/eth1.network ] || cat > /etc/systemd/network/eth1.network << EOF
+[Match]
+Name=eth1
+
+[Network]
+Bridge=br0
+EOF
+
 [ -f /etc/systemd/network/usb0.network ] || cat > /etc/systemd/network/usb0.network << EOF
 [Match]
 Name=usb0

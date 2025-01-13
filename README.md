@@ -85,11 +85,12 @@ Default buttons and LEDs PIN number.
     + BLUE_LED_PIN='12'
 
 ### 3. Network Configuration
-* __WiFi:__ `wifi0`
+* __Onboard WiFi:__ `wifi0`
     + `station mode:` Default connect to an open WiFi named `OpenIPC` if not configured.
     + `hotspot mode:` Default SSID is `SBC-GS` with password `12345678`, IP is `192.168.4.1/24`
 * __Bridge:__ `br0` Default `DHCP client` with static IP `192.168.1.20/24, 10.0.36.254/24`
-* __Ethernet:__ `eth0` Default slave of br0.
+* __Onboard Ethernet:__ `eth0` Default slave of br0.
+* __USB Ethernet:__ `eth1` Default slave of br0.
 * __USB tethering:__ `usb0` Default slave of br0.
 * __USB gadget ncm:__ `radxa0` Default `DHCP server` with static IP `192.168.2.20/24`
 
@@ -188,6 +189,7 @@ GS Directory Tree
 │   │   │   ├── dummy0.netdev
 │   │   │   ├── dummy0.network
 │   │   │   ├── eth0.network
+│   │   │   ├── eth1.network
 │   │   │   └── usb0.network
 │   │   └── system
 │   │       ├── gs-init.service
