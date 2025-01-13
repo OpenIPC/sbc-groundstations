@@ -40,6 +40,7 @@ There are some built-in functions that can bind to button behaviors.
     + __change_otg_mode:__ change usb otg port between host and device.
     + __scan_wfb_channel:__ search wifi channel used by drone.
     + __toggle_record:__ start or stop record.
+    + __toggle_stream:__ start or stop stream service.
     + __cleanup_record_files:__ cleanup record files in order of file names until remaining space(MB) of record partition is large than `rec_dir_freespace_min` settings.  
       **CAUTION:** Second long press in 60 seconds after first long press will delete all record files.
     + __apply_conf:__ check and apply configuration in gs.conf.

@@ -82,6 +82,17 @@ function toggle_record() {
 	echo "single" > /run/record_button.fifo
 }
 
+# start or stop stream
+function toggle_stream() {
+	if [ -h "/run/systemd/units/invocation:stream.service" ]; then
+		echo "Stop stream service" > /run/pixelpilot.msg
+		sleep 1
+		systemctl stop stream.service
+	else
+		systemd-run --unit=stream /gs/stream.sh
+	fi
+}
+
 # cleanup record files
 function cleanup_record_files() {
 	# first long press cleanup record files until have enough space
