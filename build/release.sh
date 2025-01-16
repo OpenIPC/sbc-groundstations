@@ -43,7 +43,7 @@ else
 		if [ -f "$BASENAME" ]; then 
 			echo "Warning: Archive file '$BASENAME' already exist just use it"
 		else
-			wget -q "$IMAGE_URL"
+			wget -q --show-progress --progress=bar:force:noscroll "$IMAGE_URL"
 		fi
 		IMAGE_ARCHIVE=$BASENAME
 	else

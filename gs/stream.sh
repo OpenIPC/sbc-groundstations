@@ -29,7 +29,21 @@ case "$screen_mode" in
 esac
 [ -n "$screen_mode" ] && screen_mode_cmdline="--screen-mode $screen_mode"
 
-[ -n "$BTN_Q1_PIN" ] && GPIO_REC=$(gpiofind PIN_${BTN_Q1_PIN})
+# Auto select osd config file based on osd_type if osd_config_file is not set
+if [ -z "$osd_config_file" ]; then
+	case "$osd_type" in
+		"msposd_air")
+			osd_config_file="/config/pixelpilot_osd_simple.json"
+			;;
+		"msposd_gs")
+			osd_config_file="/config/pixelpilot_msposd.json"
+			;;
+		*)
+			osd_config_file="/config/pixelpilot_osd.json"
+			;;
+	esac
+fi
+
 GPIO_RED_LED=$(gpiofind PIN_${RED_LED_PIN})
 
 function gencmd(){
@@ -79,8 +93,19 @@ else
 	bash -c "$video_play_cmd" &
 	pid_player=$!
 fi
+
+# start msposd_rockchip after /dev/shm/msposd is created and wfb tunnel is up
+(
+if [[ "$osd_enable" == "yes" && "$osd_type" == "msposd_gs" ]]; then
+	while [[ ! -e /dev/shm/msposd || ! -d /sys/class/net/gs-wfb ]]; do sleep 1; done
+	msposd --master 0.0.0.0:14551  --osd -r 20 --ahi 0 --matrix 11
+fi
+) &
+
 # show wallpaper
 ( sleep 10 && fbi -d /dev/fb0 -a -fitwidth -T 1 --noverbose /gs/wallpaper.png ) &
+
+# Monitor button for start/stop reocrd
 while read record_button_action < /run/record_button.fifo; do
 	[ "$record_button_action" == "single" ] || continue
 	if [ "$video_record" == "0" ]; then

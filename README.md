@@ -96,10 +96,13 @@ Default buttons and LEDs PIN number.
 * __USB gadget ncm:__ `radxa0` Default `DHCP server` with static IP `192.168.2.20/24`
 
 ### 4. Video Configuration
-* `video_on_boot`: used to control showing video or terminal console after startup. Default is `yes`. Set it to `no` will boot into the terminal and only recommended for development and debugging.
-* `osd_config_file`: pixelpilot's osd config file. Default is `/config/pixelpilot_osd.json`. Use `/config/pixelpilot_osd_simple.json` for less osd elements when using msposd.
-* `screen_mode`: used to set the screen resolution and refresh rate. Support <width>x<heigth>@<fps>(e.g. 1920x1080@60), max-fps, max-res and empty. Default is empty and will auto detect by pixelpilot or SBC. Recommended set it manually only when preferred screen mode is not the best.
-* __CAUTION:__ Resolution is limited to 1920x1080 by radxa, can changed by setting `max_resolution_4k` to `yes` in `System Configuration` section.
+* __video_on_boot:__ used to control showing video or terminal console after startup. Default is `yes`. Set it to `no` will boot into the terminal and only recommended for development and debugging.
+* __screen_mode:__ used to set the screen resolution and refresh rate. Support <width>x<heigth>@<fps>(e.g. 1920x1080@60), max-fps, max-res and empty. Default is empty and will auto detect by pixelpilot or SBC. Recommended set it manually only when preferred screen mode is not the best. __CAUTION:__ Resolution is limited to 1920x1080 by radxa, can changed by setting `max_resolution_4k` to `yes` in `System Configuration` section.
+* __osd_type:__ OSD type can be `mavlink`, `msposd_air` or `msposd_gs`.
+* __osd_config_file:__ pixelpilot's osd config file. Default is blank and auto select according to `osd_type`. Can manually set the configuration file e.g. Use `/config/pixelpilot_osd_simple.json` for less osd elements when using msposd air side rendering.
+    + mavlink    => /config/pixelpilot_osd.json
+    + msposd_air => /config/pixelpilot_osd_simple.json
+    + msposd_gs  => /config/pixelpilot_msposd.json
 
 ### 5. Record Configuration
 * `REC_Dir`: the record storage location. Default is `/home/radxa/Videos`.
@@ -164,9 +167,12 @@ GS Directory Tree
 │   ├── custom-sample.conf
 │   ├── gs.conf
 │   ├── gs.key
+│   ├── pixelpilot_msposd.json
 │   ├── pixelpilot_osd.json
 │   └── pixelpilot_osd_simple.json
 ├── etc
+│   ├── default
+│   │   └── wifibroadcast -> /tmp/wifibroadcast
 │   ├── gs.conf -> /config/gs.conf
 │   ├── gs.key -> /config/gs.key
 │   ├── gs-release
@@ -196,12 +202,13 @@ GS Directory Tree
 │   │       ├── gs-init.service
 │   │       ├── gs.service
 │   │       └── multi-user.target.wants
-│   │           ├── gs-ini.service -> /etc/systemd/system/gs-ini.service
+│   │           ├── gs-init.service -> /etc/systemd/system/gs-init.service
 │   │           └── gs.service -> /etc/systemd/system/gs.service
-│   └── udev
-│       └── rules.d
-│           ├── 98-rename.rules
-│           └── 99-GS.rules
+│   ├── udev
+│   │   └── rules.d
+│   │       ├── 98-rename.rules
+│   │       └── 99-GS.rules
+│   └── wifibroadcast.cfg -> /tmp/wifibroadcast.cfg
 ├── gs
 │   ├── button-kbd.py
 │   ├── button.sh
@@ -214,6 +221,14 @@ GS Directory Tree
 │   ├── rk3566-hdmi-max-resolution-4k.dts
 │   ├── stream.sh
 │   └── wfb.sh
+├── tmp
+│   ├── wifibroadcast.cfg
+│   └── wifibroadcast.default
+├── usr
+│   └── local
+│       └── bin
+│           ├── msposd
+│           └── pixelpilot
 └── Videos
 
 ```

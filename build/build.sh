@@ -115,9 +115,22 @@ apt --no-install-recommends -y install libgstreamer1.0-dev libgstreamer-plugins-
 
 git clone --depth=1 https://github.com/OpenIPC/PixelPilot_rk.git
 pushd PixelPilot_rk
+# Temporarily use pr#42 until merged
+git fetch origin pull/42/head:pr-42
+git checkout pr-42
 cmake -B build
 cmake --build build --target install
 popd
+
+# msposd_rockchip
+wget -q https://github.com/OpenIPC/msposd/releases/download/latest/msposd_rockchip -O /usr/local/bin/msposd
+chmod +x /usr/local/bin/msposd
+wget -q https://raw.githubusercontent.com/OpenIPC/msposd/main/fonts/font_ardu.png -O /usr/share/fonts/font_ardu.png
+wget -q https://raw.githubusercontent.com/OpenIPC/msposd/main/fonts/font_ardu_hd.png -O /usr/share/fonts/font_ardu_hd.png
+wget -q https://raw.githubusercontent.com/OpenIPC/msposd/main/fonts/font_btfl.png -O /usr/share/fonts/font_btfl.png
+wget -q https://raw.githubusercontent.com/OpenIPC/msposd/main/fonts/font_btfl_hd.png -O /usr/share/fonts/font_btfl_hd.png
+wget -q https://raw.githubusercontent.com/OpenIPC/msposd/main/fonts/font_inav.png -O /usr/share/fonts/font_inav.png
+wget -q https://raw.githubusercontent.com/OpenIPC/msposd/main/fonts/font_inav_hd.png -O /usr/share/fonts/font_inav_hd.png
 
 # SBC-GS-CC
 pushd SBC-GS/gs
