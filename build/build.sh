@@ -32,6 +32,7 @@ apt install -y git cmake dkms build-essential
 dpkg -l | grep -q "linux-image-5.10.160-26-rk356x" && apt purge -y linux-image-5.10.160-26-rk356x linux-headers-5.10.160-26-rk356x
 
 ## 
+KVER=$(ls /lib/modules | tail -n 1)
 [ -d /root/SourceCode ] || mkdir -p /root/SourceCode
 cd /root/SourceCode
 
@@ -44,14 +45,14 @@ sed -i "s^dkms install -m \${DRV_NAME} -v \${DRV_VERSION}^dkms install -m \${DRV
 popd
 
 # 8812bu
-# make -j16 KSRC=/lib/modules/$(ls /lib/modules | tail -n 1)/build
+# make -j16 KSRC=/lib/modules/${KVER}/build
 # make install
 git clone --depth=1 https://github.com/OpenHD/rtl88x2bu.git
 cp -r rtl88x2bu /usr/src/rtl88x2bu-git
 sed -i 's/PACKAGE_VERSION="@PKGVER@"/PACKAGE_VERSION="git"/g' /usr/src/rtl88x2bu-git/dkms.conf
 dkms add -m rtl88x2bu -v git
-dkms build -m rtl88x2bu -v git -k $(ls /lib/modules | tail -n 1)
-dkms install -m rtl88x2bu -v git -k $(ls /lib/modules | tail -n 1)
+dkms build -m rtl88x2bu -v git -k ${KVER}
+dkms install -m rtl88x2bu -v git -k ${KVER}
 
 # 8812cu
 git clone --depth=1 https://github.com/libc0607/rtl88x2cu-20230728.git
@@ -84,16 +85,18 @@ sed -i "s^dkms install -m \${DRV_NAME} -v \${DRV_VERSION}^dkms install -m \${DRV
 ./dkms-install.sh
 popd
 
-# 8814au
-git clone --depth=1 https://github.com/morrownr/8814au.git rtl8814au
-DRV_NAME_8814AU="rtl8814au"
-DRV_VERSION_8814AU="5.8.5.1"
-sed -i "/MODULE_VERSION(DRIVERVERSION);/a MODULE_IMPORT_NS(VFS_internal_I_am_really_a_filesystem_and_am_NOT_a_driver);" rtl8814au/os_dep/linux/os_intfs.c
-sed -i "s^kernelver=\$kernelver ./dkms-make.sh^'make' -j\$(nproc) KVER=\${kernelver} KSRC=/lib/modules/\${kernelver}/build^" rtl8814au/dkms.conf
-cp -rf rtl8814au /usr/src/${DRV_NAME_8814AU}-${DRV_VERSION_8814AU}
-dkms add -m ${DRV_NAME_8814AU} -v ${DRV_VERSION_8814AU}
-dkms build -m ${DRV_NAME_8814AU} -v ${DRV_VERSION_8814AU} -k $(ls /lib/modules | tail -n 1)
-dkms install -m ${DRV_NAME_8814AU} -v ${DRV_VERSION_8814AU} -k $(ls /lib/modules | tail -n 1)
+# rtw88 downstream for 8814au, 8821au, 8811au, 8821cu, 8811cu, 8723du
+git clone --depth=1 https://github.com/lwfinger/rtw88.git
+pushd rtw88
+make KERNELRELEASE=${KVER}
+make KERNELRELEASE=${KVER} install
+cat >> /etc/modprobe.d/blacklist-rtw88.conf << EOF
+# injection drivers available for 8812au, 8812bu and 8812cu/8822cu
+blacklist rtw_8812au
+blacklist rtw_8822bu
+blacklist rtw_8822cu
+EOF
+popd
 
 # AR9271
 apt install firmware-atheros
