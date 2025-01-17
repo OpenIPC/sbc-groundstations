@@ -111,10 +111,11 @@ mount -o bind /run $ROOTFS/run
 mount -t devpts devpts $ROOTFS/dev/pts
 
 # reformat config partition to fat16 for macos compatible
+config_partition_UUID=$(grep -oP "(?<=^UUID=).*(?=\s/config)" ${ROOTFS}/etc/fstab | tr -d -)
 [ -d config_tmp ] || mkdir config_tmp
 cp -a $ROOTFS/config/* config_tmp/
 umount $ROOTFS/config
-mkfs.fat -F 16 -n config -i 78067914 ${LOOPDEV}p1
+mkfs.fat -F 16 -n config -i ${config_partition_UUID} ${LOOPDEV}p1
 mount ${LOOPDEV}p1 $ROOTFS/config
 mv config_tmp/* $ROOTFS/config/
 rmdir config_tmp
