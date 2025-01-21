@@ -168,7 +168,7 @@ echo "root:root" | chpasswd
 # permit root login over ssh
 sed -i "s/#PermitRootLogin.*/PermitRootLogin yes/" /etc/ssh/sshd_config
 # sync mount /config
-sed -i 's/\(UUID=7806-7914\s*\/config\s*vfat\s*defaults,x-systemd.automount\)/\1,sync/' /etc/fstab
+sed -i 's/\(UUID=\S*\s*\/config\s*vfat\s*defaults,x-systemd.automount\)/\1,sync/' /etc/fstab
 # set gpsd not listen on ipv6
 sed -i "/ListenStream=\[::1\]:2947/s/^/# /" /lib/systemd/system/gpsd.socket
 # set chrony use gps time
