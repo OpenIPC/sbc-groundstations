@@ -65,7 +65,6 @@ for channel in $channel_available; do
 				echo "wfb channel found: channel $channel "
 				echo "found channel: $channel" > /run/pixelpilot.msg
 				channel_wfb_used=$channel
-				sed -i "s/wfb_channel='[0-9]\+'/wfb_channel='${channel_wfb_used}'/" /config/gs.conf
 				break 
 			else
 				echo "channel $channel is wfb but key may not matched"
@@ -78,6 +77,7 @@ for channel in $channel_available; do
 done
 
 if [ -n "${channel_wfb_used}" ]; then
+	sed -i "s/wfb_channel='[0-9]\+'/wfb_channel='${channel_wfb_used}'/" /config/gs.conf
 	for nic in $wfb_nics; do
 		iw dev $nic set channel $channel_wfb_used HT${wfb_bandwidth}
 	done
