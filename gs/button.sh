@@ -41,7 +41,7 @@ function change_wifi_mode() {
 
 # change usb otg mode between host and device
 function change_otg_mode() {
-	local otg_mode_LED_PIN_info=$(gpiofind PIN_${otg_mode_LED_PIN})
+	local otg_mode_LED_PIN_info=$(gpiofind PIN_${!otg_mode_LED_PIN})
 	local otg_mode_file="/sys/kernel/debug/usb/fcc00000.dwc3/mode"
 	local otg_mode=$(cat $otg_mode_file)
 	if [ "$otg_mode" == "host" ]; then
@@ -55,8 +55,8 @@ function change_otg_mode() {
 		(
 		while true; do
 			# Blink green power LED
-			gpioset -D $otg_mode_LED_drive -m time -s 1 $otg_mode_LED_PIN_info=1
-			gpioset -D $otg_mode_LED_drive -m time -s 1 $otg_mode_LED_PIN_info=0
+			gpioset -D ${!otg_mode_LED_drive} -m time -s 1 $otg_mode_LED_PIN_info=1
+			gpioset -D ${!otg_mode_LED_drive} -m time -s 1 $otg_mode_LED_PIN_info=0
 		done
 		) &
 		local pid_led=$!
@@ -65,7 +65,7 @@ function change_otg_mode() {
 		echo "change otg mode to host!" > /run/pixelpilot.msg
 		[ -z "$pid_led" ] || kill $pid_led
 		sleep 1.2
-		gpioset -D $otg_mode_LED_drive -m time -s 1 $otg_mode_LED_PIN_info=1
+		gpioset -D ${!otg_mode_LED_drive} -m time -s 1 $otg_mode_LED_PIN_info=1
 	else
 		echo "otg mode is unkonw"
 	fi
