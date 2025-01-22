@@ -133,16 +133,18 @@ rm $ROOTFS/root/build.sh
 # add release info
 BUILD_DATE=$(date "+%Y-%m-%d")
 BUILD_DATETIME=$(date "+%Y-%m-%d %H:%M:%S")
-echo "BUILD_DATETIME=\"${BUILD_DATETIME}\"" >> $ROOTFS/etc/gs-release
-echo "COMMIT=\"${1}\"" >> $ROOTFS/etc/gs-release
-
 if [[ "$2" == refs/tags/* ]]; then
 	VERSION=${2#refs/tags/}
-	echo "CHANNEL=\"release\"" >> $ROOTFS/etc/gs-release
+	CHANNEL="release"
 else
 	VERSION=${1:0:7}
-	echo "CHANNEL=\"test\"" >> $ROOTFS/etc/gs-release
+	CHANNEL="test"
 fi
+
+echo "SBC_MODEL=\"radxa_zero3\"" >> $ROOTFS/etc/gs-release
+echo "BUILD_DATETIME=\"${BUILD_DATETIME}\"" >> $ROOTFS/etc/gs-release
+echo "COMMIT=\"${1}\"" >> $ROOTFS/etc/gs-release
+echo "CHANNEL=\"${CHANNEL}\"" >> $ROOTFS/etc/gs-release
 echo "VERSION=\"${VERSION}\"" >> $ROOTFS/etc/gs-release
 echo "==============show gs-release============"
 cat $ROOTFS/etc/gs-release

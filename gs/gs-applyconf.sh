@@ -3,6 +3,9 @@
 set -e
 set -x
 
+# load gs.conf if not loded
+[ -z "${WIFI_mode+defined}" ] && source /etc/gs.conf
+
 need_u_boot_update=0
 need_reboot=0
 need_restart_services=""
