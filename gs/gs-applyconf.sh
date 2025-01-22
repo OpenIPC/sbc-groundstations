@@ -3,6 +3,15 @@
 set -e
 set -x
 
+# merge custom.conf to gs.conf
+if [ -f /config/custom.conf ]; then
+	grep -E '^\s*[^#]' /config/custom.conf | while IFS='=' read -r ckey cvalue; do
+		sed -i "s/^${ckey}=.*/${ckey}=${cvalue}/" /etc/gs.conf
+	done
+	mv /config/custom.conf /config/custom-merged.conf
+	source /etc/gs.conf
+fi
+
 # load gs.conf if not loded
 [ -z "${WIFI_mode+defined}" ] && source /etc/gs.conf
 
