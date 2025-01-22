@@ -98,7 +98,7 @@ fi
 (
 if [[ "$osd_enable" == "yes" && "$osd_type" == "msposd_gs" ]]; then
 	while [[ ! -e /dev/shm/msposd || ! -d /sys/class/net/gs-wfb ]]; do sleep 1; done
-	msposd --master 0.0.0.0:$msposd_gs_port --osd -r $msposd_gs_fps --ahi $msposd_gs_ahi --matrix $msposd_gs_matrix
+	msposd --master 0.0.0.0:$msposd_gs_port --osd -r $msposd_gs_fps --ahi $msposd_gs_ahi
 fi
 ) &
 

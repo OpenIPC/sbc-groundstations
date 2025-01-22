@@ -77,24 +77,24 @@ peer = 'connect://${wfb_outgoing_ip}:${wfb_outgoing_port_video}'
 bandwidth = ${wfb_bandwidth}
 
 EOF
-# Not use wfb tunnel for msposd_gs
-# 	if [ "$osd_type" == "msposd_gs" ]; then
-# 	cat > /etc/wifibroadcast.cfg << EOF
-# [gs]
-# streams = [{'name': 'video',   'stream_rx': 0x00, 'stream_tx': None, 'service_type': 'udp_direct_rx',  'profiles': ['base', 'gs_base', 'video', 'gs_video']},
-#            {'name': 'mavlink', 'stream_rx': 0x10, 'stream_tx': 0x90, 'service_type': 'mavlink',        'profiles': ['base', 'gs_base', 'mavlink', 'gs_mavlink']},
-#            {'name': 'tunnel',  'stream_rx': 0x20, 'stream_tx': 0xa0, 'service_type': 'tunnel',         'profiles': ['base', 'gs_base', 'tunnel', 'gs_tunnel']},
-#            {'name': 'msp',     'stream_rx': 0x11, 'stream_tx': 0x91, 'service_type': 'udp_proxy',      'profiles': ['base', 'gs_base', 'gs_msp']}
-#            ]
-# [gs_msp]
-# peer = 'connect://127.0.0.1:14551'  # outgoing connection
-# frame_type = 'data'  # Use data or rts frames
-# fec_k = 1            # FEC K (For tx side. Rx will get FEC settings from session packet)
-# fec_n = 2            # FEC N (For tx side. Rx will get FEC settings from session packet)
-# fec_timeout = 0      # [ms], 0 to disable. If no new packets during timeout, emit one empty packet if FEC block is open
-# fec_delay = 0        # [us], 0 to disable. Issue FEC packets with delay between them.
-# EOF
-# 	fi
+# Direct use wfb_rx for msposd_gs
+	if [[ "$osd_type" == "msposd_gs" && "$msposd_gs_method" == "wfbrx" ]]; then
+	cat >> /etc/wifibroadcast.cfg << EOF
+[gs]
+streams = [{'name': 'video',   'stream_rx': 0x00, 'stream_tx': None, 'service_type': 'udp_direct_rx',  'profiles': ['base', 'gs_base', 'video', 'gs_video']},
+           {'name': 'mavlink', 'stream_rx': 0x10, 'stream_tx': 0x90, 'service_type': 'mavlink',        'profiles': ['base', 'gs_base', 'mavlink', 'gs_mavlink']},
+           {'name': 'tunnel',  'stream_rx': 0x20, 'stream_tx': 0xa0, 'service_type': 'tunnel',         'profiles': ['base', 'gs_base', 'tunnel', 'gs_tunnel']},
+           {'name': 'msp',     'stream_rx': 0x11, 'stream_tx': 0x91, 'service_type': 'udp_proxy',      'profiles': ['base', 'gs_base', 'gs_msp']}
+           ]
+[gs_msp]
+peer = 'connect://127.0.0.1:${msposd_gs_port}'  # outgoing connection
+frame_type = 'data'  # Use data or rts frames
+fec_k = 1            # FEC K (For tx side. Rx will get FEC settings from session packet)
+fec_n = 2            # FEC N (For tx side. Rx will get FEC settings from session packet)
+fec_timeout = 0      # [ms], 0 to disable. If no new packets during timeout, emit one empty packet if FEC block is open
+fec_delay = 0        # [us], 0 to disable. Issue FEC packets with delay between them.
+EOF
+	fi
 	# grep -q "WFB_NICS=\"${wfb_nics}\"" /etc/default/wifibroadcast || echo "WFB_NICS=\"${wfb_nics}\"" > /tmp/wifibroadcast.default
 	echo "WFB_NICS=\"${wfb_nics}\"" > /etc/default/wifibroadcast
 	systemctl restart wifibroadcast@gs

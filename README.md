@@ -25,7 +25,7 @@ Main Features
 * __Auto build with github action.__
 
 
-Configuration [ gs.conf for details ]
+Configuration [ [gs.conf](https://github.com/zhouruixi/SBC-GS/blob/main/gs/gs.conf) for details ]
 -------------------------------------
 
 ### 1. Button Configuration
@@ -98,7 +98,15 @@ Default buttons and LEDs PIN number.
 ### 4. Video Configuration
 * __video_on_boot:__ used to control showing video or terminal console after startup. Default is `yes`. Set it to `no` will boot into the terminal and only recommended for development and debugging.
 * __screen_mode:__ used to set the screen resolution and refresh rate. Support <width>x<heigth>@<fps>(e.g. 1920x1080@60), max-fps, max-res and empty. Default is empty and will auto detect by pixelpilot or SBC. Recommended set it manually only when preferred screen mode is not the best. __CAUTION:__ Resolution is limited to 1920x1080 by radxa, can changed by setting `max_resolution_4k` to `yes` in `System Configuration` section.
-* __osd_type:__ OSD type can be `mavlink`, `msposd_air` or `msposd_gs`.
+* __video_player:__ `pixelpilot` or `gstreamer`.
+* __video_codec:__ `h265` or `h264`.
+* __osd_enable:__ Enable or disable OSD. Only pixelpilot video player support OSD.
+* __osd_fps:__ Pixelpilot OSD refresh rate.
+* __osd_type:__ `mavlink`(Native OSD provided by pixelpilot), `msposd_air`(msposd air side rendering), `msposd_gs`(msposd ground side rendering)
+* __msposd_gs_method:__ msposd message transmission method. Can be `tunnel`(over wfb tunnel) or `wfbrx`(over wfb tx rx pair)
+* __msposd_gs_port:__ The port that msposd listens on and uses to obtain data.
+* __msposd_gs_fps:__ Max MSP Display refresh rate.
+* __msposd_gs_ahi:__ Graphic AHI mode.
 * __osd_config_file:__ pixelpilot's osd config file. Default is blank and auto select according to `osd_type`. Can manually set the configuration file e.g. Use `/config/pixelpilot_osd_simple.json` for less osd elements when using msposd air side rendering.
     + mavlink    => /config/pixelpilot_osd.json
     + msposd_air => /config/pixelpilot_osd_simple.json
