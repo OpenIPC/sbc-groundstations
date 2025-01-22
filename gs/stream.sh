@@ -3,7 +3,7 @@
 set -e
 set -x
 
-source /config/gs.conf
+source /etc/gs.conf
 export DISPLAY=:0
 cd $REC_Dir
 

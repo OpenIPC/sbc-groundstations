@@ -2,7 +2,7 @@
 
 set -e
 set -x
-source /config/gs.conf
+source /etc/gs.conf
 
 sleep 12
 setfont /usr/share/consolefonts/CyrAsia-TerminusBold32x16.psf.gz

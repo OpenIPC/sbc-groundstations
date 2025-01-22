@@ -1,7 +1,7 @@
 #!/bin/bash
 
 set -e
-source /config/gs.conf
+source /etc/gs.conf
 
 # change wifi mode between station and hotspot
 function change_wifi_mode() {
@@ -126,8 +126,7 @@ function cleanup_record_files() {
 function apply_conf() {
 	(
 	echo "apply gs.conf!" > /run/pixelpilot.msg
-	source /config/gs.conf
-	source /gs/gs-applyconf.sh
+	/gs/gs-applyconf.sh
 	) &
 }
 

@@ -1,6 +1,6 @@
 #!/bin/bash
 
-source /config/gs.conf
+source /etc/gs.conf
 
 pwmchip_path="/sys/class/pwm/pwmchip${fan_PWM_chip}"
 if [ ! -d $pwmchip_path ]; then

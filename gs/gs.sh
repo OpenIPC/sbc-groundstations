@@ -4,7 +4,7 @@ set -e
 set -x
 
 # load config
-source /config/gs.conf
+source /etc/gs.conf
 
 # check and apply configuration in gs.conf
 source /gs/gs-applyconf.sh
