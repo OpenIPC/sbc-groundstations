@@ -107,10 +107,10 @@ Default buttons and LEDs PIN number.
 * __msposd_gs_port:__ The port that msposd listens on and uses to obtain data.
 * __msposd_gs_fps:__ Max MSP Display refresh rate.
 * __msposd_gs_ahi:__ Graphic AHI mode.
-* __osd_config_file:__ pixelpilot's osd config file. Default is blank and auto select according to `osd_type`. Can manually set the configuration file e.g. Use `/config/pixelpilot_osd_simple.json` for less osd elements when using msposd air side rendering.
-    + mavlink    => /config/pixelpilot_osd.json
-    + msposd_air => /config/pixelpilot_osd_simple.json
-    + msposd_gs  => /config/pixelpilot_msposd.json
+* __osd_config_file:__ pixelpilot's osd config file. Default is blank and auto select according to `osd_type`. Can manually set the configuration file e.g. `/config/pixelpilot_osd_custom.json`.
+    + mavlink    => /etc/pixelpilot/pixelpilot_osd.json
+    + msposd_air => /etc/pixelpilot/pixelpilot_osd_simple.json
+    + msposd_gs  => /etc/pixelpilot/pixelpilot_msposd.json
 
 ### 5. Record Configuration
 * `REC_Dir`: the record storage location. Default is `/home/radxa/Videos`.
@@ -174,10 +174,7 @@ GS Directory Tree
 ├── config
 │   ├── custom-sample.conf
 │   ├── gs.conf
-│   ├── gs.key
-│   ├── pixelpilot_msposd.json
-│   ├── pixelpilot_osd.json
-│   └── pixelpilot_osd_simple.json
+│   └── gs.key
 ├── etc
 │   ├── default
 │   │   └── wifibroadcast -> /tmp/wifibroadcast
@@ -195,6 +192,10 @@ GS Directory Tree
 │   │   └── system-connections
 │   │       ├── hotspot.nmconnection
 │   │       └── wifi0.nmconnection
+│   ├── pixelpilot
+│   │   ├── pixelpilot_msposd.json
+│   │   ├── pixelpilot_osd.json
+│   │   └── pixelpilot_osd_simple.json
 │   ├── samba
 │   │   └── smb.conf
 │   ├── systemd

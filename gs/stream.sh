@@ -33,13 +33,13 @@ esac
 if [ -z "$osd_config_file" ]; then
 	case "$osd_type" in
 		"msposd_air")
-			osd_config_file="/config/pixelpilot_osd_simple.json"
+			osd_config_file="/etc/pixelpilot/pixelpilot_osd_simple.json"
 			;;
 		"msposd_gs")
-			osd_config_file="/config/pixelpilot_msposd.json"
+			osd_config_file="/etc/pixelpilot/pixelpilot_msposd.json"
 			;;
 		*)
-			osd_config_file="/config/pixelpilot_osd.json"
+			osd_config_file="/etc/pixelpilot/pixelpilot_osd.json"
 			;;
 	esac
 fi
