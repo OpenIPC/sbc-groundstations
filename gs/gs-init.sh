@@ -20,7 +20,7 @@ EOF
 BOARD=$(cat /etc/hostname)
 
 # Create a partition(exfat) to save record videos
-[ -d $REC_Dir ] || mkdir -p $REC_Dir
+[ -d $rec_dir ] || mkdir -p $rec_dir
 os_dev=$(blkid | grep rootfs | grep -oP "/dev/.+(?=p\d+)") || true
 if [ ! -b ${os_dev}p4 ]; then
         sgdisk -ge $os_dev
@@ -35,9 +35,9 @@ EOF
         parted -s $os_dev mkpart videos fat32 ${root_partirion_end} 100%
         mkfs.exfat ${os_dev}p4
 fi
-# mount /dev/disk/by-partlabel/videos $REC_Dir
-if ! grep -Pq "^/dev/[^\t]*\t${REC_Dir}\texfat\tdefaults\t0\t0" /etc/fstab; then
-	echo -e "${os_dev}p4\t${REC_Dir}\texfat\tdefaults\t0\t0" >> /etc/fstab
+# mount /dev/disk/by-partlabel/videos $rec_dir
+if ! grep -Pq "^/dev/[^\t]*\t${rec_dir}\texfat\tdefaults\t0\t0" /etc/fstab; then
+	echo -e "${os_dev}p4\t${rec_dir}\texfat\tdefaults\t0\t0" >> /etc/fstab
 fi
 
 # Enable dtbo

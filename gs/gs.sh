@@ -25,9 +25,9 @@ fi
 
 # WiFi
 if [ -d /sys/class/net/wifi0 ]; then
-	if [ "$WIFI_mode" == "hotspot" ]; then
+	if [ "$wifi_mode" == "hotspot" ]; then
 	       ( sleep 15; nmcli connection up hotspot ) &
-       elif [ "$WIFI_mode" == "station" ]; then
+       elif [ "$wifi_mode" == "station" ]; then
 	       ( sleep 5; nmcli connection up wifi0 ) &
 	fi
 fi
@@ -75,7 +75,7 @@ echo "start button service"
 systemd-run --unit=button /gs/button.sh
 
 # system boot complete, turn red record LED off
-gpioset -D $RED_LED_drive $(gpiofind PIN_${RED_LED_PIN})=0
+gpioset -D $red_led_drive $(gpiofind PIN_${red_led_pin})=0
 echo "gs service start completed"
 
 exit 0

@@ -13,7 +13,7 @@ if [ -f /config/custom.conf ]; then
 fi
 
 # load gs.conf if not loded
-[ -z "${WIFI_mode+defined}" ] && source /etc/gs.conf
+[ -z "${wifi_mode+defined}" ] && source /etc/gs.conf
 
 need_u_boot_update=0
 need_reboot=0
@@ -93,10 +93,10 @@ if [ -n "$dtbo_need_disable" ]; then
 	need_reboot=1
 fi
 
-## Update REC_Dir in fstab
-[ -d $REC_Dir ] || mkdir -p $REC_Dir
-if ! grep -Pq "^/dev/[^\t]*\t${REC_Dir}\texfat\tdefaults\t0\t0" /etc/fstab; then
-	sed -i "s#^\(/dev/[^\t]*\t\)[^\t]*#\1${REC_Dir}#" /etc/fstab
+## Update rec_dir in fstab
+[ -d $rec_dir ] || mkdir -p $rec_dir
+if ! grep -Pq "^/dev/[^\t]*\t${rec_dir}\texfat\tdefaults\t0\t0" /etc/fstab; then
+	sed -i "s#^\(/dev/[^\t]*\t\)[^\t]*#\1${rec_dir}#" /etc/fstab
 	need_reboot=1
 fi
 
@@ -135,30 +135,30 @@ if [ -z "$wfb_integrated_wnic" ]; then
 	# If no connection named radxa, create one to automatically connect to the unencrypted WiFi named OpenIPC.
 	[ -f /etc/NetworkManager/system-connections/wifi0.nmconnection ] || nmcli con add type wifi ifname wifi0 con-name wifi0 ssid OpenIPC
 	# If the WiFi configuration in gs.conf is not empty and changes, modify the WiFi connection information according to the configuration file
-	if [[ -f /etc/NetworkManager/system-connections/wifi0.nmconnection && -n $WIFI_SSID && -n $WIFI_Encryption && -n $WIFI_Password ]]; then
+	if [[ -f /etc/NetworkManager/system-connections/wifi0.nmconnection && -n $wifi_ssid && -n $wifi_encryption && -n $wifi_password ]]; then
 		WIFI_SSID_OS=$(nmcli -g 802-11-wireless.ssid connection show wifi0)
 		WIFI_Encryption_OS=$(nmcli -g 802-11-wireless-security.key-mgmt connection show wifi0)
 		WIFI_Password_OS=$(nmcli -s -g 802-11-wireless-security.psk connection show wifi0)
-		[[ "$WIFI_SSID_OS" == "$WIFI_SSID" && "$WIFI_Encryption_OS" == "$WIFI_Encryption" && "$WIFI_Password_OS" == "$WIFI_Password" ]] || nmcli con modify wifi0 ssid ${WIFI_SSID} wifi-sec.key-mgmt ${WIFI_Encryption} wifi-sec.psk ${WIFI_Password}
+		[[ "$WIFI_SSID_OS" == "$wifi_ssid" && "$WIFI_Encryption_OS" == "$wifi_encryption" && "$WIFI_Password_OS" == "$wifi_password" ]] || nmcli con modify wifi0 ssid ${wifi_ssid} wifi-sec.key-mgmt ${wifi_encryption} wifi-sec.psk ${wifi_password}
 		nmcli con down wifi0 && nmcli con up wifi0
 	fi
 	echo "wifi0 station mode configure done"
 
 	# wifi0 hotspot mode configuration
 	echo "start configure wifi0 hotspot mode"
-	if [[ -f /etc/NetworkManager/system-connections/hotspot.nmconnection && -n $Hotspot_SSID && -n $Hotspot_Password && -n $Hotspot_ip ]];then
+	if [[ -f /etc/NetworkManager/system-connections/hotspot.nmconnection && -n $hotspot_ssid && -n $hotspot_password && -n $hotspot_ip ]];then
 		Hotspot_SSID_OS=$(nmcli -g 802-11-wireless.ssid connection show hotspot)
 		Hotspot_Password_OS=$(nmcli -s -g 802-11-wireless-security.psk connection show hotspot)
 		Hotspot_ip_OS=$(nmcli -g ipv4.addresses con show hotspot)
-		[[ "$Hotspot_SSID_OS" == "$Hotspot_SSID" && "$Hotspot_Password_OS" == "$Hotspot_Password" ]] || nmcli connection modify hotspot ssid $Hotspot_SSID wifi-sec.psk $Hotspot_Password
-		[[ "$Hotspot_ip_OS" == $Hotspot_ip ]] || nmcli connection modify hotspot ipv4.method shared ipv4.addresses $Hotspot_ip
-	elif [[ -d /sys/class/net/wifi0 && -n $Hotspot_SSID && -n $Hotspot_Password && -n $Hotspot_ip ]]; then
-		nmcli dev wifi hotspot con-name hotspot ifname wifi0 ssid $Hotspot_SSID password $Hotspot_Password
-		nmcli connection modify hotspot ipv4.method shared ipv4.addresses $Hotspot_ip autoconnect no
+		[[ "$Hotspot_SSID_OS" == "$hotspot_ssid" && "$Hotspot_Password_OS" == "$hotspot_password" ]] || nmcli connection modify hotspot ssid $hotspot_ssid wifi-sec.psk $hotspot_password
+		[[ "$Hotspot_ip_OS" == $hotspot_ip ]] || nmcli connection modify hotspot ipv4.method shared ipv4.addresses $hotspot_ip
+	elif [[ -d /sys/class/net/wifi0 && -n $hotspot_ssid && -n $hotspot_password && -n $hotspot_ip ]]; then
+		nmcli dev wifi hotspot con-name hotspot ifname wifi0 ssid $hotspot_ssid password $hotspot_password
+		nmcli connection modify hotspot ipv4.method shared ipv4.addresses $hotspot_ip autoconnect no
 	else
 		echo "no wifi0 or hotspot setting is blank"
 	fi
-	[[ -d /sys/class/net/wifi0 && "$WIFI_mode" == "hotspot" ]] && ( sleep 15; nmcli connection up hotspot ) &
+	[[ -d /sys/class/net/wifi0 && "$wifi_mode" == "hotspot" ]] && ( sleep 15; nmcli connection up hotspot ) &
 	echo "wifi0 hotspot mode configure done"
 fi
 
@@ -171,8 +171,8 @@ if [[ -f /etc/network/interfaces.d/radxa0 && -n "$gadget_net_fixed_ip" ]]; then
 fi
 echo "radxa0 usb gadget network configure done"
 
-# Update REC_Dir in smb.conf
-grep -q "$REC_Dir" /etc/samba/smb.conf || ( sed -i "/\[Videos\]/{n;s|.*|   ${REC_Dir}|;}" /etc/samba/smb.conf && need_restart_services="$need_restart_services smbd nmbd")
+# Update rec_dir in smb.conf
+grep -q "$rec_dir" /etc/samba/smb.conf || ( sed -i "/\[Videos\]/{n;s|.*|   ${rec_dir}|;}" /etc/samba/smb.conf && need_restart_services="$need_restart_services smbd nmbd")
 
 # some configuration need reboot to take effect
 [ "$need_u_boot_update" == "1" ] && u-boot-update

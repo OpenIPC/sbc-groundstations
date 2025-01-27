@@ -72,18 +72,18 @@ There are some built-in functions that can bind to button behaviors.
 ### 2. GPIO Configuration
 Default buttons and LEDs PIN number.
 * Quick button PIN
-    + BTN_Q1_PIN='32'
-    + BTN_Q2_PIN='38'
-    + BTN_Q3_PIN='40'
+    + btn_q1_pin='32'
+    + btn_q2_pin='38'
+    + btn_q3_pin='40'
 * Custom button PIN
-    + BTN_CU_PIN='18'
-    + BTN_CD_PIN='16'
-    + BTN_CL_PIN='13'
-    + BTN_CR_PIN='11'
+    + btn_cu_pin='18'
+    + btn_cd_pin='16'
+    + btn_cl_pin='13'
+    + btn_cr_pin='11'
 * LED PIN
-    + RED_LED_PIN='22'
-    + GREEN_LED_PIN='15'
-    + BLUE_LED_PIN='12'
+    + red_led_pin='22'
+    + green_led_pin='15'
+    + blue_led_pin='12'
 
 ### 3. Network Configuration
 * __Onboard WiFi:__ `wifi0`
@@ -113,9 +113,9 @@ Default buttons and LEDs PIN number.
     + msposd_gs  => /etc/pixelpilot/pixelpilot_msposd.json
 
 ### 5. Record Configuration
-* `REC_Dir`: the record storage location. Default is `/home/radxa/Videos`.
+* `rec_dir`: the record storage location. Default is `/home/radxa/Videos`.
 * `rec_dir_freespace_min`: the minimum remaining space before recording. When press the record button, if remaining space is lower than this value, it will prompt that there is insufficient space and the recording will not start. Default is `1000`MB.
-* `REC_FPS`: Record video fps and must same video fps set on drone. Default is `60`.
+* `rec_fps`: Record video fps and must same video fps set on drone. Default is `60`.
 * __CAUTION:__ OSD will not be recorded.
 
 ### 6. Wifibroadcast Configuration
@@ -279,7 +279,6 @@ TODO
 * Change the built-in LED to a normal GPIO LED
 * Screenshots
 * Record video playback
-* Unify variable names
 
 
 Known issues

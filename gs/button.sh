@@ -15,12 +15,12 @@ function change_wifi_mode() {
 	wifi0_connected_connection=$(nmcli device status | grep '^wifi0.*connected' | tr -s ' ' | cut -d ' ' -f 4)
 	case "$wifi0_connected_connection" in
 		"hotspot")
-			echo "Prepare connect to ${WIFI_SSID}!" > /run/pixelpilot.msg
+			echo "Prepare connect to ${wifi_ssid}!" > /run/pixelpilot.msg
 			if nmcli connection up wifi0 > /dev/null 2>&1; then
-				echo "WiFi connected to ${WIFI_SSID}!" > /run/pixelpilot.msg
+				echo "WiFi connected to ${wifi_ssid}!" > /run/pixelpilot.msg
 			else
 				nmcli connection up hotspot
-				echo "Failed connect to ${WIFI_SSID}, fallback to hotspot mode!" > /run/pixelpilot.msg
+				echo "Failed connect to ${wifi_ssid}, fallback to hotspot mode!" > /run/pixelpilot.msg
 			fi
 			sleep 3
 			;;
@@ -41,7 +41,7 @@ function change_wifi_mode() {
 
 # change usb otg mode between host and device
 function change_otg_mode() {
-	local otg_mode_LED_PIN_info=$(gpiofind PIN_${!otg_mode_LED_PIN})
+	local otg_mode_LED_PIN_info=$(gpiofind PIN_${!otg_mode_led_pin})
 	local otg_mode_file="/sys/kernel/debug/usb/fcc00000.dwc3/mode"
 	local otg_mode=$(cat $otg_mode_file)
 	if [ "$otg_mode" == "host" ]; then
@@ -55,8 +55,8 @@ function change_otg_mode() {
 		(
 		while true; do
 			# Blink green power LED
-			gpioset -D ${!otg_mode_LED_drive} -m time -s 1 $otg_mode_LED_PIN_info=1
-			gpioset -D ${!otg_mode_LED_drive} -m time -s 1 $otg_mode_LED_PIN_info=0
+			gpioset -D ${!otg_mode_led_drive} -m time -s 1 $otg_mode_LED_PIN_info=1
+			gpioset -D ${!otg_mode_led_drive} -m time -s 1 $otg_mode_LED_PIN_info=0
 		done
 		) &
 		local pid_led=$!
@@ -65,7 +65,7 @@ function change_otg_mode() {
 		echo "change otg mode to host!" > /run/pixelpilot.msg
 		[ -z "$pid_led" ] || kill $pid_led
 		sleep 1.2
-		gpioset -D ${!otg_mode_LED_drive} -m time -s 1 $otg_mode_LED_PIN_info=1
+		gpioset -D ${!otg_mode_led_drive} -m time -s 1 $otg_mode_LED_PIN_info=1
 	else
 		echo "otg mode is unkonw"
 	fi
@@ -97,7 +97,7 @@ function toggle_stream() {
 function cleanup_record_files() {
 	# first long press cleanup record files until have enough space
 	# secord long press in 60s will remove all record files
-	record_file_list=$(find $REC_Dir -maxdepth 1 -type f \( -name '*.mp4' -o -name '*.mkv' \))
+	record_file_list=$(find $rec_dir -maxdepth 1 -type f \( -name '*.mp4' -o -name '*.mkv' \))
 	if [ -n "$record_file_list" ];then
 		if [ ! -f /tmp/cleanup_record ]; then
 			for record_file in $record_file_list; do
@@ -142,11 +142,11 @@ function reboot_gs() {
 	( sleep 2 && reboot) &
 }
 
-# mount extdisk first partition to REC_Dir
+# mount extdisk first partition to rec_dir
 function mount_extdisk() {
 	# mount in root mnt namespace. Udev mount will use systemd-udevd mnt namespace by default.
-	if nsenter --mount=/proc/1/ns/mnt mount ${arg_2}1 ${REC_Dir} > /dev/null 2>&1; then
-		partitioninfo=$(df -hT ${REC_Dir} | tail -n 1 | tr -s ' ')
+	if nsenter --mount=/proc/1/ns/mnt mount ${arg_2}1 ${rec_dir} > /dev/null 2>&1; then
+		partitioninfo=$(df -hT ${rec_dir} | tail -n 1 | tr -s ' ')
 		echo "$partitioninfo" > /run/pixelpilot.msg
 	else
 		echo "mount extdisk failed, check fstype and file system" > /run/pixelpilot.msg
@@ -155,11 +155,11 @@ function mount_extdisk() {
 
 # unmount extdisk video partition
 function ummount_extdisk() {
-	if findmnt "$REC_Dir" | grep -q "/dev/sd?"; then
-		if umount -lf "$REC_Dir" > /dev/null 2>&1; then
-			echo "umount $REC_Dir success" > /run/pixelpilot.msg
+	if findmnt "$rec_dir" | grep -q "/dev/sd?"; then
+		if umount -lf "$rec_dir" > /dev/null 2>&1; then
+			echo "umount $rec_dir success" > /run/pixelpilot.msg
 		else
-			echo "umount $REC_Dir failed, check record status" > /run/pixelpilot.msg
+			echo "umount $rec_dir failed, check record status" > /run/pixelpilot.msg
 		fi
 	else
 		echo "extdisk already umounted" > /run/pixelpilot.msg
@@ -196,7 +196,7 @@ function button_action() {
 }
 
 function execute_button_function() {
-	local gpio_pin="${1}_PIN"
+	local gpio_pin="${1}_pin"
 	[ -z "${!gpio_pin}" ] && exit 0
 	local single_press_function="${1}_single_press"
 	local long_press_function="${1}_long_press"
@@ -217,13 +217,13 @@ function execute_button_function() {
 	done
 }
 
-execute_button_function BTN_Q1 &
-execute_button_function BTN_Q2 &
-execute_button_function BTN_Q3 &
-execute_button_function BTN_CU &
-execute_button_function BTN_CD &
-execute_button_function BTN_CL &
-execute_button_function BTN_CR &
-execute_button_function BTN_CM &
+execute_button_function btn_q1 &
+execute_button_function btn_q2 &
+execute_button_function btn_q3 &
+execute_button_function btn_cu &
+execute_button_function btn_cd &
+execute_button_function btn_cl &
+execute_button_function btn_cr &
+execute_button_function btn_cm &
 
 wait

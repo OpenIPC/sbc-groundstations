@@ -5,7 +5,7 @@ set -x
 
 source /etc/gs.conf
 export DISPLAY=:0
-cd $REC_Dir
+cd $rec_dir
 
 video_record="0"
 video_play_cmd=""
@@ -44,18 +44,18 @@ if [ -z "$osd_config_file" ]; then
 	esac
 fi
 
-GPIO_RED_LED=$(gpiofind PIN_${RED_LED_PIN})
+GPIO_RED_LED=$(gpiofind PIN_${red_led_pin})
 
 function gencmd(){
 	if [ "$video_player" == "pixelpilot" ]; then
-		video_play_cmd="pixelpilot $screen_mode_cmdline --codec $video_codec --dvr-framerate $REC_FPS --dvr-fmp4 --dvr-template ${REC_Dir}/record_%Y-%m-%d_%H-%M-%S.mp4"
+		video_play_cmd="pixelpilot $screen_mode_cmdline --codec $video_codec --dvr-framerate $rec_fps --dvr-fmp4 --dvr-template ${rec_dir}/record_%Y-%m-%d_%H-%M-%S.mp4"
 		[ "$osd_enable" == "no" ] || video_play_cmd="$video_play_cmd --osd --osd-elements '' --osd-config $osd_config_file --osd-custom-message --osd-refresh $((1000 / ${osd_fps}))"
 		[ "$record_on" == "arm" ] && video_play_cmd="$video_play_cmd --mavlink-dvr-on-arm"
 		video_rec_cmd="$video_play_cmd --dvr-start"
 	elif [ "$video_player" == "gstreamer" ]; then
 		# current_date=$(date +'%m-%d-%Y_%H-%M-%S')
 		# gencmd record_${current_date}.ts
-		rec_index=$(ls -1 $REC_Dir | grep -oP "^\d+(?=\.mkv)" | tail -n 1)
+		rec_index=$(ls -1 $rec_dir | grep -oP "^\d+(?=\.mkv)" | tail -n 1)
 		if [ -z $rec_index ]; then
 			rec_index="1000"
 		else
@@ -69,7 +69,7 @@ function gencmd(){
 }
 
 function check_record_freespace() {
-	local rec_dir_freespace=$(df $REC_Dir | tail -n 1 | awk '{print $4}')
+	local rec_dir_freespace=$(df $rec_dir | tail -n 1 | awk '{print $4}')
 	local rec_dir_freespace_MB=$((${rec_dir_freespace} / 1024))
 	if [ $rec_dir_freespace_MB -lt $rec_dir_freespace_min ]; then
 		echo "insufficient"
@@ -127,15 +127,15 @@ while read record_button_action < /run/record_button.fifo; do
 		(
 		while true; do
 			# Blink red record LED
-			gpioset -D $RED_LED_drive -m time -s 1 ${GPIO_RED_LED}=1
-			gpioset -D $RED_LED_drive -m time -s 1 ${GPIO_RED_LED}=0
+			gpioset -D $red_led_drive -m time -s 1 ${GPIO_RED_LED}=1
+			gpioset -D $red_led_drive -m time -s 1 ${GPIO_RED_LED}=0
 		done
 		) &
 		pid_led=$!
 	else
 		# turn off record LED
 		[ -z $pid_led ] || kill $pid_led
-		sleep 1.2 && gpioset -D $RED_LED_drive ${GPIO_RED_LED}=0 &
+		sleep 1.2 && gpioset -D $red_led_drive ${GPIO_RED_LED}=0 &
 		if [ "$video_player" == "pixelpilot" ]; then
 			kill -SIGUSR1 $pid_player
 		else
