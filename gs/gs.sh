@@ -23,6 +23,13 @@ fi
 # GPS
 [ "$use_gps" == "yes" ] && systemctl start chrony gpsd &
 
+# ttyd
+if [ "$ttyd_enable" == "yes" ]; then
+	[ "$(systemctl is-enabled ttyd)" == "enabled" ] || systemctl enabled --now ttyd
+else
+	[ "$(systemctl is-enabled ttyd)" == "enabled" ] && systemctl disabled --now ttyd
+fi
+
 # WiFi
 if [ -d /sys/class/net/wifi0 ]; then
 	if [ "$wifi_mode" == "hotspot" ]; then

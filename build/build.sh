@@ -140,6 +140,27 @@ pushd SBC-GS/gs
 ./install.sh
 popd
 
+# ttyd
+ttyd_version="1.7.7"
+wget "https://github.com/tsl0922/ttyd/releases/download/${ttyd_version}/ttyd.aarch64" -O /usr/local/bin/ttyd
+chmod +x /usr/local/bin/ttyd
+cat > /etc/systemd/system/ttyd.service << EOF
+[Unit]
+Description=TTYD
+After=syslog.target
+After=network.target
+
+[Service]
+ExecStart=/usr/local/bin/ttyd -t enableZmodem=true -p 81 -W login
+Type=simple
+Restart=always
+User=root
+Group=root
+
+[Install]
+WantedBy=multi-user.target
+EOF
+
 # install useful packages
 DEBIAN_FRONTEND=noninteractive apt -y install lrzsz net-tools socat netcat exfatprogs ifstat fbi minicom bridge-utils console-setup psmisc ethtool drm-info libdrm-tests proxychains4 chrony gpsd gpsd-clients tcpdump iptables-persistent dosfstools sshpass fake-hwclock tree evtest
 pip install evdev

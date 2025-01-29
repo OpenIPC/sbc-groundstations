@@ -19,6 +19,7 @@ Main Features
 * __Sequentially increasing video file names.__ SBC has incorrect time without Internet, The gstreamer record video files name sequentially starting from 1000.mkv, Finally video files will be like this: `1000.mkv, 1001.mkv, etc.` PixelPilot record file name use template since this [commit](https://github.com/OpenIPC/PixelPilot_rk/commit/eab6c59e203c22c468a4ce99ff8461ec00d56fc3), Finally video files will be like record_%Y-%m-%d_%H-%M-%S.mp4.
 * __send stream over USB tethering and Ethernet.__ Video and telemetry stream can send to other device over USB tethering or Ethernet, witch can be played with Android QGroundControl,PixelPilot etc. Notice: share stream using multicast by default, not working with windows QGroundControl.
 * __Forward SBC port to IPC over wfb tun.__ Forward SBC port 2222/8080 to IPC port 22/80 over wfb tun.
+* __Web terminal.__ Use [ttyd](https://github.com/tsl0922/ttyd) for web terminal. Default port is 81.
 * __WFB channel scan.__
 * __Record to external disk.__ Save record files to the first partition of the external disk when plug in, support vfat, exfat, ext4 formats. Recommended to umount or shutdown SBC before unplugging the disk. **WARING:** Do not unplugging the disk when recoding, may corrupt the file system.
 * __Version in /etc/gs-release.__
@@ -210,9 +211,10 @@ GS Directory Tree
 │   │   └── system
 │   │       ├── gs-init.service
 │   │       ├── gs.service
-│   │       └── multi-user.target.wants
-│   │           ├── gs-init.service -> /etc/systemd/system/gs-init.service
-│   │           └── gs.service -> /etc/systemd/system/gs.service
+│   │       ├── multi-user.target.wants
+│   │       │   ├── gs-init.service -> /etc/systemd/system/gs-init.service
+│   │       │   └── gs.service -> /etc/systemd/system/gs.service
+│   │       └── ttyd.service
 │   ├── udev
 │   │   └── rules.d
 │   │       ├── 98-rename.rules
