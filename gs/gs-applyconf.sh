@@ -139,7 +139,7 @@ if [ -z "$wfb_integrated_wnic" ]; then
 		WIFI_SSID_OS=$(nmcli -g 802-11-wireless.ssid connection show wifi0)
 		WIFI_Encryption_OS=$(nmcli -g 802-11-wireless-security.key-mgmt connection show wifi0)
 		WIFI_Password_OS=$(nmcli -s -g 802-11-wireless-security.psk connection show wifi0)
-		[[ "$WIFI_SSID_OS" == "$wifi_ssid" && "$WIFI_Encryption_OS" == "$wifi_encryption" && "$WIFI_Password_OS" == "$wifi_password" ]] || nmcli con modify wifi0 ssid ${wifi_ssid} wifi-sec.key-mgmt ${wifi_encryption} wifi-sec.psk ${wifi_password}
+		[[ "$WIFI_SSID_OS" == "$wifi_ssid" && "$WIFI_Encryption_OS" == "$wifi_encryption" && "$WIFI_Password_OS" == "$wifi_password" ]] || nmcli con modify wifi0 ssid "${wifi_ssid}" wifi-sec.key-mgmt ${wifi_encryption} wifi-sec.psk "${wifi_password}"
 		nmcli con down wifi0 && nmcli con up wifi0
 	fi
 	echo "wifi0 station mode configure done"
@@ -150,10 +150,10 @@ if [ -z "$wfb_integrated_wnic" ]; then
 		Hotspot_SSID_OS=$(nmcli -g 802-11-wireless.ssid connection show hotspot)
 		Hotspot_Password_OS=$(nmcli -s -g 802-11-wireless-security.psk connection show hotspot)
 		Hotspot_ip_OS=$(nmcli -g ipv4.addresses con show hotspot)
-		[[ "$Hotspot_SSID_OS" == "$hotspot_ssid" && "$Hotspot_Password_OS" == "$hotspot_password" ]] || nmcli connection modify hotspot ssid $hotspot_ssid wifi-sec.psk $hotspot_password
+		[[ "$Hotspot_SSID_OS" == "$hotspot_ssid" && "$Hotspot_Password_OS" == "$hotspot_password" ]] || nmcli connection modify hotspot ssid "$hotspot_ssid" wifi-sec.psk "$hotspot_password"
 		[[ "$Hotspot_ip_OS" == $hotspot_ip ]] || nmcli connection modify hotspot ipv4.method shared ipv4.addresses $hotspot_ip
 	elif [[ -d /sys/class/net/wifi0 && -n $hotspot_ssid && -n $hotspot_password && -n $hotspot_ip ]]; then
-		nmcli dev wifi hotspot con-name hotspot ifname wifi0 ssid $hotspot_ssid password $hotspot_password
+		nmcli dev wifi hotspot con-name hotspot ifname wifi0 ssid "$hotspot_ssid" password "$hotspot_password"
 		nmcli connection modify hotspot ipv4.method shared ipv4.addresses $hotspot_ip autoconnect no
 	else
 		echo "no wifi0 or hotspot setting is blank"
