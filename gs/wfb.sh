@@ -69,12 +69,16 @@ wifi_region = '${wfb_region}'
 
 [gs_mavlink]
 peer = 'connect://${wfb_outgoing_ip}:${wfb_outgoing_port_mavlink}'
+bandwidth = 20
 
 [gs_video]
 peer = 'connect://${wfb_outgoing_ip}:${wfb_outgoing_port_video}'
 
 [base]
 bandwidth = ${wfb_bandwidth}
+
+[gs_tunnel]
+bandwidth = 20
 
 EOF
 # Direct use wfb_rx for msposd_gs
