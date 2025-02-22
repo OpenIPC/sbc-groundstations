@@ -159,7 +159,7 @@ WantedBy=multi-user.target
 EOF
 
 # install useful packages
-DEBIAN_FRONTEND=noninteractive apt -y install lrzsz net-tools socat netcat exfatprogs ifstat fbi minicom bridge-utils console-setup psmisc ethtool drm-info libdrm-tests proxychains4 chrony gpsd gpsd-clients tcpdump iptables-persistent dosfstools sshpass fake-hwclock tree evtest
+DEBIAN_FRONTEND=noninteractive apt -y install lrzsz net-tools socat netcat exfatprogs ifstat fbi minicom bridge-utils console-setup psmisc ethtool drm-info libdrm-tests proxychains4 chrony gpsd gpsd-clients tcpdump iptables-persistent dosfstools sshpass fake-hwclock tree evtest python3-dev
 pip install evdev
 
 # disable services
