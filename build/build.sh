@@ -26,7 +26,7 @@ fi
 # Update system to date
 apt update
 apt dist-upgrade -y --allow-downgrades
-apt install -y git cmake dkms build-essential
+apt install -y git cmake dkms build-essential pkg-config
 
 # Remove old kernel in radxa-zero3_debian_bullseye_xfce_b6.img
 dpkg -l | grep -q "linux-image-5.10.160-26-rk356x" && apt purge -y linux-image-5.10.160-26-rk356x linux-headers-5.10.160-26-rk356x
@@ -131,6 +131,13 @@ wget -q https://raw.githubusercontent.com/OpenIPC/msposd/main/fonts/font_btfl.pn
 wget -q https://raw.githubusercontent.com/OpenIPC/msposd/main/fonts/font_btfl_hd.png -O /usr/share/fonts/font_btfl_hd.png
 wget -q https://raw.githubusercontent.com/OpenIPC/msposd/main/fonts/font_inav.png -O /usr/share/fonts/font_inav.png
 wget -q https://raw.githubusercontent.com/OpenIPC/msposd/main/fonts/font_inav_hd.png -O /usr/share/fonts/font_inav_hd.png
+
+# wfb-ng-osd
+git clone --recursive --depth=1 https://github.com/svpcom/wfb-ng-osd.git
+pushd wfb-ng-osd
+make osd mode=rockchip
+cp -a osd.rockchip /usr/local/bin/wfb-ng-osd
+popd
 
 # SBC-GS-CC
 pushd SBC-GS/gs

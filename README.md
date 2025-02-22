@@ -101,7 +101,7 @@ Default buttons and LEDs PIN number.
 * __screen_mode:__ used to set the screen resolution and refresh rate. Support <width>x<heigth>@<fps>(e.g. 1920x1080@60), max-fps, max-res and empty. Default is empty and will auto detect by pixelpilot or SBC. Recommended set it manually only when preferred screen mode is not the best. __CAUTION:__ Resolution is limited to 1920x1080 by radxa, can changed by setting `max_resolution_4k` to `yes` in `System Configuration` section.
 * __video_player:__ `pixelpilot` or `gstreamer`.
 * __video_codec:__ `h265` or `h264`.
-* __osd_enable:__ Enable or disable OSD. Only pixelpilot video player support OSD.
+* __osd_enable:__ Enable or disable OSD. pixelpilot video player support mulit OSD types. gstreamer video player only support wfb-ng-osd.
 * __osd_fps:__ Pixelpilot OSD refresh rate.
 * __osd_type:__ `mavlink`(Native OSD provided by pixelpilot), `msposd_air`(msposd air side rendering), `msposd_gs`(msposd ground side rendering)
 * __msposd_gs_method:__ msposd message transmission method. Can be `tunnel`(over wfb tunnel) or `wfbrx`(over wfb tx rx pair)
@@ -239,7 +239,8 @@ GS Directory Tree
 │   └── local
 │       └── bin
 │           ├── msposd
-│           └── pixelpilot
+│           ├── pixelpilot
+│           └── wfb-ng-osd
 └── Videos
 
 ```

@@ -94,11 +94,16 @@ else
 	pid_player=$!
 fi
 
-# start msposd_rockchip after /dev/shm/msposd is created and wfb tunnel is up
+# start OSD
 (
-if [[ "$osd_enable" == "yes" && "$osd_type" == "msposd_gs" ]]; then
-	while [[ ! -e /dev/shm/msposd || ! -d /sys/class/net/gs-wfb ]]; do sleep 1; done
-	msposd --master 0.0.0.0:$msposd_gs_port --osd -r $msposd_gs_fps --ahi $msposd_gs_ahi
+if [ "$osd_enable" == "yes" ]; then
+	if [[ "$video_player" == "pixelpilot" && "$osd_type" == "msposd_gs" ]]; then
+		# start msposd_rockchip after /dev/shm/msposd is created and wfb tunnel is up
+		while [[ ! -e /dev/shm/msposd || ! -d /sys/class/net/gs-wfb ]]; do sleep 1; done
+		msposd --master 0.0.0.0:$msposd_gs_port --osd -r $msposd_gs_fps --ahi $msposd_gs_ahi
+	elif [ "$video_player" == "gstreamer" ]; then
+		wfb-ng-osd
+	fi
 fi
 ) &
 
