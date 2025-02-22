@@ -71,6 +71,9 @@ fi
 # If video_on_boot=yes, video playback will be automatically started
 [ "$video_on_boot" == "yes" ] && ( echo "start stream service"; systemd-run --unit=stream /gs/stream.sh )
 
+# start wfb rtsp server if set wfb_rtsp_server_enable to yes
+[ "$wfb_rtsp_server_enable" == "yes" ] && systemctl start rtsp@$video_codec
+
 # If otg mode is device, start adbd and ncm on boot
 if [ "$otg_mode" == "device" ]; then
 	echo device > /sys/kernel/debug/usb/fcc00000.dwc3/mode
