@@ -1,6 +1,8 @@
 #!/bin/bash
 
 set -ex
+
+# Start install gs
 echo -e "\033[31mStart install gs\033[0m"
 
 install_dir='/gs'
@@ -28,6 +30,42 @@ cp FPVue.key /config/gs.key
 [ $(readlink -f /etc/gs.key) == "/config/gs.key" ] || ( [ -f /etc/gs.key ] && rm /etc/gs.key; ln -s /config/gs.key /etc/gs.key )
 [ $(readlink -f /etc/gs.conf) == "/config/gs.conf" ] || ( [ -f /etc/gs.conf ] &&  rm /etc/gs.conf; ln -s /config/gs.conf /etc/gs.conf )
 
-echo -e "\033[31mInstallation Complete, Configuration file is /config/gs.conf\033[0m"
+echo -e "\033[31m GS installation Complete, Configuration file is /config/gs.conf\033[0m"
+
+
+# Start install webui
+echo -e "\033[31mStart install WebUI\033[0m"
+webui_install_dir=${install_dir}/webui
+
+git clone --depth=1 https://github.com/zhouruixi/SBC-GS-WebUI.git $webui_install_dir
+
+apt -y install python3-venv
+
+pushd ${webui_install_dir}
+python3 -m venv venv
+
+source venv/bin/activate
+pip install -r requirements.txt
+
+cat > /etc/systemd/system/webui.service << EOF
+[Unit]
+Description=SBC GS CC Edition WebUI
+After=network.target
+
+[Service]
+ExecStart=${webui_install_dir}/venv/bin/python ${webui_install_dir}/webui.py
+WorkingDirectory=${webui_install_dir}
+Environment=PATH=${webui_install_dir}/venv/bin:$PATH
+Environment=VIRTUAL_ENV=${webui_install_dir}/venv
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
+EOF
+
+deactivate
+echo -e "\033[31m WebUI installation Complete, Configuration file is /config/gs.conf\033[0m"
+
+
 sync
 echo -e "\033[31mRestart required to take effect!\033[0m"

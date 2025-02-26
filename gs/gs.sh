@@ -84,6 +84,9 @@ fi
 echo "start button service"
 systemd-run --unit=button /gs/button.sh
 
+# start webui
+[ "$webui_enable" == "yes" ] && systemctl start webui
+
 # system boot complete, turn red record LED off
 gpioset -D $red_led_drive $(gpiofind PIN_${red_led_pin})=0
 echo "gs service start completed"

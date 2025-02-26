@@ -214,7 +214,8 @@ GS Directory Tree
 │   │       ├── multi-user.target.wants
 │   │       │   ├── gs-init.service -> /etc/systemd/system/gs-init.service
 │   │       │   └── gs.service -> /etc/systemd/system/gs.service
-│   │       └── ttyd.service
+│   │       ├── ttyd.service
+│   │       └── webui.service
 │   ├── udev
 │   │   └── rules.d
 │   │       ├── 98-rename.rules
@@ -231,6 +232,24 @@ GS Directory Tree
 │   ├── rk3566-dwc3-otg-role-switch.dts
 │   ├── rk3566-hdmi-max-resolution-4k.dts
 │   ├── stream.sh
+│   ├── webui
+│   │   ├── plotter.py
+│   │   ├── requirements.txt
+│   │   ├── settings_webui.yaml
+│   │   ├── static
+│   │   │   ├── css
+│   │   │   │   └── bootstrap.min.css
+│   │   │   └── js
+│   │   │       ├── bootstrap.bundle.min.js
+│   │   │       ├── jquery-3.6.0.min.js
+│   │   │       └── webui.js
+│   │   ├── templates
+│   │   │   ├── filemanager.html
+│   │   │   ├── index.html
+│   │   │   ├── plotter.html
+│   │   │   └── viewer.html
+│   │   ├── venv -> python-venv
+│   │   └── webui.py
 │   └── wfb.sh
 ├── tmp
 │   ├── wifibroadcast.cfg
