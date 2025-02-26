@@ -166,7 +166,7 @@ WantedBy=multi-user.target
 EOF
 
 # install useful packages
-DEBIAN_FRONTEND=noninteractive apt -y install lrzsz net-tools socat netcat exfatprogs ifstat fbi minicom bridge-utils console-setup psmisc ethtool drm-info libdrm-tests proxychains4 chrony gpsd gpsd-clients tcpdump iptables-persistent dosfstools sshpass fake-hwclock tree evtest python3-dev
+DEBIAN_FRONTEND=noninteractive apt -y install lrzsz net-tools socat netcat exfatprogs ifstat fbi minicom bridge-utils console-setup psmisc ethtool drm-info libdrm-tests proxychains4 chrony gpsd gpsd-clients tcpdump iptables-persistent dosfstools sshpass fake-hwclock tree evtest python3-dev tftpd-hpa
 pip install evdev
 
 # disable services
@@ -198,6 +198,8 @@ sed -i 's/\(UUID=\S*\s*\/config\s*vfat\s*defaults,x-systemd.automount\)/\1,sync/
 sed -i "/ListenStream=\[::1\]:2947/s/^/# /" /lib/systemd/system/gpsd.socket
 # set chrony use gps time
 echo "refclock SHM 0 refid GPS offset 0.1 delay 0.1" >> /etc/chrony/chrony.conf
+# change tftp root to /gs/webui/firmware
+sed -i 's|TFTP_DIRECTORY="/srv/tftp"|TFTP_DIRECTORY="/gs/webui/firmware"|' /etc/default/tftpd-hpa
 
 # enable color support of ls and also add handy aliases
 cat >> /etc/bash.bashrc << EOF
