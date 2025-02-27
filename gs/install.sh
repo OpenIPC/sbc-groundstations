@@ -57,7 +57,10 @@ ExecStart=${webui_install_dir}/venv/bin/python ${webui_install_dir}/webui.py
 WorkingDirectory=${webui_install_dir}
 Environment=PATH=${webui_install_dir}/venv/bin:$PATH
 Environment=VIRTUAL_ENV=${webui_install_dir}/venv
-Restart=always
+Restart=on-failure
+RestartSec=5
+StartLimitIntervalSec=120
+StartLimitBurst=5
 
 [Install]
 WantedBy=multi-user.target
