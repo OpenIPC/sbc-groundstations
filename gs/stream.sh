@@ -102,7 +102,7 @@ if [ "$osd_enable" == "yes" ]; then
 		while [[ ! -e /dev/shm/msposd || ! -d /sys/class/net/gs-wfb ]]; do sleep 1; done
 		msposd --master 0.0.0.0:$msposd_gs_port --osd -r $msposd_gs_fps --ahi $msposd_gs_ahi
 	elif [ "$video_player" == "gstreamer" ]; then
-		wfb-ng-osd
+		wfb-ng-osd -p 14550
 	fi
 fi
 ) &
