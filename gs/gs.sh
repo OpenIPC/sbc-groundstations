@@ -84,6 +84,10 @@ fi
 echo "start button service"
 systemd-run --unit=button /gs/button.sh
 
+# copy video stream to local
+[[ "$wfb_outgoing_ip" != "224.0.0.1" && "$wfb_outgoing_ip" != "127.0.0.1" ]] && \
+	iptables -t mangle -A OUTPUT -d $wfb_outgoing_ip -p udp --dport $wfb_outgoing_port_video -j TEE --gateway $br0_fixed_ip
+
 # start webui
 [ "$webui_enable" == "yes" ] && systemctl start webui
 
