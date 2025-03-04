@@ -259,6 +259,7 @@ GS Directory Tree
 │       └── bin
 │           ├── msposd
 │           ├── pixelpilot
+│           ├── ttyd
 │           └── wfb-ng-osd
 └── Videos
 
@@ -297,7 +298,6 @@ TODO
 ----
 
 * [Adaptive-Link](https://github.com/sickgreg/OpenIPC-Adaptive-Link) support
-* [improver](https://github.com/OpenIPC/improver) support
 * Change the built-in LED to a normal GPIO LED
 * Screenshots
 * Record video playback
@@ -306,4 +306,4 @@ TODO
 Known issues
 ------------
 
-
+* When WiFi uses 192.168.1.0/24 network segment, SBC cannot be accessed via WiFi. Temporary solution: Modify br0 default network configuration, e.g. modify `br0_fixed_ip` to `192.168.3.20/24`.

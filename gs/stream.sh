@@ -100,7 +100,11 @@ if [ "$osd_enable" == "yes" ]; then
 	if [[ "$video_player" == "pixelpilot" && "$osd_type" == "msposd_gs" ]]; then
 		# start msposd_rockchip after /dev/shm/msposd is created and wfb tunnel is up
 		while [[ ! -e /dev/shm/msposd || ! -d /sys/class/net/gs-wfb ]]; do sleep 1; done
-		msposd --master 0.0.0.0:$msposd_gs_port --osd -r $msposd_gs_fps --ahi $msposd_gs_ahi
+		if [ "$msposd_gs_record" == "yes" ]; then
+			msposd --master 0.0.0.0:$msposd_gs_port --osd -r $msposd_gs_fps --ahi $msposd_gs_ahi --subtitle $rec_dir
+		else
+			msposd --master 0.0.0.0:$msposd_gs_port --osd -r $msposd_gs_fps --ahi $msposd_gs_ahi
+		fi
 	elif [ "$video_player" == "gstreamer" ]; then
 		wfb-ng-osd -p 14550
 	fi
