@@ -144,6 +144,13 @@ pushd SBC-GS/gs
 ./install.sh
 popd
 
+# alink
+alink_latest_tag=$(curl -s https://api.github.com/repos/OpenIPC/adaptive-link/tags | jq -r '.[0].name')
+wget "https://github.com/OpenIPC/adaptive-link/releases/download/${alink_latest_tag}/alink_gs" -O /usr/local/bin/alink
+chmod +x /usr/local/bin/alink
+wget "https://github.com/OpenIPC/adaptive-link/releases/download/${alink_latest_tag}/alink.conf" -O /config/alink.conf
+ln -s /config/alink.conf /etc/alink.conf
+
 # ttyd
 ttyd_version="1.7.7"
 wget "https://github.com/tsl0922/ttyd/releases/download/${ttyd_version}/ttyd.aarch64" -O /usr/local/bin/ttyd

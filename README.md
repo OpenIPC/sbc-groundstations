@@ -177,6 +177,7 @@ GS Directory Tree
 │   ├── gs.conf
 │   └── gs.key
 ├── etc
+│   ├── alink.conf -> /config/alink.conf
 │   ├── default
 │   │   └── wifibroadcast -> /tmp/wifibroadcast
 │   ├── gs.conf -> /config/gs.conf
@@ -257,6 +258,7 @@ GS Directory Tree
 ├── usr
 │   └── local
 │       └── bin
+│           ├── alink
 │           ├── msposd
 │           ├── pixelpilot
 │           ├── ttyd
@@ -297,7 +299,6 @@ Troubleshooting
 TODO
 ----
 
-* [Adaptive-Link](https://github.com/sickgreg/OpenIPC-Adaptive-Link) support
 * Change the built-in LED to a normal GPIO LED
 * Screenshots
 * Record video playback

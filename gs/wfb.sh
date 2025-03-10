@@ -64,8 +64,9 @@ elif [ "$wfb_mode" == "standalone" ]; then
 	# Modify /etc/wifibroadcast.cfg according to gs.conf
 	cat > /etc/wifibroadcast.cfg << EOF
 [common]
-wifi_channel = '${wfb_channel}'
+wifi_channel = ${wfb_channel}
 wifi_region = '${wfb_region}'
+log_interval = ${wfb_log_interval}
 
 [gs_mavlink]
 peer = 'connect://${wfb_outgoing_ip}:${wfb_outgoing_port_mavlink}'
