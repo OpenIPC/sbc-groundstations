@@ -20,6 +20,7 @@ case "$screen_mode" in
 		echo "use max-resolution screen_mode: $screen_mode"
 		;;
 	*"x"*"@"*)
+		screen_mode=${screen_mode%D}
 		echo "use screen_mode in gs.conf: $screen_mode"
 		;;
 	*)
