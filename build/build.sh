@@ -178,6 +178,8 @@ pip install evdev
 
 # disable services
 sed -i '/disable_service systemd-networkd/a disable_service dnsmasq' /config/before.txt
+# systemctl disable tftpd-hpa
+update-rc.d -f tftpd-hpa remove
 
 # enable services
 sed -i "s/disable_service systemd-networkd/# disable_service systemd-networkd/" /config/before.txt
