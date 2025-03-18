@@ -84,7 +84,9 @@ fi
 truncate -s ${diskNewSize}G $IMAGE
 
 LOOPDEV=$(losetup -P --show -f $IMAGE)
-ROOT_PART=$(sgdisk -p $LOOPDEV | grep "rootfs" | tail -n 1 | tr -s ' ' | cut -d ' ' -f 2)
+# ROOT_PART=$(sgdisk -p $LOOPDEV | grep "rootfs" | tail -n 1 | tr -s ' ' | cut -d ' ' -f 2)
+# Base image build by rsdk have no rootfs flag
+ROOT_PART="3"
 ROOT_DEV=${LOOPDEV}p${ROOT_PART}
 
 # move second/backup GPT header to end of disk

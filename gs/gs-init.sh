@@ -24,14 +24,14 @@ BOARD=$(cat /etc/hostname)
 os_dev=$(blkid | grep rootfs | grep -oP "/dev/.+(?=p\d+)") || true
 if [ ! -b ${os_dev}p4 ]; then
         sgdisk -ge $os_dev
-        root_partirion_size=$(parted -s $os_dev p | grep -oP "\d+(?=MB\s*ext4)")
+        root_partirion_size=$(parted -s $os_dev unit MiB p | grep -oP "\d+(?=MiB\s*ext4)")
         root_partirion_size_new=$(( root_partirion_size + $rootfs_reserved_space ))
         cat << EOF | parted ---pretend-input-tty $os_dev > /dev/null 2>&1
 resizepart 3 ${root_partirion_size_new}MiB
 yes
 EOF
         resize2fs ${os_dev}p3
-        root_partirion_end=$(parted -s $os_dev p | grep rootfs | tr -s ' ' | cut -d ' ' -f 4)
+        root_partirion_end=$(parted -s $os_dev p | grep ext4 | tr -s ' ' | cut -d ' ' -f 4)
         parted -s $os_dev mkpart videos fat32 ${root_partirion_end} 100%
         mkfs.exfat ${os_dev}p4
 fi
