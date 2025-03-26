@@ -50,7 +50,7 @@ GPIO_RED_LED=$(gpiofind PIN_${red_led_pin})
 function gencmd(){
 	if [ "$video_player" == "pixelpilot" ]; then
 		video_play_cmd="pixelpilot $screen_mode_cmdline --codec $video_codec --dvr-framerate $rec_fps --dvr-fmp4 --dvr-template ${rec_dir}/record_%Y-%m-%d_%H-%M-%S.mp4 --dvr-sequenced-files"
-		[ "$osd_enable" == "no" ] || video_play_cmd="$video_play_cmd --osd --osd-elements '' --osd-config $osd_config_file --osd-custom-message --osd-refresh $((1000 / ${osd_fps}))"
+		[ "$osd_enable" == "no" ] || video_play_cmd="$video_play_cmd --osd --osd-config $osd_config_file --osd-custom-message --osd-refresh $((1000 / ${osd_fps}))"
 		[ "$record_on" == "arm" ] && video_play_cmd="$video_play_cmd --mavlink-dvr-on-arm"
 		[ "$disable_vsync" == "yes" ] && video_play_cmd="$video_play_cmd --disable-vsync"
 		video_rec_cmd="$video_play_cmd --dvr-start"
