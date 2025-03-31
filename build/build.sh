@@ -246,6 +246,33 @@ cat > /etc/iptables/rules.v4 << EOF
 COMMIT
 EOF
 
+# Save fake hwclock to disk every minute
+cat >> /etc/systemd/system/save-fakehwclock.timer << EOF
+[Unit]
+Description=Save fake hwclock to disk every minute
+
+[Timer]
+OnBootSec=1min
+OnUnitActiveSec=1min
+Unit=save-fakehwclock.service
+
+[Install]
+WantedBy=timers.target
+EOF
+
+cat >> /etc/systemd/system/save-fakehwclock.service << EOF
+[Unit]
+Description=Save fake hwclock to disk
+
+[Service]
+Type=oneshot
+ExecStart=/sbin/fake-hwclock save
+EOF
+
+systemctl enable save-fakehwclock.timer
+echo $(date "+%Y-%m-%d %H:%M:%S") > /etc/fake-hwclock.data
+
+
 rm -rf /root/SourceCode
 rm /etc/resolv.conf
 chown -R 1000:1000 /gs
