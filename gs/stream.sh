@@ -155,6 +155,7 @@ while read record_button_action < /run/record_button.fifo; do
 			bash -c "$video_play_cmd" &
 			pid_player=$!
 		fi
+		sync
 		echo "record stop!" > /run/pixelpilot.msg
 		video_record='0'
 	fi
