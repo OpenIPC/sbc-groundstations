@@ -148,7 +148,7 @@ popd
 alink_latest_tag=$(curl -s https://api.github.com/repos/OpenIPC/adaptive-link/tags | jq -r '.[0].name')
 wget "https://github.com/OpenIPC/adaptive-link/releases/download/${alink_latest_tag}/alink_gs" -O /usr/local/bin/alink
 chmod +x /usr/local/bin/alink
-wget "https://raw.githubusercontent.com/OpenIPC/adaptive-link/refs/heads/main/more/alink_gs.conf" -O /config/alink.conf
+wget "https://raw.githubusercontent.com/OpenIPC/adaptive-link/refs/heads/main/alink_gs.conf" -O /config/alink.conf
 ln -s /config/alink.conf /etc/alink.conf
 
 # ttyd
