@@ -263,26 +263,10 @@
       ]
     },
     {
-      "name": "Video decode&display latency",
-      "type": "VideoDecodeLatencyWidget",
-      "x": -250,
-      "y": 56,
-      "icon_path": "latency.png",
-      "template": "%f ms (avg)",
-      "per_second_window_s": 2,
-      "per_second_bucket_ms": 100,
-      "facts": [
-        {
-          "__comment": "Avg Decode Latency per-second",
-          "name": "video.decode_and_handover_ms"
-        }
-      ]
-    },
-    {
       "name": "Video link throughput",
       "type": "VideoBitrateWidget",
       "x": -250,
-      "y": 86,
+      "y": 56,
       "icon_path": "network.png",
       "template": "%f Mbps",
       "per_second_window_s": 2,
@@ -296,10 +280,11 @@
     },
     {
       "name": "WFB radio",
-      "type": "TplTextWidget",
+      "type": "IconTplTextWidget",
       "x": -250,
-      "y": 116,
-      "template": "WFB %d F%u L%u",
+      "y": 86,
+      "icon_path": "wfb.png",
+      "template": "RSSI %d ",
       "facts": [
         {
           "name": "mavlink.radio_status.rssi",
@@ -307,16 +292,51 @@
             "sysid": "3",
             "compid": "68"
           }
-        },
+        }
+      ]
+    },
+    {
+      "name": "WFB radio SNR",
+      "type": "TplTextWidget",
+      "x": -110,
+      "y": 86,
+      "template": "| SNR %d",
+      "facts": [
         {
-          "name": "mavlink.radio_status.fixed",
+          "name": "wfbcli.rx.ant_stats.snr_min",
+          "tags": {
+            "ant_id": "0",
+            "id": "video rx"
+          }
+        }
+      ]
+    },
+    {
+      "name": "WFB radio package lost",
+      "type": "IconTplTextWidget",
+      "x": -250,
+      "y": 116,
+      "icon_path": "wfb.png",
+      "template": "LOST %u ",
+      "facts": [
+        {
+          "name": "mavlink.radio_status.rxerrors",
           "tags": {
             "sysid": "3",
             "compid": "68"
           }
-        },
+        }
+      ]
+    },
+    {
+      "name": "WFB radio package fec",
+      "type": "TplTextWidget",
+      "x": -110,
+      "y": 116,
+      "template": "| FEC %u",
+      "facts": [
         {
-          "name": "mavlink.radio_status.rxerrors",
+          "name": "mavlink.radio_status.fixed",
           "tags": {
             "sysid": "3",
             "compid": "68"
