@@ -119,7 +119,7 @@ apt --no-install-recommends -y install libgstreamer1.0-dev libgstreamer-plugins-
 git clone --depth=1 https://github.com/OpenIPC/PixelPilot_rk.git
 pushd PixelPilot_rk
 cmake -B build
-cmake --build build --target install
+cmake --build build -j$(nproc) --target install
 popd
 
 # msposd_rockchip
