@@ -26,7 +26,7 @@ fi
 # Update system to date
 apt update
 apt dist-upgrade -y --allow-downgrades
-apt install -y git cmake dkms build-essential pkg-config libevent-dev
+apt install -y git cmake dkms build-essential pkg-config libevent-dev unzip
 
 # Remove old kernel in radxa-zero3_debian_bullseye_xfce_b6.img
 dpkg -l | grep -q "linux-image-5.10.160-26-rk356x" && apt purge -y linux-image-5.10.160-26-rk356x linux-headers-5.10.160-26-rk356x
