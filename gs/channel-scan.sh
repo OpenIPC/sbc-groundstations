@@ -77,7 +77,7 @@ for channel in $channel_available; do
 done
 
 if [ -n "${channel_wfb_used}" ]; then
-	sed -i "s/wfb_channel='[0-9]\+'/wfb_channel='${channel_wfb_used}'/" /etc/gs.conf
+	sed -i "s/wfb_channel='[0-9]\+'/wfb_channel='${channel_wfb_used}'/" $(readlink -f /etc/gs.conf)
 	for nic in $wfb_nics; do
 		iw dev $nic set channel $channel_wfb_used HT${wfb_bandwidth}
 	done

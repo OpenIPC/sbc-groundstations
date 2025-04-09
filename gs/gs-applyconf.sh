@@ -6,7 +6,7 @@ set -x
 # merge custom.conf to gs.conf
 if [ -f /config/custom.conf ]; then
 	grep -E '^\s*[^#]' /config/custom.conf | while IFS='=' read -r ckey cvalue; do
-		sed -i "s/^${ckey}=.*/${ckey}=${cvalue}/" /etc/gs.conf
+		sed -i "s/^${ckey}=.*/${ckey}=${cvalue}/" $(readlink -f /etc/gs.conf)
 	done
 	mv /config/custom.conf /config/custom-merged.conf
 	source /etc/gs.conf
