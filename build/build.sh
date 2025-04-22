@@ -236,6 +236,9 @@ alias la='ls -A'
 alias l='ls -CF'
 EOF
 
+# Enable ipv4 forward
+grep -q "^net\.ipv4\.ip_forward.*1" /etc/sysctl.conf || echo "net.ipv4.ip_forward=1" >> /etc/sysctl.conf
+
 # Forward SBC port 2222/8080 to IPC port 22/80
 cat > /etc/iptables/rules.v4 << EOF
 *nat
