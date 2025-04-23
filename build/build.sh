@@ -113,13 +113,21 @@ popd
 
 # PixelPilot_rk / fpvue
 # From JohnDGodwin
-apt -y install librockchip-mpp-dev libdrm-dev libcairo-dev gstreamer1.0-rockchip1 librga-dev librga2 librockchip-mpp1 librockchip-vpu0 libv4l-rkmpp libgl4es libgl4es-dev libspdlog-dev nlohmann-json3-dev libmsgpack-dev
+apt -y install librockchip-mpp-dev libdrm-dev libcairo-dev gstreamer1.0-rockchip1 librga-dev librga2 librockchip-mpp1 librockchip-vpu0 libv4l-rkmpp libgl4es libgl4es-dev libspdlog-dev nlohmann-json3-dev libmsgpack-dev libgpiod-dev
 apt --no-install-recommends -y install libgstreamer1.0-dev libgstreamer-plugins-base1.0-dev libgstreamer-plugins-bad1.0-dev gstreamer1.0-plugins-base gstreamer1.0-plugins-good gstreamer1.0-plugins-bad gstreamer1.0-plugins-ugly gstreamer1.0-libav gstreamer1.0-tools
 
 git clone --depth=1 https://github.com/OpenIPC/PixelPilot_rk.git
 pushd PixelPilot_rk
+
+# Temporarily use pr#62 for test
+git fetch origin pull/62/head:pr-62
+git checkout pr-62
+
+git submodule update --init --recursive
 cmake -B build
 cmake --build build -j$(nproc) --target install
+
+cp /root/SourceCode/SBC-GS/gs/gsmenu.sh /usr/local/bin
 popd
 
 # msposd_rockchip

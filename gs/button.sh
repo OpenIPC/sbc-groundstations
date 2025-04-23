@@ -217,13 +217,16 @@ function execute_button_function() {
 	done
 }
 
-execute_button_function btn_q1 &
+# up/down/left/right/q1 is used by PixelPilot_rk
+if [ "$video_player" != "pixelpilot"]; then
+	execute_button_function btn_cu &
+	execute_button_function btn_cd &
+	execute_button_function btn_cl &
+	execute_button_function btn_cr &
+	execute_button_function btn_cm &
+	execute_button_function btn_q1 &
+fi
 execute_button_function btn_q2 &
 execute_button_function btn_q3 &
-execute_button_function btn_cu &
-execute_button_function btn_cd &
-execute_button_function btn_cl &
-execute_button_function btn_cr &
-execute_button_function btn_cm &
 
 wait
