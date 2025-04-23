@@ -95,6 +95,12 @@ sgdisk -ge $LOOPDEV
 # refresh partition table
 # kpartx -a /dev/loop
 
+# Change config partition type GUID from Linux to Windows
+# 8300(0FC63DAF-8483-4772-8E79-3D69D8477DE4) -> 0700(EBD0A0A2-B9E5-4433-87C0-68B6B72699C7)
+CONFIG_PART_NUM=1
+CONFIG_PART_TYPE=$(lsblk -o PARTTYPE ${LOOPDEV}p${CONFIG_PART_NUM})
+[ "$CONFIG_PART_TYPE" == "EBD0A0A2-B9E5-4433-87C0-68B6B72699C7" ] || sgdisk --typecode=${CONFIG_PART_NUM}:0700 $LOOPDEV
+
 # expand root patition size
 parted -s $LOOPDEV resizepart $ROOT_PART 100%
 
