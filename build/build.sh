@@ -147,6 +147,17 @@ make osd mode=rockchip
 cp -a osd.rockchip /usr/local/bin/wfb-ng-osd
 popd
 
+# RubyFPV
+apt -y install libpcap-dev libi2c-dev libgpiod-dev
+git clone --depth=1 https://github.com/RubyFPV/RubyFPV.git
+pushd RubyFPV
+make all RUBY_BUILD_ENV=radxa
+
+mkdir -p /home/radxa/ruby/plugins/osd
+cp -a ruby_* test_* version_ruby_base.txt res /home/radxa/ruby
+cp -a ruby_plugin_* /home/radxa/ruby/plugins/osd
+popd
+
 # SBC-GS-CC
 pushd SBC-GS/gs
 ./install.sh
