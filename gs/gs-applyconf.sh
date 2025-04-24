@@ -133,7 +133,7 @@ if [ -z "$wfb_integrated_wnic" ]; then
 	# wifi0 station mode configuration
 	echo "start configure wifi0 station mode"
 	# If no connection named radxa, create one to automatically connect to the unencrypted WiFi named OpenIPC.
-	[ -f /etc/NetworkManager/system-connections/wifi0.nmconnection ] || nmcli con add type wifi ifname wifi0 con-name wifi0 ssid OpenIPC
+	[ -f /etc/NetworkManager/system-connections/wifi0.nmconnection ] || nmcli con add type wifi ifname wifi0 con-name wifi0 ssid OpenIPC autoconnect no
 	# If the WiFi configuration in gs.conf is not empty and changes, modify the WiFi connection information according to the configuration file
 	if [[ -f /etc/NetworkManager/system-connections/wifi0.nmconnection && -n $wifi_ssid && -n $wifi_encryption && -n $wifi_password ]]; then
 		WIFI_SSID_OS=$(nmcli -g 802-11-wireless.ssid connection show wifi0)
@@ -154,12 +154,13 @@ if [ -z "$wfb_integrated_wnic" ]; then
 		[[ "$Hotspot_ip_OS" == $hotspot_ip ]] || nmcli connection modify hotspot ipv4.method shared ipv4.addresses $hotspot_ip
 	elif [[ -d /sys/class/net/wifi0 && -n $hotspot_ssid && -n $hotspot_password && -n $hotspot_ip ]]; then
 		nmcli dev wifi hotspot con-name hotspot ifname wifi0 ssid "$hotspot_ssid" password "$hotspot_password"
-		nmcli connection modify hotspot ipv4.method shared ipv4.addresses $hotspot_ip autoconnect no
+		nmcli connection modify hotspot ipv4.method shared ipv4.addresses $hotspot_ip autoconnect yes
 	else
 		echo "no wifi0 or hotspot setting is blank"
 	fi
-	[[ -d /sys/class/net/wifi0 && "$wifi_mode" == "hotspot" ]] && ( sleep 15; nmcli connection up hotspot ) &
-	echo "wifi0 hotspot mode configure done"
+
+	# Fallback to hotspot mode if wifi connect failed
+	[[ -d /sys/class/net/wifi0 && "$wifi_mode" == "station" ]] && ( sleep 15; nmcli connection up wifi0 || nmcli con up hotspot ) &
 fi
 
 # radxa0 dnsmasq configuration

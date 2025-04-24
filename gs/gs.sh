@@ -30,15 +30,6 @@ else
 	[ "$(systemctl is-enabled ttyd)" == "enabled" ] && systemctl disabled --now ttyd
 fi
 
-# WiFi
-if [ -d /sys/class/net/wifi0 ]; then
-	if [ "$wifi_mode" == "hotspot" ]; then
-	       ( sleep 15; nmcli connection up hotspot ) &
-       elif [ "$wifi_mode" == "station" ]; then
-	       ( sleep 5; nmcli connection up wifi0 ) &
-	fi
-fi
-
 # pwm fan service
 [ "$fan_service_enable" == "yes" ] && ( echo "start fan service"; systemd-run --unit=fan /gs/fan.sh )
 
