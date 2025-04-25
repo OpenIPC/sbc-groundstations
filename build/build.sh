@@ -148,14 +148,16 @@ cp -a osd.rockchip /usr/local/bin/wfb-ng-osd
 popd
 
 # RubyFPV
-apt -y install libpcap-dev libi2c-dev libgpiod-dev
-git clone --depth=1 https://github.com/RubyFPV/RubyFPV.git
+rubyfpv_version="11.0"
+apt -y install build-essential librockchip-mpp-dev libdrm-dev libcairo-dev libpcap-dev libi2c-dev libgpiod-dev wireless-tools
+git clone --depth=1 --branch $rubyfpv_version --single-branch https://github.com/RubyFPV/RubyFPV.git
 pushd RubyFPV
 make all RUBY_BUILD_ENV=radxa
 
 mkdir -p /home/radxa/ruby/plugins/osd
-cp -a ruby_* test_* version_ruby_base.txt res /home/radxa/ruby
+cp -a ruby_* test_* res /home/radxa/ruby
 cp -a ruby_plugin_* /home/radxa/ruby/plugins/osd
+[ -f version_ruby_base.txt ] && cp version_ruby_base.txt /home/radxa/ruby
 popd
 
 # SBC-GS-CC

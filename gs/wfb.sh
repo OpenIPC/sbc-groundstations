@@ -3,7 +3,13 @@
 set -e
 set -x
 
+# Only run script after gs service started
+[ -h "/run/systemd/units/invocation:gs.service" ] || exit 0
+
 source /etc/gs.conf
+# Not run script when using rubyfpv
+[ "$video_player" == "rubyfpv" ] && exit 0
+
 wfb_nics=$(echo /sys/class/net/wl* | sed -r -e "s^/sys/class/net/^^g" -e "s/wifi0\s{0,1}//" -e "s/wl\*//")
 [ -n "$wfb_integrated_wnic" ] && wfb_nics="$wfb_integrated_wnic $wfb_nics"
 [ -z "$wfb_nics" ] && exit 0
@@ -40,7 +46,6 @@ set_txpower() {
 }
 
 if [ "$wfb_mode" == "cluster" ]; then
-	[ -h "/run/systemd/units/invocation:gs.service" ] || exit 0
 	# stop local_node.service if exist
 	[ -h "/run/systemd/units/invocation:local_node.service" ] && systemctl stop local_node.service
 	# set all wnic to monitor
@@ -60,7 +65,6 @@ if [ "$wfb_mode" == "cluster" ]; then
 	wait
 	"
 elif [ "$wfb_mode" == "standalone" ]; then
-	[ -h "/run/systemd/units/invocation:gs.service" ] || exit 0
 	# Modify /etc/wifibroadcast.cfg according to gs.conf
 	cat > /etc/wifibroadcast.cfg << EOF
 [common]
@@ -82,7 +86,7 @@ bandwidth = ${wfb_bandwidth}
 bandwidth = 20
 
 EOF
-# Direct use wfb_rx for msposd_gs
+	# Direct use wfb_rx for msposd_gs
 	if [[ "$osd_type" == "msposd_gs" && "$msposd_gs_method" == "wfbrx" ]]; then
 	cat >> /etc/wifibroadcast.cfg << EOF
 [gs]

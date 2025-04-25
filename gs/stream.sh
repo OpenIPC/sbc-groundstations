@@ -117,6 +117,7 @@ fi
 ( sleep 10 && fbi -d /dev/fb0 -a -fitwidth -T 1 --noverbose /gs/wallpaper.png ) &
 
 # Monitor button for start/stop reocrd
+[ -p /run/record_button.fifo ] || mkfifo /run/record_button.fifo
 while read record_button_action < /run/record_button.fifo; do
 	[ "$record_button_action" == "single" ] || continue
 	if [ "$video_record" == "0" ]; then

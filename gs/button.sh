@@ -2,6 +2,8 @@
 
 set -e
 source /etc/gs.conf
+# Passing record button state from button.sh to stream.sh
+[ -p /run/record_button.fifo ] || mkfifo /run/record_button.fifo
 
 # change wifi mode between station and hotspot
 function change_wifi_mode() {
@@ -218,7 +220,7 @@ function execute_button_function() {
 }
 
 # up/down/left/right/q1 is used by PixelPilot_rk
-if [ "$video_player" != "pixelpilot"]; then
+if [ "$video_player" != "pixelpilot" ]; then
 	execute_button_function btn_cu &
 	execute_button_function btn_cd &
 	execute_button_function btn_cl &

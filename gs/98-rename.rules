@@ -1,6 +1,8 @@
 # force name radxa zero 3w onboard wifi to wifi0
 ACTION=="add", SUBSYSTEM=="net", KERNEL=="wl*", ENV{ID_NET_DRIVER}=="aicwf_sdio", NAME="wifi0"
 # SUBSYSTEM=="net", KERNEL=="wl*", ACTION=="add", DRIVERS=="aicwf_sdio", NAME="wifi0"
+# use legacy wlan name for compatibility with RubyFpv
+ACTION=="add", SUBSYSTEM=="net", KERNEL=="wl*", NAME="wlan0"
 # rename gadget usb net to radxa0
 ACTION=="add", SUBSYSTEM=="net", KERNELS=="gadget", NAME="radxa0"
 # rename usb tethering ncm nic to usb0

@@ -11,6 +11,11 @@ if not os.path.lexists("/run/systemd/units/invocation:gs.service"):
     print("gs service is not started, use keyboard as normal")
     sys.exit(1)
 
+# Do not use keyboard as button when RubyFpv is running
+if os.path.lexists("/run/systemd/units/invocation:rubyfpv.service"):
+    print("RubyFpv is running, use keyboard as normal")
+    sys.exit(1)
+
 # Check number of command line arguments
 if len(sys.argv) != 2:
     print("Usage: python script.py /path/to/kbd_device")

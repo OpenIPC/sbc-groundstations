@@ -77,8 +77,8 @@ Default buttons and LEDs PIN number.
     + btn_q2_pin='38'
     + btn_q3_pin='40'
 * Custom button PIN
-    + btn_cu_pin='18'
-    + btn_cd_pin='16'
+    + btn_cu_pin='16'
+    + btn_cd_pin='18'
     + btn_cl_pin='13'
     + btn_cr_pin='11'
 * LED PIN
