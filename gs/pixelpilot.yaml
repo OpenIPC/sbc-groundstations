@@ -1,0 +1,16 @@
+gsmenu:
+  enabled: true
+  gpio:
+    # RuncamVRX
+    # left: 13
+    # right: 38
+    # up: 16
+    # down: 18
+    # center: 11
+    # rec: 32
+    # RubyFpv
+    left: 13
+    right: 11
+    up: 16
+    down: 18
+    rec: 32

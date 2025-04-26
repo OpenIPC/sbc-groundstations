@@ -53,6 +53,7 @@ function gencmd(){
 		[ "$osd_enable" == "no" ] || video_play_cmd="$video_play_cmd --osd --osd-config $osd_config_file --osd-custom-message --osd-refresh $((1000 / ${osd_fps}))"
 		[ "$record_on" == "arm" ] && video_play_cmd="$video_play_cmd --mavlink-dvr-on-arm"
 		[ "$disable_vsync" == "yes" ] && video_play_cmd="$video_play_cmd --disable-vsync"
+		[ "$gsmenu_enable" == "yes" ] && video_play_cmd="$video_play_cmd --config /etc/pixelpilot.yaml"
 		video_rec_cmd="$video_play_cmd --dvr-start"
 	elif [ "$video_player" == "gstreamer" ]; then
 		# current_date=$(date +'%m-%d-%Y_%H-%M-%S')
