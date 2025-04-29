@@ -54,6 +54,7 @@ function gencmd(){
 		[ "$record_on" == "arm" ] && video_play_cmd="$video_play_cmd --mavlink-dvr-on-arm"
 		[ "$disable_vsync" == "yes" ] && video_play_cmd="$video_play_cmd --disable-vsync"
 		[ "$gsmenu_enable" == "yes" ] && video_play_cmd="$video_play_cmd --config /etc/pixelpilot.yaml"
+		[ "$wfb_outgoing_video" == "socket" ] && video_play_cmd="$video_play_cmd --socket /run/wfb_video.sock"
 		video_rec_cmd="$video_play_cmd --dvr-start"
 	elif [ "$video_player" == "gstreamer" ]; then
 		# current_date=$(date +'%m-%d-%Y_%H-%M-%S')

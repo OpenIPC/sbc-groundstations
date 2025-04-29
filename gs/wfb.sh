@@ -65,6 +65,11 @@ if [ "$wfb_mode" == "cluster" ]; then
 	wait
 	"
 elif [ "$wfb_mode" == "standalone" ]; then
+	if [ "$wfb_outgoing_video" == "socket" ]; then
+		gs_video_peer="connect_unix://@/run/wfb_video.sock"
+	else
+		gs_video_peer="connect://${wfb_outgoing_ip}:${wfb_outgoing_port_video}"
+	fi
 	# Modify /etc/wifibroadcast.cfg according to gs.conf
 	cat > /etc/wifibroadcast.cfg << EOF
 [common]
@@ -77,7 +82,7 @@ peer = 'connect://${wfb_outgoing_ip}:${wfb_outgoing_port_mavlink}'
 bandwidth = 20
 
 [gs_video]
-peer = 'connect://${wfb_outgoing_ip}:${wfb_outgoing_port_video}'
+peer = '${gs_video_peer}'
 
 [base]
 bandwidth = ${wfb_bandwidth}
