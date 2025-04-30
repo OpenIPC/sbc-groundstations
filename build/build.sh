@@ -92,6 +92,7 @@ git clone --depth=1 https://github.com/lwfinger/rtw88.git
 pushd rtw88
 make KERNELRELEASE=${KVER}
 make KERNELRELEASE=${KVER} install
+make KERNELRELEASE=${KVER} install_fw
 cat >> /etc/modprobe.d/blacklist-rtw88.conf << EOF
 # injection drivers available for 8812au, 8812bu and 8812cu/8822cu
 blacklist rtw_8812au
