@@ -173,8 +173,7 @@ popd
 
 # alink
 alink_latest_tag=$(curl -s https://api.github.com/repos/OpenIPC/adaptive-link/tags | jq -r '.[0].name')
-wget "https://github.com/OpenIPC/adaptive-link/releases/download/${alink_latest_tag}/alink_gs" -O /usr/local/bin/alink
-chmod +x /usr/local/bin/alink
+wget "https://github.com/OpenIPC/adaptive-link/releases/download/${alink_latest_tag}/alink_gs" -O /usr/local/bin/alink && chmod +x /usr/local/bin/alink
 wget "https://raw.githubusercontent.com/OpenIPC/adaptive-link/refs/heads/main/alink_gs.conf" -O /config/alink.conf
 ln -s /config/alink.conf /etc/alink.conf
 
@@ -209,6 +208,17 @@ pip install evdev
 wget "https://github.com/OpenIPC/snander-mstar/releases/download/latest/snander-linux.zip"
 unzip snander-linux.zip snander -d /usr/local/bin
 chmod +x /usr/local/bin/snander
+
+# yq
+wget https://github.com/mikefarah/yq/releases/latest/download/yq_linux_arm64 -O /usr/local/bin/yq && chmod +x /usr/local/bin/yq
+
+# yaml-cli
+git clone --depth=1 https://github.com/OpenIPC/yaml-cli.git
+pushd yaml-cli
+cmake .
+make -j$(nproc)
+make install
+popd
 
 # disable services
 sed -i '/disable_service systemd-networkd/a disable_service dnsmasq' /config/before.txt

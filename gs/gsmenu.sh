@@ -1,9 +1,65 @@
 #!/bin/bash
 set -o pipefail
 source /etc/gs.conf
-SSH='timeout -k 1 11 sshpass -p 12345 ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o ConnectTimeout=10 -o ControlMaster=auto -o ControlPath=/run/ssh_control:%h:%p:%r -o ControlPersist=15s -o ServerAliveInterval=3 -o ServerAliveCountMax=2 root@10.5.0.10 '
+# Configuration
+REMOTE_IP="10.5.0.10"
+SSH_PASS="12345"
+CACHE_DIR="/tmp/gsmenu_cache"
+CACHE_TTL=10 # seconds
+MAJESTIC_YAML="/etc/majestic.yaml"
+WFB_YAML="/etc/wfb.yaml"
+PRESET_DIR="/etc/presets"
+
+# SSH command setup
+SSH="timeout -k 1 11 sshpass -p $SSH_PASS ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o ConnectTimeout=10 -o ControlMaster=auto -o ControlPath=/run/ssh_control:%h:%p:%r -o ControlPersist=15s -o ServerAliveInterval=3 -o ServerAliveCountMax=2 root@$REMOTE_IP"
+SCP="timeout -k 1 11 sshpass -p $SSH_PASS scp -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o ConnectTimeout=10 -o ControlMaster=auto -o ControlPath=/run/ssh_control:%h:%p:%r -o ControlPersist=15s -o ServerAliveInterval=3 -o ServerAliveCountMax=2"
+
+# Create cache directory if it doesn't exist
+mkdir -p "$CACHE_DIR"
+
+# Function to refresh cached files
+refresh_cache() {
+    local current_time=$(date +%s)
+    local last_refresh=$((current_time - CACHE_TTL))
+
+    # Check if we need to refresh
+    if [[ ! -f "$CACHE_DIR/last_refresh" ]] || [[ $(cat "$CACHE_DIR/last_refresh") -lt $last_refresh ]]; then
+        # Copy the YAML configuration files
+        $SSH "cat $MAJESTIC_YAML" > "$CACHE_DIR/majestic.yaml" 2>/dev/null
+        $SSH "cat $WFB_YAML" > "$CACHE_DIR/wfb.yaml" 2>/dev/null
+
+        # Update refresh timestamp
+        echo "$current_time" > "$CACHE_DIR/last_refresh"
+    fi
+}
+
+# Function to get value from majestic.yaml using yaml-cli
+get_majestic_value() {
+    local key="$1"
+    yaml-cli -i "$CACHE_DIR/majestic.yaml" -g "$key" 2>/dev/null
+}
+
+# Function to get value from wfb.yaml using yaml-cli
+get_wfb_value() {
+    local key="$1"
+    yaml-cli -i "$CACHE_DIR/wfb.yaml" -g "$key" 2>/dev/null
+}
+
+# Refresh cache for get
+case "$@" in
+  "get air"*)
+    [ "$3" != "presets" ] && refresh_cache
+    ;;
+esac
 
 case "$@" in
+    "values air presets preset")
+        if [ -d $PRESET_DIR ]; then
+            for dir in $PRESET_DIR/presets/*; do
+                echo $(basename $dir)
+            done
+        fi
+    ;;
     "values air wfbng mcs_index")
         echo -n 0 10
         ;;
@@ -83,67 +139,144 @@ case "$@" in
         echo -e "mavfwd\nmsposd"
         ;;
 
-    "get air camera mirror")
-        [ "true" = $($SSH cli -g .image.mirror) ] && echo 1 || echo 0
+"get air presets info"*)
+        if [ "$5" == "" ] ; then
+            echo ""
+        else
+            echo "Name: $(yaml-cli -i $PRESET_DIR/presets/$5/preset-config.yaml -g .name)"
+            echo "Author: $(yaml-cli -i $PRESET_DIR/presets/$5/preset-config.yaml -g .author)"
+            echo "Description: $(yaml-cli -i $PRESET_DIR/presets/$5/preset-config.yaml -g .description)"
+            echo "Category: $(yaml-cli -i $PRESET_DIR/presets/$5/preset-config.yaml -g .category)"
+            echo "Sensor: $(yaml-cli -i $PRESET_DIR/presets/$5/preset-config.yaml -g .sensor)"
+            echo "Status: $(yaml-cli -i $PRESET_DIR/presets/$5/preset-config.yaml -g .status)"
+            echo "Tags: $(yaml-cli -i $PRESET_DIR/presets/$5/preset-config.yaml -g .tags)"
+        fi
+    ;;
+    "get air presets update")
+        mkdir -p $PRESET_DIR
+        if [ -d "$PRESET_DIR/.git" ]; then
+            # If it's already a git repo, force reset and pull
+            cd $PRESET_DIR
+            git fetch --all
+            git reset --hard origin/master
+            git pull origin master --force
+        else
+            # If not a git repo yet, clone fresh
+            git clone https://github.com/OpenIPC/fpv-presets.git $PRESET_DIR
+        fi
+    ;;
+        "get air camera mirror")
+        [ "$(get_majestic_value '.image.mirror')" = "true" ] && echo 1 || echo 0
         ;;
     "get air camera flip")
-        [ "true" = $($SSH cli -g .image.flip) ] && echo 1 || echo 0
+        [ "$(get_majestic_value '.image.flip')" = "true" ] && echo 1 || echo 0
         ;;
     "get air camera contrast")
-        $SSH cli -g .image.contrast
+        get_majestic_value '.image.contrast'
         ;;
     "get air camera hue")
-        $SSH cli -g .image.hue
+        get_majestic_value '.image.hue'
         ;;
     "get air camera saturation")
-        $SSH cli -g .image.saturation
+        get_majestic_value '.image.saturation'
         ;;
     "get air camera luminace")
-        $SSH cli -g .image.luminance
+        get_majestic_value '.image.luminance'
         ;;
     "get air camera size")
-        $SSH cli -g .video0.size
+        get_majestic_value '.video0.size'
         ;;
     "get air camera fps")
-        $SSH cli -g .video0.fps
+        get_majestic_value '.video0.fps'
         ;;
     "get air camera bitrate")
-        $SSH cli -g .video0.bitrate
+        get_majestic_value '.video0.bitrate'
         ;;
     "get air camera codec")
-        $SSH cli -g .video0.codec
+        get_majestic_value '.video0.codec'
         ;;
     "get air camera gopsize")
-        $SSH cli -g .video0.gopSize
+        get_majestic_value '.video0.gopSize'
         ;;
     "get air camera rc_mode")
-        $SSH cli -g .video0.rcMode
+        get_majestic_value '.video0.rcMode'
         ;;
     "get air camera rec_enable")
-         [ "true" = $($SSH cli -g .records.enabled) ] && echo 1 || echo 0
+        [ "$(get_majestic_value '.records.enabled')" = "true" ] && echo 1 || echo 0
         ;;
     "get air camera rec_split")
-        $SSH cli -g .records.split
+        get_majestic_value '.records.split'
         ;;
     "get air camera rec_maxusage")
-        $SSH cli -g .records.maxUsage
+        get_majestic_value '.records.maxUsage'
         ;;
     "get air camera exposure")
-        $SSH cli -g .isp.exposure
+        get_majestic_value '.isp.exposure'
         ;;
     "get air camera antiflicker")
-        $SSH cli -g .isp.antiFlicker
+        get_majestic_value '.isp.antiFlicker'
         ;;
     "get air camera sensor_file")
-        $SSH cli -g .isp.sensorConfig || [ $? -eq 1 ] && exit 0
+        get_majestic_value '.isp.sensorConfig'
         ;;
     "get air camera fpv_enable")
-        $SSH cli -g .fpv.enabled | grep -q true && echo 1 || echo 0
+        get_majestic_value '.fpv.enabled' | grep -q true && echo 1 || echo 0
         ;;
     "get air camera noiselevel")
-        $SSH cli -g .fpv.noiseLevel || [ $? -eq 1 ] && exit 0
+        get_majestic_value '.fpv.noiseLevel'
         ;;
 
+    "set air presets "*)
+        PRESET="$PRESET_DIR/presets/$4/preset-config.yaml"
+
+        # Create a temporary script file
+        REMOTE_SCRIPT=$(mktemp)
+        echo "#!/bin/sh" > "$REMOTE_SCRIPT"
+        echo "# Auto-generated configuration script" >> "$REMOTE_SCRIPT"
+        echo "echo 'Applying configuration...'" >> "$REMOTE_SCRIPT"
+
+        # Process config files
+        FILES=$(yq e '.files | keys | .[]' "$PRESET")
+
+        for FILE in $FILES; do
+            # Generate CLI commands for each key-value pair
+            while IFS= read -r LINE; do
+                KEY="${LINE%% *}"    # Get everything before first space
+                VALUE="${LINE#* }"   # Get everything after first space
+
+                # Escape single quotes in values for bash
+                VALUE=${VALUE//\'/\'\\\'\'}
+
+                echo "echo \"Setting $KEY to $VALUE in $FILE\"" >> "$REMOTE_SCRIPT"
+                echo "cli -i '/etc/$FILE' -s '$KEY' '$VALUE'" >> "$REMOTE_SCRIPT"
+            done < <(yq e ".files[\"$FILE\"] | to_entries | .[] | \".\" + .key + \" \" + .value" "$PRESET")
+        done
+
+        # Add additional file copies
+        yq e '.additional_files // [] | .[]' "$PRESET" | while read -r ADDITIONAL_FILE; do
+            LOCAL_FILE="$PRESET_DIR/presets/$4/$ADDITIONAL_FILE"
+            if [ -f "$LOCAL_FILE" ]; then
+                # Transfer the file first
+                $SCP "$LOCAL_FILE" "root@$REMOTE_IP:/etc/"
+                echo "echo 'Copied additional file: $ADDITIONAL_FILE'"
+            else
+                echo "echo 'Warning: Additional file not found: $ADDITIONAL_FILE'"
+            fi
+        done
+
+        # Add service restart commands
+        echo "echo 'Restarting services...'" >> "$REMOTE_SCRIPT"
+        echo "(wifibroadcast stop; wifibroadcast stop; sleep 1; wifibroadcast start) >/dev/null 2>&1 &" >> "$REMOTE_SCRIPT"
+        echo "killall -1 majestic" >> "$REMOTE_SCRIPT"
+        echo "echo 'Configuration applied successfully'" >> "$REMOTE_SCRIPT"
+
+        # Transfer and execute the script
+        $SCP "$REMOTE_SCRIPT" "root@$REMOTE_IP:/tmp/apply_config.sh"
+        $SSH "sh /tmp/apply_config.sh"
+
+        # Cleanup
+        rm "$REMOTE_SCRIPT"
+    ;;
     "set air camera mirror"*)
         if [ "$5" = "on" ]
         then 
@@ -262,32 +395,32 @@ case "$@" in
         ;;
 
     "get air wfbng power")
-        $SSH wifibroadcast cli -g .wireless.txpower
+        get_wfb_value '.wireless.txpower'
         ;;
     "get air wfbng air_channel")
-        channel=$($SSH wifibroadcast cli -g .wireless.channel | tr -d '\n')
-        iw list | grep "\[$channel\]" | tr -d '[]' | awk '{print $4 " (" $2 " " $3 ")"}' | sort -n | uniq | tr -d '\n'        
+        channel=$(get_wfb_value '.wireless.channel' | tr -d '\n')
+        iw list | grep "\[$channel\]" | tr -d '[]' | awk '{print $4 " (" $2 " " $3 ")"}' | sort -n | uniq | tr -d '\n'
         ;;
     "get air wfbng width")
-        $SSH wifibroadcast cli -g .wireless.width
+        get_wfb_value '.wireless.width'
         ;;
     "get air wfbng mcs_index")
-        $SSH wifibroadcast cli -g .broadcast.mcs_index
+        get_wfb_value '.broadcast.mcs_index'
         ;;
     "get air wfbng stbc")
-        $SSH wifibroadcast cli -g .broadcast.stbc
+        get_wfb_value '.broadcast.stbc'
         ;;
     "get air wfbng ldpc")
-        $SSH wifibroadcast cli -g .broadcast.ldpc
+        get_wfb_value '.broadcast.ldpc'
         ;;
     "get air wfbng fec_k")
-        $SSH wifibroadcast cli -g .broadcast.fec_k
+        get_wfb_value '.broadcast.fec_k'
         ;;
     "get air wfbng fec_n")
-        $SSH wifibroadcast cli -g .broadcast.fec_n
+        get_wfb_value '.broadcast.fec_n'
         ;;
     "get air wfbng mlink")
-        $SSH wifibroadcast cli -g .wireless.mlink
+        get_wfb_value '.wireless.mlink'
         ;;
     "get air wfbng adaptivelink")
         $SSH grep ^alink_drone /etc/rc.local | grep -q 'alink_drone' && echo 1 || echo 0
