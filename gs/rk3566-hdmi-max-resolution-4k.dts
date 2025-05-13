@@ -5,7 +5,7 @@
         title = "Set maximum monitor resolution to 3840x2160";
         category = "misc";
         description = "Set maximum monitor resolution to 4K.";
-	compatible = "radxa,rock-3a\0radxa,rock-3b\0radxa,e25";
+	compatible = "radxa,rock-3a", "radxa,rock-3b", "radxa,rock-3c", "radxa,zero3", "radxa,e25";
     };
 
     fragment@0 {

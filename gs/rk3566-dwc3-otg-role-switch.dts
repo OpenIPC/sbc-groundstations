@@ -3,11 +3,11 @@
 / {
 
 	metadata {
-		title = "Set OTG port to be controlled by hardware switch";
-		compatible = "radxa,rock-3a\0radxa,rock-3b\0radxa,e25";
+		title = "Set OTG to host mode and switchable";
+		compatible = "radxa,rock-3a", "radxa,rock-3b", "radxa,rock-3c", "radxa,zero3", "radxa,e25";
 		category = "misc";
 		exclusive = "usbdrd_dwc3-dr_mode";
-		description = "Set OTG port to be controlled by hardware switch.";
+		description = "Set OTG to host mode and switchable";
 	};
 
 	fragment@0 {
