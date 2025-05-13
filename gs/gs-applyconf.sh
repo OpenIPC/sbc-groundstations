@@ -70,27 +70,29 @@ elif [[ "$enable_external_antenna" == "no" && -f /boot/dtbo/radxa-zero3-external
 	need_reboot=1
 fi
 # dtbo enable or disable
-dtbo_enable_array=$(echo $dtbo_enable_list | tr -s ' ' | tr ' ' '\n' | sort)
-dtbo_enabled_array=$(ls /boot/dtbo/rk3568-*.dtbo 2>/dev/null | sed -e "s^/boot/dtbo/rk3568-^^g" -e "s/.dtbo//g" | sort)
-dtbo_need_enable=$(comm -23 <(echo "$dtbo_enable_array") <(echo "$dtbo_enabled_array"))
-dtbo_need_disable=$(comm -13 <(echo "$dtbo_enable_array") <(echo "$dtbo_enabled_array"))
-# enable dtbo
-if [ -n "$dtbo_need_enable" ]; then
-	for dtboe in $dtbo_need_enable; do
-		if [ -f /boot/dtbo/rk3568-${dtboe}.dtbo.disabled ]; then
-			mv /boot/dtbo/rk3568-${dtboe}.dtbo.disabled /boot/dtbo/rk3568-${dtboe}.dtbo
-			need_u_boot_update=1
-			need_reboot=1
-		fi
-	done
-fi
-# disable dtbo
-if [ -n "$dtbo_need_disable" ]; then
-	for dtbod in $dtbo_need_disable; do
-		mv /boot/dtbo/rk3568-${dtbod}.dtbo /boot/dtbo/rk3568-${dtbod}.dtbo.disabled
-	done
-	need_u_boot_update=1
-	need_reboot=1
+if [ -n "$dtbo_enable_list" ]; then
+	dtbo_enable_array=$(echo $dtbo_enable_list | tr -s ' ' | tr ' ' '\n' | sort)
+	dtbo_enabled_array=$(ls /boot/dtbo/rk3568-*.dtbo 2>/dev/null | sed -e "s^/boot/dtbo/rk3568-^^g" -e "s/.dtbo//g" | sort)
+	dtbo_need_enable=$(comm -23 <(echo "$dtbo_enable_array") <(echo "$dtbo_enabled_array"))
+	dtbo_need_disable=$(comm -13 <(echo "$dtbo_enable_array") <(echo "$dtbo_enabled_array"))
+	# enable dtbo
+	if [ -n "$dtbo_need_enable" ]; then
+		for dtboe in $dtbo_need_enable; do
+			if [ -f /boot/dtbo/rk3568-${dtboe}.dtbo.disabled ]; then
+				mv /boot/dtbo/rk3568-${dtboe}.dtbo.disabled /boot/dtbo/rk3568-${dtboe}.dtbo
+				need_u_boot_update=1
+				need_reboot=1
+			fi
+		done
+	fi
+	# disable dtbo
+	if [ -n "$dtbo_need_disable" ]; then
+		for dtbod in $dtbo_need_disable; do
+			mv /boot/dtbo/rk3568-${dtbod}.dtbo /boot/dtbo/rk3568-${dtbod}.dtbo.disabled
+		done
+		need_u_boot_update=1
+		need_reboot=1
+	fi
 fi
 
 ## Update rec_dir in fstab
