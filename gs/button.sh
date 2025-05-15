@@ -146,8 +146,11 @@ function reboot_gs() {
 
 # mount extdisk first partition to rec_dir
 function mount_extdisk() {
+	local root_dev=$(findmnt -n -o SOURCE /)
+	# skip if boot from MicroSD
+	[[ "$root_dev" == "/dev/mmcblk1p"? && "${arg_2}" == "/dev/mmcblk1p1" ]] && exit 0
 	# mount in root mnt namespace. Udev mount will use systemd-udevd mnt namespace by default.
-	if nsenter --mount=/proc/1/ns/mnt mount ${arg_2}1 ${rec_dir} > /dev/null 2>&1; then
+	if nsenter --mount=/proc/1/ns/mnt mount ${arg_2} ${rec_dir} > /dev/null 2>&1; then
 		partitioninfo=$(df -hT ${rec_dir} | tail -n 1 | tr -s ' ')
 		echo "$partitioninfo" > /run/pixelpilot.msg
 	else
@@ -157,7 +160,7 @@ function mount_extdisk() {
 
 # unmount extdisk video partition
 function ummount_extdisk() {
-	if findmnt "$rec_dir" | grep -q "/dev/sd?"; then
+	if grep -Eq "^/dev/sda1 /${rec_dir}|^/dev/mmcblk1p1 /${rec_dir}" /proc/mounts; then
 		if umount -lf "$rec_dir" > /dev/null 2>&1; then
 			echo "umount $rec_dir success" > /run/pixelpilot.msg
 		else
