@@ -1,8 +1,13 @@
 # sbc-groundstations
 Instructions and prebuild images for openipc groundstations
 
-Current boards supported and being developed:
-* [Radxa Zero 3W/E](https://github.com/OpenIPC/sbc-groundstations/releases/tag/zero3w-v1.9.9)
-* [Orange Pi 3B](https://github.com/OpenIPC/sbc-groundstations/releases/tag/Orange-Pi-Latest)
-* [Orange Pi 5 ](https://github.com/OpenIPC/sbc-groundstations/releases/tag/Orange-Pi-Latest)
-* [Orange Pi 5 Plus](https://github.com/OpenIPC/sbc-groundstations/releases/tag/Orange-Pi-Latest)
+## Stock Edition Maintained by @JohnDGodwin 
+* Radxa zero 3W/E
+  [v1.9.9](https://github.com/OpenIPC/sbc-groundstations/releases/tag/zero3w-v1.9.9)
+  [2.0.0 beta 1](https://github.com/JohnDGodwin/OpenIPC_Groundstations/releases/tag/sbc-2.0.0-beta1)
+* Orange Pi 3b, 5, 5 Plus
+  [Orange Pi](https://github.com/OpenIPC/sbc-groundstations/releases/tag/Orange-Pi-Latest)
+
+## CC Edition Maintained by @zhouruixi 
+* Radxa zero 3W/E
+  [v0.9-beta](https://github.com/zhouruixi/SBC-GS/releases/tag/v0.9-beta)
