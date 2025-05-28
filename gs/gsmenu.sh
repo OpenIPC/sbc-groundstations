@@ -25,8 +25,7 @@ refresh_cache() {
     # Check if we need to refresh
     if [[ ! -f "$CACHE_DIR/last_refresh" ]] || [[ $(cat "$CACHE_DIR/last_refresh") -lt $last_refresh ]]; then
         # Copy the YAML configuration files
-        $SSH "cat $MAJESTIC_YAML" > "$CACHE_DIR/majestic.yaml" 2>/dev/null
-        $SSH "cat $WFB_YAML" > "$CACHE_DIR/wfb.yaml" 2>/dev/null
+        $SCP root@$REMOTE_IP:$MAJESTIC_YAML root@$REMOTE_IP:$WFB_YAML $CACHE_DIR 2>/dev/null
 
         # Update refresh timestamp
         echo "$current_time" > "$CACHE_DIR/last_refresh"
@@ -70,7 +69,7 @@ case "$@" in
         echo -n 0 15
         ;;
     "values air wfbng mlink")
-        echo -e "1500\n1600\n1700\n1800\n1900\n2000\n2100\n2200\n2300\n2400\n2500\n2600\n2700\n2800\n2900\n3000\n3100\n3200\n3300\n3400\n3500\n3600\n3700\n3800\n3900\n4000"
+        echo -n -e "1500\n1600\n1700\n1800\n1900\n2000\n2100\n2200\n2300\n2400\n2500\n2600\n2700\n2800\n2900\n3000\n3100\n3200\n3300\n3400\n3500\n3600\n3700\n3800\n3900\n4000"
         ;;
     "values air camera contrast")
         echo -n 0 100
@@ -103,40 +102,40 @@ case "$@" in
         echo -n 0 60
         ;;
     "values air wfbng power")
-        echo -e "1\n20\n25\n30\n35\n40\n45\n50\n55\n58"
+        echo -n -e "1\n20\n25\n30\n35\n40\n45\n50\n55\n58"
         ;;
     "values air wfbng air_channel")
         iw list | grep MHz | grep -v disabled | grep \* | tr -d '[]' | awk '{print $4 " (" $2 " " $3 ")"}' | grep '^[1-9]' | sort -n |  uniq
         ;;
     "values air wfbng width")
-        echo -e "20\n40"
+        echo -n -e "20\n40"
         ;;
     "values air camera size")
-        echo -e "1280x720\n1456x816\n1920x1080\n1440x1080\n1920x1440\n2104x1184\n2208x1248\n2240x1264\n2312x1304\n2436x1828\n2512x1416\n2560x1440\n2560x1920\n2720x1528\n2944x1656\n3200x1800\n3840x2160"
+        echo -n -e "1280x720\n1456x816\n1920x1080\n1440x1080\n1920x1440\n2104x1184\n2208x1248\n2240x1264\n2312x1304\n2436x1828\n2512x1416\n2560x1440\n2560x1920\n2720x1528\n2944x1656\n3200x1800\n3840x2160"
         ;;
     "values air camera fps")
-        echo -e "60\n90\n120"
+        echo -n -e "60\n90\n120"
         ;;
     "values air camera bitrate")
-        echo -e "1024\n2048\n3072\n4096\n5120\n6144\n7168\n8192\n9216\n10240\n11264\n12288\n13312\n14336\n15360\n16384\n17408\n18432\n19456\n20480\n21504\n22528\n23552\n24576\n25600\n26624\n27648\n28672\n29692\n30720"
+        echo -n -e "1024\n2048\n3072\n4096\n5120\n6144\n7168\n8192\n9216\n10240\n11264\n12288\n13312\n14336\n15360\n16384\n17408\n18432\n19456\n20480\n21504\n22528\n23552\n24576\n25600\n26624\n27648\n28672\n29692\n30720"
         ;;
     "values air camera codec")
-        echo -e "h264\nh265"
+        echo -n -e "h264\nh265"
         ;;
     "values air camera rc_mode")
-        echo -e "vbr\navbr\ncbr"
+        echo -n -e "vbr\navbr\ncbr"
         ;;
     "values air camera antiflicker")
-        echo -e "disabled\n50\n60"
+        echo -n -e "disabled\n50\n60"
         ;;
     "values air camera sensor_file")
-        echo -e "/etc/sensors/imx307.bin\n/etc/sensors/imx335.bin\n/etc/sensors/imx335_fpv.bin\n/etc/sensors/imx415_fpv.bin\n/etc/sensors/imx415_fpv.bin\n/etc/sensors/imx415_milos10.bin\n/etc/sensors/imx415_milos15.bin\n/etc/sensors/imx335_milos12tweak.bin\n/etc/sensors/imx335_greg15.bin\n/etc/sensors/imx335_spike5.bin\n/etc/sensors/gregspike05.bin"
+        echo -n -e "/etc/sensors/imx307.bin\n/etc/sensors/imx335.bin\n/etc/sensors/imx335_fpv.bin\n/etc/sensors/imx415_fpv.bin\n/etc/sensors/imx415_fpv.bin\n/etc/sensors/imx415_milos10.bin\n/etc/sensors/imx415_milos15.bin\n/etc/sensors/imx335_milos12tweak.bin\n/etc/sensors/imx335_greg15.bin\n/etc/sensors/imx335_spike5.bin\n/etc/sensors/gregspike05.bin"
         ;;
     "values air telemetry serial")
-        echo -e "ttyS0\nttyS1\nttyS2"
+        echo -n -e "ttyS0\nttyS1\nttyS2"
         ;;
     "values air telemetry router")
-        echo -e "mavfwd\nmsposd"
+        echo -n -e "mavfwd\nmsposd"
         ;;
 
 "get air presets info"*)
@@ -489,13 +488,13 @@ case "$@" in
         iw list | grep MHz | grep -v disabled | grep \* | tr -d '[]' | awk '{print $4 " (" $2 " " $3 ")"}' | grep '^[1-9]' | sort -n |  uniq
         ;;
     "values gs wfbng bandwidth")
-        echo -e "20\n40"
+        echo -n -e "20\n40"
         ;;
     "values gs system resolution")
-        drm_info -j /dev/dri/card0 2>/dev/null | jq -r '."/dev/dri/card0".connectors[1].modes[] | select(.name | contains("i") | not) | .name + "@" + (.vrefresh|tostring)' | sort | uniq
+        drm_info -j /dev/dri/card0 2>/dev/null | jq -r '."/dev/dri/card0".connectors[1].modes[] | select(.name | contains("i") | not) | .name + "@" + (.vrefresh|tostring)' | sort | uniq  | sed -z '$ s/\n$//'
         ;;
     "values gs system rec_fps")
-        echo -e "60\n90\n120"
+        echo -n -e "60\n90\n120"
         ;;
 
     "get gs system gs_rendering")
@@ -561,12 +560,10 @@ case "$@" in
                 echo -n ""
         fi
         ;;
-
     "get gs wifi IP")
         WIFI_DEV=$(nmcli -t connection show --active | grep wifi0 | cut -d : -f4)
         ip -4 addr show "$WIFI_DEV" | grep -oP '(?<=inet\s)\d+(\.\d+){3}'
         ;;
-
     "set gs wifi wlan"*)
         [ ! -d /sys/class/net/wifi0 ] && exit 0 # we have no wifi
         if [ "$5" = "on" ]
@@ -649,7 +646,8 @@ case "$@" in
         gsmenu.sh get gs system resolution
         ;;
     "get gs main Version")
-        grep PRETTY_NAME= /etc/os-release | cut -d \" -f2
+        source /etc/gs-release
+        echo -n "$VERSION"
         ;;
     "get gs main Disk")
         read -r size avail pcent <<< $(df -h / | awk 'NR==2 {print $2, $4, $5}')
@@ -659,10 +657,16 @@ case "$@" in
         grep ^WFB_NICS /etc/default/wifibroadcast | cut -d \" -f 2
         ;;
     "search channel")
-        echo "Not implmented"
-        echo "Not implmented" >&2
-        exit 1
+        /gs/channel-scan.sh >/dev/null 2>&1 &
         ;;
+    "button air actions Reboot")
+        $SSH 'reboot &'
+    ;;
+
+    "button gs actions Reboot")
+        reboot
+    ;;
+
     *)
         echo "Unknown $@"
         exit 1
