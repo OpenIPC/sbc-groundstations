@@ -23,10 +23,9 @@ fi
 # GPS
 [ "$use_gps" == "yes" ] && systemctl start chrony gpsd &
 
-# If otg mode is device, start adbd and ncm on boot
+# If set otg mode to device, use gadget acm, ncm, mass on boot
 if [ "$otg_mode" == "device" ]; then
-	echo device > /sys/kernel/debug/usb/fcc00000.dwc3/mode
-	( sleep 1 && systemctl start radxa-adbd@fcc00000.dwc3.service radxa-ncm@fcc00000.dwc3.service ) &
+	/gs/otg-gadget.sh &
 fi
 
 # pwm fan service

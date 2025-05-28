@@ -50,9 +50,11 @@ function change_otg_mode() {
 		echo device > $otg_mode_file
 		echo "change otg mode to device!" > /run/pixelpilot.msg
 		sleep 0.2
-		[ -d /sys/kernel/config/usb_gadget/fcc00000.dwc3/functions/ffs.adb ] || systemctl start radxa-adbd@fcc00000.dwc3.service
-		[ -f /sys/class/net/radxa0 ] || systemctl start radxa-ncm@fcc00000.dwc3.service
-		sleep 1
+		if [ -d /sys/kernel/config/usb_gadget/g1 ]; then
+			ls /sys/class/udc > /sys/kernel/config/usb_gadget/g1/UDC
+		else
+			/gs/otg-gadget.sh &
+		fi
 		# [ "$(ip link ls radxa0 | grep -oP '(?<=state ).+(?=mode)')" == "DOWN"  ] && ifup radxa0
 		(
 		while true; do

@@ -16,8 +16,8 @@ fi
 [ -d ${install_dir} ] || mkdir -p ${install_dir}
 [ "$(ls -A /etc/NetworkManager/system-connections/)" ] && rm /etc/NetworkManager/system-connections/*
 systemctl disable wifibroadcast.service wifibroadcast@gs.service
-chmod +x gs.sh wfb.sh stream.sh fan.sh button.sh button-kbd.py gs-init.sh channel-scan.sh
-cp gs.sh wfb.sh stream.sh fan.sh button.sh button-kbd.py gs-applyconf.sh gs-init.sh channel-scan.sh rk3566-dwc3-otg-role-switch.dts rk3566-hdmi-max-resolution-4k.dts ${install_dir}/
+chmod +x gs.sh wfb.sh stream.sh fan.sh button.sh button-kbd.py gs-init.sh channel-scan.sh otg-gadget.sh
+cp gs.sh wfb.sh stream.sh fan.sh button.sh button-kbd.py gs-applyconf.sh gs-init.sh channel-scan.sh otg-gadget.sh rk3566-dwc3-otg-role-switch.dts rk3566-hdmi-max-resolution-4k.dts ${install_dir}/
 cp gs.conf custom-sample.conf /config/
 [ -d /etc/pixelpilot ] || mkdir -p /etc/pixelpilot
 cp pixelpilot_osd.json pixelpilot_osd_simple.json pixelpilot_msposd.json /etc/pixelpilot/
