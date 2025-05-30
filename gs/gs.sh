@@ -38,6 +38,13 @@ else
 	[ "$(systemctl is-enabled ttyd)" == "enabled" ] && systemctl disabled --now ttyd
 fi
 
+# fsck and mount record parittion if not auto mounted
+if ! grep -q $rec_dir /proc/mounts; then
+	rec_dev=/dev/$(lsblk -no PKNAME $(findmnt -n -o SOURCE /))p4
+	fsck.exfat -a $rec_dev
+	mount $rec_dev $rec_dir
+fi
+
 # If video_on_boot=yes, video playback will be automatically started
 if [ "$video_on_boot" == "yes" ]; then
 	# Start RubyFpv

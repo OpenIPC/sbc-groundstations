@@ -36,8 +36,8 @@ EOF
         mkfs.exfat ${os_dev}p4
 fi
 # mount /dev/disk/by-partlabel/videos $rec_dir
-if ! grep -Pq "^/dev/[^\t]*\t${rec_dir}\texfat\tdefaults\t0\t0" /etc/fstab; then
-	echo -e "${os_dev}p4\t${rec_dir}\texfat\tdefaults\t0\t0" >> /etc/fstab
+if ! grep -Pq "^/dev/[^\t]*\t${rec_dir}\texfat\tdefaults\,nofail\t0\t0" /etc/fstab; then
+	echo -e "${os_dev}p4\t${rec_dir}\texfat\tdefaults,nofail\t0\t0" >> /etc/fstab
 fi
 
 # Enable dtbo

@@ -97,7 +97,7 @@ fi
 
 ## Update rec_dir in fstab
 [ -d $rec_dir ] || mkdir -p $rec_dir
-if ! grep -Pq "^/dev/[^\t]*\t${rec_dir}\texfat\tdefaults\t0\t0" /etc/fstab; then
+if ! grep -Pq "^/dev/[^\t]*\t${rec_dir}\texfat\tdefaults\,nofail\t0\t0" /etc/fstab; then
 	sed -i "s#^\(/dev/[^\t]*\t\)[^\t]*#\1${rec_dir}#" /etc/fstab
 	need_reboot=1
 fi
