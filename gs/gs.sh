@@ -112,6 +112,12 @@ if [ "$video_on_boot" == "yes" ]; then
 	fi
 fi
 
+# start oled
+[ "$oled_enable" == "yes" ] && systemd-run --unit=oled \
+	  --setenv=VIRTUAL_ENV=/gs/venv \
+	  --setenv=PATH="/gs/venv/bin:$PATH" \
+	  /gs/venv/bin/python /gs/oled.py
+
 # start webui
 [ "$webui_enable" == "yes" ] && systemctl start webui
 
