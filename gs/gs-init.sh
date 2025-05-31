@@ -3,6 +3,7 @@
 set -e
 set -x
 source /etc/gs.conf
+[ "$gs_enable" == 'no' ] && exit 0
 
 sleep 12
 setfont /usr/share/consolefonts/CyrAsia-TerminusBold32x16.psf.gz

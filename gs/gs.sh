@@ -5,6 +5,7 @@ set -x
 
 # load config
 source /etc/gs.conf
+[ "$gs_enable" == 'no' ] && exit 0
 
 # check and apply configuration in gs.conf
 source /gs/gs-applyconf.sh
