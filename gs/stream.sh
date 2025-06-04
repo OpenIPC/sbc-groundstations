@@ -7,28 +7,50 @@ source /etc/gs.conf
 export DISPLAY=:0
 cd $rec_dir
 
+pixelpilot_conf=/etc/pixelpilot.yaml
 video_record="0"
 video_play_cmd=""
 video_rec_cmd=""
-case "$screen_mode" in
-	"max-fps")
-		screen_mode=$(pixelpilot --screen-mode-list | sort -t @ -k 2,2nr -k 1,1nr | head -n 1)
-		echo "use max-fps screen_mode: $screen_mode"
-		;;
-	"max-res")
-		screen_mode=$(pixelpilot --screen-mode-list | sort -t @ -k 1,1nr -k 2,2nr | head -n 1)
-		echo "use max-resolution screen_mode: $screen_mode"
-		;;
-	*"x"*"@"*)
-		screen_mode=${screen_mode%D}
-		echo "use screen_mode in gs.conf: $screen_mode"
-		;;
-	*)
-		echo "auto screen_mode"
-		screen_mode=""
-		;;
-esac
-[ -n "$screen_mode" ] && screen_mode_cmdline="--screen-mode $screen_mode"
+
+get_screen_mode() {
+	case "$screen_mode" in
+		"max-fps")
+			screen_mode=$(pixelpilot --screen-mode-list | sort -t @ -k 2,2nr -k 1,1nr | head -n 1)
+			echo "use max-fps screen_mode: $screen_mode"
+			;;
+		"max-res")
+			screen_mode=$(pixelpilot --screen-mode-list | sort -t @ -k 1,1nr -k 2,2nr | head -n 1)
+			echo "use max-resolution screen_mode: $screen_mode"
+			;;
+		*"x"*"@"*)
+			screen_mode=${screen_mode%D}
+			echo "use screen_mode in gs.conf: $screen_mode"
+			;;
+		*)
+			echo "auto screen_mode"
+			screen_mode=""
+			;;
+	esac
+}
+
+# Check and apply button gpio pins for pixelpilot gsmenu
+apply_gsmenu_gpio () {
+	local pin_num=$(yq ".gsmenu.gpio.$2" $pixelpilot_conf)
+
+	if [ -z "${!1}" ]; then
+		yq -i "del(.gsmenu.gpio.$2)" $pixelpilot_conf
+	elif [ "${!1}" != "$pin_num" ]; then
+		yq -i ".gsmenu.gpio.$2 = ${!1}" $pixelpilot_conf
+	fi
+}
+check_button_gpio() {
+	apply_gsmenu_gpio btn_cu_pin up
+	apply_gsmenu_gpio btn_cd_pin down
+	apply_gsmenu_gpio btn_cl_pin left
+	apply_gsmenu_gpio btn_cr_pin right
+	apply_gsmenu_gpio btn_cm_pin center
+	apply_gsmenu_gpio btn_q1_pin rec
+}
 
 # Auto select osd config file based on osd_type if osd_config_file is not set
 if [ -z "$osd_config_file" ]; then
@@ -47,9 +69,12 @@ fi
 
 GPIO_RED_LED=$(gpiofind PIN_${red_led_pin})
 
-function gencmd(){
+gencmd(){
 	if [ "$video_player" == "pixelpilot" ]; then
-		video_play_cmd="pixelpilot $screen_mode_cmdline --codec $video_codec --dvr-framerate $rec_fps --dvr-fmp4 --dvr-template ${rec_dir}/record_%Y-%m-%d_%H-%M-%S.mp4 --dvr-sequenced-files"
+		get_screen_mode
+		check_button_gpio
+		video_play_cmd="pixelpilot --codec $video_codec --dvr-framerate $rec_fps --dvr-fmp4 --dvr-template ${rec_dir}/record_%Y-%m-%d_%H-%M-%S.mp4 --dvr-sequenced-files"
+		[ -n "$screen_mode" ] && video_play_cmd="$video_play_cmd --screen-mode $screen_mode"
 		[ "$osd_enable" == "no" ] || video_play_cmd="$video_play_cmd --osd --osd-config $osd_config_file --osd-custom-message --osd-refresh $((1000 / ${osd_fps}))"
 		[ "$record_on" == "arm" ] && video_play_cmd="$video_play_cmd --mavlink-dvr-on-arm"
 		[ "$disable_vsync" == "yes" ] && video_play_cmd="$video_play_cmd --disable-vsync"
@@ -72,7 +97,7 @@ function gencmd(){
 	fi
 }
 
-function check_record_freespace() {
+check_record_freespace() {
 	local rec_dir_freespace=$(df $rec_dir | tail -n 1 | awk '{print $4}')
 	local rec_dir_freespace_MB=$((${rec_dir_freespace} / 1024))
 	if [ $rec_dir_freespace_MB -lt $rec_dir_freespace_min ]; then
