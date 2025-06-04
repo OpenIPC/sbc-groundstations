@@ -58,6 +58,7 @@ if [ "$video_on_boot" == "yes" ]; then
 		mount --bind $rec_dir /home/radxa/ruby/media
 		# Use button gpio settings in gs.conf
 		button_gpio="$btn_cr_pin $btn_cl_pin $btn_cu_pin $btn_cd_pin $btn_q1_pin $btn_q2_pin $btn_q3_pin"
+		[ ! -e /config/gpio.txt ] && touch /config/gpio.txt
 		[ "$button_gpio" == "$(< /config/gpio.txt)" ] || echo "$button_gpio" > /config/gpio.txt
 		# start rubyfpv
 		systemd-run --unit=rubyfpv \
