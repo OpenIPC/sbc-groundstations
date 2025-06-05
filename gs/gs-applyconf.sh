@@ -12,6 +12,30 @@ if [ -f /config/custom.conf ]; then
 	source /etc/gs.conf
 fi
 
+# apply button gpio layout
+if [ "$btn_pin_layout" != "custom" ]; then
+	button_layout_bonnet="16,18,13,12,11,22,,"
+	button_layout_rubyfpv="16,18,13,11,,32,38,40"
+	button_layout_runcam="16,18,13,38,11,32,,"
+	button_layout_conf=button_layout_${btn_pin_layout}
+	button_pins_conf="${btn_cu_pin},${btn_cd_pin},${btn_cl_pin},${btn_cr_pin},${btn_cm_pin},${btn_q1_pin},${btn_q2_pin},${btn_q3_pin}"
+
+	if [ "$button_pins_conf" != "${!button_layout_conf}" ]; then
+		IFS=',' read -r -a button_pins_arr <<< "${!button_layout_conf},"
+		sed -i \
+			-e "s/btn_cu_pin=.*/btn_cu_pin='${button_pins_arr[0]}'/" \
+			-e "s/btn_cd_pin=.*/btn_cd_pin='${button_pins_arr[1]}'/" \
+			-e "s/btn_cl_pin=.*/btn_cl_pin='${button_pins_arr[2]}'/" \
+			-e "s/btn_cr_pin=.*/btn_cr_pin='${button_pins_arr[3]}'/" \
+			-e "s/btn_cm_pin=.*/btn_cm_pin='${button_pins_arr[4]}'/" \
+			-e "s/btn_q1_pin=.*/btn_q1_pin='${button_pins_arr[5]}'/" \
+			-e "s/btn_q2_pin=.*/btn_q2_pin='${button_pins_arr[6]}'/" \
+			-e "s/btn_q3_pin=.*/btn_q3_pin='${button_pins_arr[7]}'/" \
+			$(readlink -f /etc/gs.conf)
+		source /etc/gs.conf
+	fi
+fi
+
 # load gs.conf if not loded
 [ -z "${wifi_mode+defined}" ] && source /etc/gs.conf
 
