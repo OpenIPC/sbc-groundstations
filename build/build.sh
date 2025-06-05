@@ -31,6 +31,11 @@ apt install -y git cmake dkms build-essential pkg-config libevent-dev unzip
 # Remove old kernel in radxa-zero3_debian_bullseye_xfce_b6.img
 dpkg -l | grep -q "linux-image-5.10.160-26-rk356x" && apt purge -y linux-image-5.10.160-26-rk356x linux-headers-5.10.160-26-rk356x
 
+# Generating locales
+sed -i 's/^# *\(en_US.UTF-8 UTF-8\)/\1/' /etc/locale.gen
+locale-gen
+update-locale LANG=en_US.UTF-8 LC_ALL=en_US.UTF-8
+
 ## 
 KVER=$(ls /lib/modules | tail -n 1)
 [ -d /root/SourceCode ] || mkdir -p /root/SourceCode
