@@ -49,7 +49,7 @@ fi
 # If video_on_boot=yes, video playback will be automatically started
 if [ "$video_on_boot" == "yes" ]; then
 	# Start RubyFpv
-	if [ "$video_player" == "rubyfpv" ]; then
+	if [ "$fpv_firmware_type" == "rubyfpv" ]; then
 		# Load wifi drivers
 		[ -d "/sys/module/8812eu" ] || modprobe 8812eu rtw_tx_pwr_by_rate=0 rtw_tx_pwr_lmt_enable=0
 		[ -d "/sys/module/88XXau_wfb" ] || modprobe 88XXau_wfb rtw_tx_pwr_idx_override=1

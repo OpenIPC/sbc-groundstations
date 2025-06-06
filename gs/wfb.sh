@@ -8,7 +8,7 @@ set -x
 
 source /etc/gs.conf
 # Not run script when using rubyfpv
-[ "$video_player" == "rubyfpv" ] && exit 0
+[ "$fpv_firmware_type" == "rubyfpv" ] && exit 0
 
 wfb_nics=$(echo /sys/class/net/wl* | sed -r -e "s^/sys/class/net/^^g" -e "s/wifi0\s{0,1}//" -e "s/wl\*//")
 [ -n "$wfb_integrated_wnic" ] && wfb_nics="$wfb_integrated_wnic $wfb_nics"
