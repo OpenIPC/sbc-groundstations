@@ -45,7 +45,13 @@ set_txpower() {
 		esac
 }
 
-if [ "$wfb_mode" == "cluster" ]; then
+if [ "$fpv_firmware_type" == "ap" ]; then
+	wpa_passphrase "$ap_wifi_ssid" "$ap_wifi_password" > /run/wpa_supplicant.conf
+	wpa_supplicant -B -i ${wfb_nics%% *} -c /run/wpa_supplicant.conf
+	ip addr add "192.168.0.10/24" dev ${wfb_nics%% *}
+	# dhclient ${wfb_nics%% *}
+	exit 0
+elif [ "$wfb_mode" == "cluster" ]; then
 	# stop local_node.service if exist
 	[ -h "/run/systemd/units/invocation:local_node.service" ] && systemctl stop local_node.service
 	# set all wnic to monitor
