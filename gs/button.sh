@@ -2,6 +2,11 @@
 
 set -e
 source /etc/gs.conf
+
+# Exit if gs service is not enable
+[ -e /etc/systemd/system/multi-user.target.wants/gs.service ] || exit 0
+# Exit if gs is not enable
+[ "$gs_enable" == 'no' ] && exit 0
 # Passing record button state from button.sh to stream.sh
 [ -p /run/record_button.fifo ] || mkfifo /run/record_button.fifo
 
