@@ -128,8 +128,8 @@ git clone --depth=1 https://github.com/OpenIPC/PixelPilot_rk.git
 pushd PixelPilot_rk
 
 # Temporarily use pr#62 for test
-git fetch origin pull/62/head:pr-62
-git checkout pr-62
+# git fetch origin pull/62/head:pr-62
+# git checkout pr-62
 
 git submodule update --init --recursive
 cmake -B build
