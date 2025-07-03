@@ -73,10 +73,11 @@ gencmd(){
 	if [ "$video_player" == "pixelpilot" ]; then
 		get_screen_mode
 		check_button_gpio
-		video_play_cmd="pixelpilot --codec $video_codec --dvr-framerate $rec_fps --dvr-fmp4 --dvr-template ${rec_dir}/record_%Y-%m-%d_%H-%M-%S.mp4 --dvr-sequenced-files"
+		video_play_cmd="pixelpilot --codec $video_codec --dvr-framerate $rec_fps --dvr-template ${rec_dir}/record_%Y-%m-%d_%H-%M-%S.mp4 --dvr-sequenced-files"
 		[ -n "$screen_mode" ] && video_play_cmd="$video_play_cmd --screen-mode $screen_mode"
 		[ "$osd_enable" == "no" ] || video_play_cmd="$video_play_cmd --osd --osd-config $osd_config_file --osd-custom-message --osd-refresh $((1000 / ${osd_fps}))"
 		[ "$record_on" == "arm" ] && video_play_cmd="$video_play_cmd --mavlink-dvr-on-arm"
+		[ "$dvr_fmp4" == "yes" ] && video_play_cmd="$video_play_cmd --dvr-fmp4"
 		[ "$disable_vsync" == "yes" ] && video_play_cmd="$video_play_cmd --disable-vsync"
 		[ "$gsmenu_enable" == "yes" ] && video_play_cmd="$video_play_cmd --config /etc/pixelpilot.yaml"
 		[ "$wfb_outgoing_video" == "socket" ] && video_play_cmd="$video_play_cmd --socket /run/wfb_video.sock"
