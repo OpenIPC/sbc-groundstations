@@ -16,4 +16,4 @@ ACTION=="add", SUBSYSTEM=="input", KERNEL=="event*", ENV{ID_INPUT_KEYBOARD}=="1"
 ACTION=="add", SUBSYSTEM=="block", KERNEL=="sda1", RUN+="/gs/button.sh mount_extdisk $devnode"
 
 ## MicroSD on emmc board
-ACTION=="add", SUBSYSTEM=="block", KERNEL=="mmcblk1p1", RUN+="/gs/button.sh mount_extdisk /dev/%k"
+# ACTION=="add", SUBSYSTEM=="block", KERNEL=="mmcblk1p1", RUN+="/gs/button.sh mount_extdisk /dev/%k"
