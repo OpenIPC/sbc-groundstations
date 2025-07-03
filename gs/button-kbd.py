@@ -1,10 +1,11 @@
-#!/bin/python3
+#!/usr/bin/env python3
 
 import os
 import sys
 import time
 import subprocess
 from evdev import InputDevice, categorize, ecodes
+from dotenv import dotenv_values
 
 # Only connect keyboard after gs service is started will use kbd as buttons
 if not os.path.lexists("/run/systemd/units/invocation:gs.service"):
@@ -28,6 +29,9 @@ try:
 except FileNotFoundError:
     print(f"Device not found: {kbd_device_path}")
     sys.exit(1)
+
+# Get gs conf
+gs_conf = dotenv_values("/etc/gs.conf")
 
 # Long press time threshold
 LONG_PRESS_THRESHOLD = 1.0
@@ -81,19 +85,19 @@ try:
                         print("KEY_Q long press detected, quit now. ")
                         break
                     elif key_code == BTN_Q1:
-                        os.system(f"{button_script} {BTN_Q1_long_press}")
+                        os.system(f"{button_script} {gs_conf['btn_q1_long_press']}")
                     elif key_code == BTN_Q2:
-                        os.system(f"{button_script} {BTN_Q2_long_press}")
+                        os.system(f"{button_script} {gs_conf['btn_q2_long_press']}")
                     elif key_code == BTN_Q3:
-                        os.system(f"{button_script} {BTN_Q3_long_press}")
+                        os.system(f"{button_script} {gs_conf['btn_q3_long_press']}")
                     elif key_code == BTN_CU:
-                        os.system(f"{button_script} {BTN_CU_long_press}")
+                        os.system(f"{button_script} {gs_conf['btn_cu_long_press']}")
                     elif key_code == BTN_CD:
-                        os.system(f"{button_script} {BTN_CD_long_press}")
+                        os.system(f"{button_script} {gs_conf['btn_cd_long_press']}")
                     elif key_code == BTN_CL:
-                        os.system(f"{button_script} {BTN_CL_long_press}")
+                        os.system(f"{button_script} {gs_conf['btn_cl_long_press']}")
                     elif key_code == BTN_CR:
-                        os.system(f"{button_script} {BTN_CR_long_press}")
+                        os.system(f"{button_script} {gs_conf['btn_cr_long_press']}")
                     elif key_code == KEY_SHUTDOWN:
                         os.system(f"{button_script} shutdown_gs")
                     elif key_code == KEY_REBOOT:
@@ -102,19 +106,19 @@ try:
                     # single press
                     print(f"Key {key_event.keycode} short pressed for {press_duration:.2f} seconds.")
                     if key_code == BTN_Q1:
-                        os.system(f"{button_script} {BTN_Q1_single_press}")
+                        os.system(f"{button_script} {gs_conf['btn_q1_single_press']}")
                     elif key_code == BTN_Q2:
-                        os.system(f"{button_script} {BTN_Q2_single_press}")
+                        os.system(f"{button_script} {gs_conf['btn_q2_single_press']}")
                     elif key_code == BTN_Q3:
-                        os.system(f"{button_script} {BTN_Q3_single_press}")
+                        os.system(f"{button_script} {gs_conf['btn_q3_single_press']}")
                     elif key_code == BTN_CU:
-                        os.system(f"{button_script} {BTN_CU_single_press}")
+                        os.system(f"{button_script} {gs_conf['btn_cu_single_press']}")
                     elif key_code == BTN_CD:
-                        os.system(f"{button_script} {BTN_CD_single_press}")
+                        os.system(f"{button_script} {gs_conf['btn_cd_single_press']}")
                     elif key_code == BTN_CL:
-                        os.system(f"{button_script} {BTN_CL_single_press}")
+                        os.system(f"{button_script} {gs_conf['btn_cl_single_press']}")
                     elif key_code == BTN_CR:
-                        os.system(f"{button_script} {BTN_CR_single_press}")
+                        os.system(f"{button_script} {gs_conf['btn_cr_single_press']}")
 
                 # Clean after releasing the key
                 key_press_time.pop(key_code, None)
