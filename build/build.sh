@@ -23,6 +23,9 @@ if dpkg -l | grep -q xface4; then
 	apt autoremove -y --purge
 fi
 
+# Update bullseye-backports source URL
+sed -i 's|https://deb.debian.org/debian|http://archive.debian.org/debian|g' /etc/apt/sources.list.d/50-bullseye-backports.list
+
 # Update system to date
 apt update
 apt dist-upgrade -y --allow-downgrades
