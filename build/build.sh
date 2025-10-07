@@ -26,7 +26,7 @@ fi
 # Update system to date
 apt update
 apt dist-upgrade -y --allow-downgrades
-apt install -y git cmake dkms build-essential pkg-config libevent-dev unzip
+apt install -y git cmake dkms build-essential pkg-config libevent-dev unzip flex bison libssl-dev
 
 # Remove old kernel in radxa-zero3_debian_bullseye_xfce_b6.img
 dpkg -l | grep -q "linux-image-5.10.160-26-rk356x" && apt purge -y linux-image-5.10.160-26-rk356x linux-headers-5.10.160-26-rk356x
@@ -106,10 +106,39 @@ blacklist rtw_8822cu
 EOF
 popd
 
+# intree kmods
+git clone --depth=1 -b linux-5.10-gen-rkr4.1 https://github.com/radxa/kernel /usr/src/linux-source-${KVER}
+pushd /usr/src/linux-source-${KVER}
+cp /lib/modules/${KVER}/build/Module.symvers .
+cp /boot/System.map-${KVER} System.map
+cp /boot/config-${KVER} .config
+
+# enable AR9271
+sed -i 's/^# CONFIG_ATH9K_HTC is not set$/CONFIG_ATH9K_HTC=m/' .config
+# enable MT7612U
+sed -i 's/^# CONFIG_MT76x2U is not set$/CONFIG_MT76x2U=m/' .config
+# enable joydev input
+sed -i 's/^# CONFIG_INPUT_JOYDEV is not set$/CONFIG_INPUT_JOYDEV=m/' .config
+
+make olddefconfig
+make prepare modules_prepare
+
 # AR9271
 apt install firmware-atheros
+make -j$(nproc) M=drivers/net/wireless/ath modules
+make M=drivers/net/wireless/ath modules_install KERNELRELEASE=${KVER}
 
-# MT7612u
+# MT7612U
+make -j$(nproc) M=drivers/net/wireless/mediatek/mt76 modules
+make M=drivers/net/wireless/mediatek/mt76 modules_install KERNELRELEASE=${KVER}
+
+# INPUT_JOYDEV
+make -j$(nproc) M=drivers/input/joystick modules
+make M=drivers/input/joystick modules_install KERNELRELEASE=${KVER}
+
+# cleanup kernel source but keep .git to save space
+rm -rf *
+popd
 
 # wfb-ng
 git clone -b master --depth=1 https://github.com/svpcom/wfb-ng.git
@@ -206,7 +235,7 @@ EOF
 # install useful packages
 DEBIAN_FRONTEND=noninteractive apt -y install lrzsz net-tools socat netcat exfatprogs ifstat fbi picocom bridge-utils \
        console-setup psmisc ethtool drm-info libdrm-tests proxychains4 chrony gpsd gpsd-clients tcpdump iptables-persistent \
-       dosfstools sshpass fake-hwclock tree evtest python3-dev tftpd-hpa isc-dhcp-client
+       dosfstools sshpass fake-hwclock tree evtest python3-dev tftpd-hpa isc-dhcp-client joystick
 pip install evdev dotenv
 
 # snander
