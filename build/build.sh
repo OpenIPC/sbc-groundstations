@@ -28,7 +28,7 @@ sed -i 's|https://deb.debian.org/debian|http://archive.debian.org/debian|g' /etc
 
 # Update system to date
 apt update
-apt dist-upgrade -y --allow-downgrades
+DEBIAN_FRONTEND=noninteractive apt dist-upgrade -y --allow-downgrades -o Dpkg::Options::="--force-confnew"
 apt install -y git cmake dkms build-essential pkg-config libevent-dev unzip flex bison libssl-dev
 
 # Remove old kernel in radxa-zero3_debian_bullseye_xfce_b6.img
