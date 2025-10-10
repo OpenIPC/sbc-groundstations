@@ -34,9 +34,9 @@ fi
 
 # ttyd
 if [ "$ttyd_enable" == "yes" ]; then
-	[ "$(systemctl is-enabled ttyd)" == "enabled" ] || systemctl enabled --now ttyd
+	[ "$(systemctl is-enabled ttyd)" == "enabled" ] || systemctl enable --now ttyd
 else
-	[ "$(systemctl is-enabled ttyd)" == "enabled" ] && systemctl disabled --now ttyd
+	[ "$(systemctl is-enabled ttyd)" == "enabled" ] && systemctl disable --now ttyd
 fi
 
 # fsck and mount record parittion if not auto mounted
