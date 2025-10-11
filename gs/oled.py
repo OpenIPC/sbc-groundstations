@@ -11,9 +11,14 @@ from luma.oled.device import ssd1306
 from luma.core.render import canvas
 from PIL import ImageFont
 from dotenv import dotenv_values
+from smbus2 import SMBus, i2c_msg
 # import socket
 
+# ==========================================================
+# system
+# ==========================================================
 gs_conf = dotenv_values("/etc/gs.conf")
+oled_refresh_interval = int(gs_conf['oled_refresh_interval'])
 oled_port = int(gs_conf['oled_i2c_port'])
 oled_address = gs_conf['oled_i2c_address']
 # init oled screen
@@ -94,7 +99,90 @@ def get_rec_disk():
         disk.percent)
     return disk_str
 
-def display_system_info(device, delay=2):
+# ==========================================================
+# ina226
+# ==========================================================
+# I2C bus number
+I2C_DEVICE = oled_port
+
+# INA226 I2C device address
+INA226_ADDR = int(gs_conf['ina226_i2c_address'], 16)
+# Global flag, ina226 available or not
+ina226_available = False
+
+# Register addresses
+REG_CONFIG    = 0x00
+REG_SHUNTV    = 0x01  # Shunt voltage
+REG_BUSV      = 0x02  # Bus voltage
+REG_POWER     = 0x03  # Power
+REG_CURRENT   = 0x04  # Current
+REG_CALIB     = 0x05  # Calibration register
+
+# Configuration parameters
+SHUNT_RESISTOR = 0.1    # Shunt resistor value (unit: Ω)
+CURRENT_LSB    = 0.001  # Current resolution (unit: A)
+
+# Initialize I2C bus
+bus = SMBus(I2C_DEVICE)
+
+def detect_ina226():
+    """Check whether INA226 exists on the I2C bus"""
+    global ina226_available
+    try:
+        msg = i2c_msg.write(INA226_ADDR, [])
+        bus.i2c_rdwr(msg)
+        ina226_available = True
+        print("INA226 detected on I2C bus.")
+        return True
+    except Exception:
+        ina226_available = False
+        print("INA226 not detected, skip power monitoring.")
+        return False
+
+def init_ina226():
+    global ina226_available
+    if not ina226_available:
+        return
+    try:
+        # Calculate calibration value: CAL = 0.00512 / (CURRENT_LSB * SHUNT_RESISTOR)
+        cal_value = int(0.00512 / (CURRENT_LSB * SHUNT_RESISTOR))
+
+        # Configure register: continuous mode, sampling rate, etc.
+        # 0x4127 = average 16 samples, conversion time 1ms
+        config = 0x4127
+        bus.write_i2c_block_data(INA226_ADDR, REG_CONFIG, [(config >> 8) & 0xFF, config & 0xFF])
+        bus.write_i2c_block_data(INA226_ADDR, REG_CALIB, [(cal_value >> 8) & 0xFF, cal_value & 0xFF])
+    except Exception as e:
+        print("INA226 init failed:", e)
+        ina226_available = False
+
+def read_sensor():
+    if not ina226_available:
+        return 0.0, 0.0, 0.0
+    try:
+        # Read bus voltage (unit: V)
+        bus_voltage_raw = bus.read_i2c_block_data(INA226_ADDR, REG_BUSV, 2)
+        bus_voltage = (bus_voltage_raw[0] << 8 | bus_voltage_raw[1]) * 0.00125  # LSB=1.25mV
+
+        # Read current (unit: A)
+        current_raw = bus.read_i2c_block_data(INA226_ADDR, REG_CURRENT, 2)
+        current = (current_raw[0] << 8 | current_raw[1]) * CURRENT_LSB
+
+        # Read power (unit: W)
+        power_raw = bus.read_i2c_block_data(INA226_ADDR, REG_POWER, 2)
+        power = (power_raw[0] << 8 | power_raw[1]) * CURRENT_LSB * 25  # LSB=25*CURRENT_LSB
+
+        return bus_voltage, current, power
+    except Exception as e:
+        print("INA226 read error:", e)
+        return 0.0, 0.0, 0.0
+
+# ==========================================================
+# display
+# ==========================================================
+def display_system_info(device, delay):
+    if detect_ina226():
+        init_ina226()
     while True:
         ip_entries = get_ip_addresses()
         if not ip_entries:
@@ -106,13 +194,21 @@ def display_system_info(device, delay=2):
                 draw.text((0, 0),  f"{iface}:{ip}", font=font_medium, fill=255)
                 draw.text((0, 10), get_cpu(), font=font_medium, fill=255)
                 draw.text((0, 20), get_mem(), font=font_medium, fill=255)
-                draw.text((0, 30), get_root_disk(), font=font_medium, fill=255)
+                if ina226_available:
+                    voltage, current, power = read_sensor()
+                    draw.text((0, 30), f"DC:{voltage:.1f}V|{current:.1f}A|{power:.1f}W", font=font_medium, fill=255)
+                else:
+                    draw.text((0, 30), get_root_disk(), font=font_medium, fill=255)
                 draw.text((0, 40), get_wifi_info(), font=font_large, fill=255)
                 draw.text((0, 52), get_rec_disk(), font=font_large, fill=255)
+
             time.sleep(delay)
 
+# ==========================================================
+# main function
+# ==========================================================
 if __name__ == "__main__":
     try:
-        display_system_info(device)
+        display_system_info(device, oled_refresh_interval)
     except KeyboardInterrupt:
         device.clear()

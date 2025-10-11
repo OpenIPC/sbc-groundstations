@@ -46,8 +46,8 @@ python3 -m venv venv
 
 source venv/bin/activate
 pip install -r ${webui_install_dir}/requirements.txt
-# i2c oled
-pip install luma.oled psutil python-dotenv
+# i2c oled and ina226
+pip install luma.oled psutil python-dotenv smbus2
 
 cat > /etc/systemd/system/webui.service << EOF
 [Unit]
