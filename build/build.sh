@@ -122,6 +122,8 @@ sed -i 's/^# CONFIG_ATH9K_HTC is not set$/CONFIG_ATH9K_HTC=m/' .config
 sed -i 's/^# CONFIG_MT76x2U is not set$/CONFIG_MT76x2U=m/' .config
 # enable joydev input
 sed -i 's/^# CONFIG_INPUT_JOYDEV is not set$/CONFIG_INPUT_JOYDEV=m/' .config
+# enable INA2XX sensors
+sed -i 's/^# CONFIG_SENSORS_INA2XX is not set$/CONFIG_SENSORS_INA2XX=m/' .config
 
 make olddefconfig
 make prepare modules_prepare
@@ -138,6 +140,10 @@ make M=drivers/net/wireless/mediatek/mt76 modules_install KERNELRELEASE=${KVER}
 # INPUT_JOYDEV
 make -j$(nproc) M=drivers/input/joystick modules
 make M=drivers/input/joystick modules_install KERNELRELEASE=${KVER}
+
+# INA2XX
+make -j$(nproc) M=drivers/hwmon modules
+make M=drivers/hwmon modules_install KERNELRELEASE=${KVER}
 
 # cleanup kernel source but keep .git to save space
 rm -rf *
