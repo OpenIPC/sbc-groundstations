@@ -8,6 +8,8 @@ CACHE_DIR="/tmp/gsmenu_cache"
 CACHE_TTL=10 # seconds
 MAJESTIC_YAML="/etc/majestic.yaml"
 WFB_YAML="/etc/wfb.yaml"
+ALINK_CONF="/etc/alink.conf"
+TXPROFILES_CONF="/etc/txprofiles.conf"
 PRESET_DIR="/etc/presets"
 
 # SSH command setup
@@ -25,7 +27,7 @@ refresh_cache() {
     # Check if we need to refresh
     if [[ ! -f "$CACHE_DIR/last_refresh" ]] || [[ $(cat "$CACHE_DIR/last_refresh") -lt $last_refresh ]]; then
         # Copy the YAML configuration files
-        $SCP root@$REMOTE_IP:$MAJESTIC_YAML root@$REMOTE_IP:$WFB_YAML $CACHE_DIR 2>/dev/null
+        $SCP root@$REMOTE_IP:$MAJESTIC_YAML root@$REMOTE_IP:$WFB_YAML root@$REMOTE_IP:$ALINK_CONF root@$REMOTE_IP:$TXPROFILES_CONF $CACHE_DIR 2>/dev/null
 
         # Update refresh timestamp
         echo "$current_time" > "$CACHE_DIR/last_refresh"
@@ -42,6 +44,12 @@ get_majestic_value() {
 get_wfb_value() {
     local key="$1"
     yaml-cli -i "$CACHE_DIR/wfb.yaml" -g "$key" 2>/dev/null
+}
+
+# Function to get value from alink.conf
+get_alink_value() {
+    local key="$1"
+    grep $key= "$CACHE_DIR/alink.conf" | cut -d "=" -f 2 2>/dev/null
 }
 
 # Refresh cache for get
@@ -110,6 +118,45 @@ case "$@" in
     "values air wfbng width")
         echo -n -e "20\n40"
         ;;
+    "values air alink power_level_0_to_4")
+        echo -n -e "0\n1\n2\n3\n4"
+        ;;
+    "values air alink fallback_ms")
+        echo -n  1 2000
+        ;;
+    "values air alink hold_fallback_mode_s")
+        echo -n  1 10
+        ;;
+    "values air alink min_between_changes_ms")
+        echo -n 1 10000
+        ;;
+    "values air alink hold_modes_down_s")
+        echo -n 1 10
+        ;;
+    "values air alink hysteresis_percent")
+        echo -n 0 100
+        ;;
+    "values air alink hysteresis_percent_down")
+        echo -n 0 100
+        ;;
+    "values air alink exp_smoothing_factor")
+        echo -n 0 1.6
+        ;;
+    "values air alink exp_smoothing_factor_down")
+        echo -n 0 1.6
+        ;;
+    "values air alink check_xtx_period_ms")
+        echo -n 1 5000
+        ;;
+    "values air alink request_keyframe_interval_ms")
+        echo -n 1 5000
+        ;;
+    "values air alink osd_level")
+        echo -n -e "0\n1\n2\n3\n4\n5\n6"
+        ;;
+    "values air alink multiply_font_size_by")
+        echo -n 0 1.5
+        ;;
     "values air camera size")
         echo -n -e "1280x720\n1456x816\n1920x1080\n1440x1080\n1920x1440\n2104x1184\n2208x1248\n2240x1264\n2312x1304\n2436x1828\n2512x1416\n2560x1440\n2560x1920\n2720x1528\n2944x1656\n3200x1800\n3840x2160"
         ;;
@@ -129,10 +176,10 @@ case "$@" in
         echo -n -e "disabled\n50\n60"
         ;;
     "values air camera sensor_file")
-        echo -n -e "/etc/sensors/imx307.bin\n/etc/sensors/imx335.bin\n/etc/sensors/imx335_fpv.bin\n/etc/sensors/imx415_fpv.bin\n/etc/sensors/imx415_fpv.bin\n/etc/sensors/imx415_milos10.bin\n/etc/sensors/imx415_milos15.bin\n/etc/sensors/imx335_milos12tweak.bin\n/etc/sensors/imx335_greg15.bin\n/etc/sensors/imx335_spike5.bin\n/etc/sensors/gregspike05.bin"
+        echo -n -e "imx307\nimx335\nimx335_fpv\nimx415_fpv\nimx415_fpv\nimx415_milos10\nimx415_milos15\nimx335_milos12tweak\nimx335_greg15\nimx335_spike5\ngregspike05"
         ;;
     "values air telemetry serial")
-        echo -n -e "ttyS0\nttyS1\nttyS2"
+        echo -n -e "ttyS0\nttyS1\nttyS2\nttyS3"
         ;;
     "values air telemetry router")
         echo -n -e "mavfwd\nmsposd"
@@ -216,7 +263,7 @@ case "$@" in
         get_majestic_value '.isp.antiFlicker'
         ;;
     "get air camera sensor_file")
-        get_majestic_value '.isp.sensorConfig'
+        basename -s .bin $(basename $(get_majestic_value '.isp.sensorConfig'))
         ;;
     "get air camera fpv_enable")
         get_majestic_value '.fpv.enabled' | grep -q true && echo 1 || echo 0
@@ -278,7 +325,7 @@ case "$@" in
     ;;
     "set air camera mirror"*)
         if [ "$5" = "on" ]
-        then 
+        then
             $SSH 'cli -s .image.mirror true && killall -1 majestic'
         else
             $SSH 'cli -s .image.mirror false && killall -1 majestic'
@@ -286,7 +333,7 @@ case "$@" in
         ;;
     "set air camera flip"*)
         if [ "$5" = "on" ]
-        then 
+        then
             $SSH 'cli -s .image.flip true && killall -1 majestic'
         else
             $SSH 'cli -s .image.flip false && killall -1 majestic'
@@ -324,7 +371,7 @@ case "$@" in
         ;;
     "set air camera rec_enable"*)
         if [ "$5" = "on" ]
-        then 
+        then
             $SSH 'cli -s .records.enable true && killall -1 majestic'
         else
             $SSH 'cli -s .records.enable false && killall -1 majestic'
@@ -343,11 +390,11 @@ case "$@" in
         $SSH "cli -s .isp.antiFlicker $5 && killall -1 majestic"
         ;;
     "set air camera sensor_file"*)
-        $SSH "cli -s .isp.sensorConfig $5 && killall -1 majestic"
+        $SSH "cli -s .isp.sensorConfig /etc/sensors/${5}.bin && killall -1 majestic"
         ;;
     "set air camera fpv_enable"*)
         if [ "$5" = "on" ]
-        then     
+        then
             $SSH 'cli -s .fpv.enabled true && killall -1 majestic'
         else
             $SSH 'cli -s .fpv.enabled false && killall -1 majestic'
@@ -371,6 +418,12 @@ case "$@" in
         ;;
 
     "set air telemetry serial"*)
+        if [ "$5" = "ttyS0" ]
+        then
+          $SSH "sed -i 's/^console::respawn:\/sbin\/getty -L console 0 vt100/#console::respawn:\/sbin\/getty -L console 0 vt100/' /etc/inittab ; kill -HUP 1"
+        else
+          $SSH "sed -i 's/^#console::respawn:\/sbin\/getty -L console 0 vt100/console::respawn:\/sbin\/getty -L console 0 vt100/' /etc/inittab ; kill -HUP 1"
+        fi
         $SSH wifibroadcast cli -s .telemetry.serial $5
         $SSH "(wifibroadcast stop ;wifibroadcast stop; sleep 1;  wifibroadcast start) >/dev/null 2>&1 &"
         ;;
@@ -384,7 +437,7 @@ case "$@" in
         ;;
     "set air telemetry gs_rendering"*)
         if [ "$5" = "on" ]
-        then -o 127.0.0.1:"$port_tx" -z "$size"
+        then
             $SSH 'sed -i "s/-o 127\.0\.0\.1:\"\$port_tx\" -z \"\$size\"/-o 10\.5\.0\.1:\"\$port_tx\"/" /usr/bin/wifibroadcast'
             $SSH "(wifibroadcast stop ;wifibroadcast stop; sleep 1;  wifibroadcast start) >/dev/null 2>&1 &"
         else
@@ -446,7 +499,7 @@ case "$@" in
         ;;
     "set air wfbng stbc"*)
         if [ "$5" = "on" ]
-        then 
+        then
             $SSH wifibroadcast cli -s .broadcast.stbc 1
         else
             $SSH wifibroadcast cli -s .broadcast.stbc 0
@@ -455,11 +508,11 @@ case "$@" in
         ;;
     "set air wfbng ldpc"*)
         if [ "$5" = "on" ]
-        then 
+        then
             $SSH wifibroadcast cli -s .broadcast.ldpc 1
         else
             $SSH wifibroadcast cli -s .broadcast.ldpc 0
-            
+
         fi
         $SSH "(wifibroadcast stop ;wifibroadcast stop; sleep 1;  wifibroadcast start) >/dev/null 2>&1 &"
         ;;
@@ -484,11 +537,34 @@ case "$@" in
         fi
         ;;
 
+"get air alink"*)
+        get_alink_value $4
+        ;;
+
+    "set air alink"*)
+        if [ "$5" = "off" ]
+        then
+            $SSH 'sed -i "s/'$4'=.*/'$4'=0/" /etc/alink.conf; killall -9 alink_drone ; alink_drone &'
+        elif [ "$5" = "on" ]
+        then
+            $SSH 'sed -i "s/'$4'=.*/'$4'=1/" /etc/alink.conf; killall -9 alink_drone ; alink_drone &'
+        elif [ "$4" = "txprofiles" ]
+        then
+            $SCP $CACHE_DIR/txprofiles.conf root@$REMOTE_IP:$TXPROFILES_CONF
+            $SSH 'killall -9 alink_drone ; alink_drone &'
+        else
+            $SSH 'sed -i "s/'$4'=.*/'$4'='$5'/" /etc/alink.conf; killall -9 alink_drone ; alink_drone &'
+        fi
+        ;;
+
     "values gs wfbng gs_channel")
-        iw list | grep MHz | grep -v disabled | grep \* | tr -d '[]' | awk '{print $4 " (" $2 " " $3 ")"}' | grep '^[1-9]' | sort -n |  uniq
+        iw list | grep MHz | grep -v disabled | grep \* | tr -d '[]' | awk '{print $4 " (" $2 " " $3 ")"}' | grep '^[1-9]' | sort -n | uniq | sed -z '$ s/\n$//'
         ;;
     "values gs wfbng bandwidth")
         echo -n -e "20\n40"
+        ;;
+    "values gs wfbng txpower")
+        echo -n -e "1\n100"
         ;;
     "values gs system resolution")
         drm_info -j /dev/dri/card0 2>/dev/null | jq -r '."/dev/dri/card0".connectors[1].modes[] | select(.name | contains("i") | not) | .name + "@" + (.vrefresh|tostring)' | sort | uniq  | sed -z '$ s/\n$//'
@@ -574,7 +650,7 @@ case "$@" in
                 nmcli con up "$6"
             else
                 echo "Creating new "$6" connection..."
-                nmcli device wifi connect "$6" password "$7"
+                nmcli device wifi connect "$6" password "$7" ifname wifi
                 echo "Starting Wlan..."
                 nmcli con up "$6"
             fi
@@ -615,6 +691,29 @@ case "$@" in
     "get gs wfbng bandwidth")
         echo -n $wfb_bandwidth
         ;;
+    "get gs wfbng txpower")
+        wifi_txpower=$(grep ^wifi_txpower /etc/wifibroadcast.cfg)
+        [ -z "$wifi_txpower" ] && echo "50" && exit 0
+        read first_card first_card_power < <(
+            echo "$wifi_txpower" | cut -d = -f 2 | jq -r '"\(to_entries[0].key) \(to_entries[0].value)"'
+        )
+        first_card_type=$(udevadm info /sys/class/net/${first_card}/ | grep -E 'ID_NET_DRIVER=(rtl88xxau_wfb|rtl88x2eu)'| cut -d = -f2)
+        case "$first_card_type" in
+        "rtl88xxau_wfb")
+            min_phy_txpower=-1000
+            max_phy_txpower=-3000
+            ;;
+
+        "rtl88x2eu")
+            min_phy_txpower=1000
+            max_phy_txpower=2900
+            ;;
+        esac
+        range=$((max_phy_txpower - min_phy_txpower))
+        position=$((first_card_power - min_phy_txpower))
+        percentage=$(( (position * 100) / range ))
+        echo $percentage
+        ;;
 
     "set gs wfbng adaptivelink"*)
         if [ "$5" = "on" ]
@@ -639,6 +738,36 @@ case "$@" in
         sed -i "s/^wfb_bandwidth=.*/wfb_bandwidth='$5'/" "$(readlink -f /etc/gs.conf)"
         /gs/wfb.sh
         ;;
+    "set gs wfbng txpower"*)
+        source /etc/default/wifibroadcast
+        wifi_txpower=""
+        for nic in $WFB_NICS
+        do
+            card_type=$(udevadm info /sys/class/net/${nic}/ | grep -E 'ID_NET_DRIVER=(rtl88xxau_wfb|rtl88x2eu)'| cut -d = -f2)
+            case "$card_type" in
+            "rtl88xxau_wfb")
+                min_phy_txpower=-1000
+                max_phy_txpower=-3000
+                ;;
+
+            "rtl88x2eu")
+                min_phy_txpower=1000
+                max_phy_txpower=2900
+                ;;
+            esac
+            range=$((max_phy_txpower - min_phy_txpower))
+            percentage=$5
+            power_value=$(( min_phy_txpower + (percentage * range) / 100 ))
+            [ ! -z "$wifi_txpower" ] && wifi_txpower=$wifi_txpower,
+            wifi_txpower=$wifi_txpower" \"$nic\": $power_value"
+        done
+        if ! grep -A 20 "\[common\]" /etc/wifibroadcast.cfg | grep -q "^wifi_txpower = "; then
+            sed -i "/^\[common\]/a\wifi_txpower = {$wifi_txpower}" /etc/wifibroadcast.cfg
+        else
+            sed -i "s/^wifi_txpower = .*/wifi_txpower = {$wifi_txpower}/" /etc/wifibroadcast.cfg
+        fi
+        systemctl restart wifibroadcast.service
+        ;;
     "get gs main Channel")
         gsmenu.sh get gs wfbng gs_channel
         ;;
@@ -659,6 +788,7 @@ case "$@" in
     "search channel")
         /gs/channel-scan.sh >/dev/null 2>&1 &
         ;;
+
     "button air actions Reboot")
         $SSH 'reboot &'
     ;;
