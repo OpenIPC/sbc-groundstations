@@ -93,6 +93,16 @@ elif [[ "$enable_external_antenna" == "no" && -f /boot/dtbo/radxa-zero3-external
 	need_u_boot_update=1
 	need_reboot=1
 fi
+# INA226 device
+if [[ "$ina226_kernel_driver" == "yes" && -f /boot/dtbo/rk3566-ina226-overlay.dtbo.disabled ]]; then
+        mv /boot/dtbo/rk3566-ina226-overlay.dtbo.disabled /boot/dtbo/rk3566-ina226-overlay.dtbo
+        need_u_boot_update=1
+        need_reboot=1
+elif [[ "$ina226_kernel_driver" == "no" && -f /boot/dtbo/rk3566-ina226-overlay.dtbo ]]; then
+        mv /boot/dtbo/rk3566-ina226-overlay.dtbo /boot/dtbo/rk3566-ina226-overlay.dtbo.disabled
+        need_u_boot_update=1
+        need_reboot=1
+fi
 # dtbo enable or disable
 if [ -n "$dtbo_enable_list" ]; then
 	dtbo_enable_array=$(echo $dtbo_enable_list | tr -s ' ' | tr ' ' '\n' | sort)

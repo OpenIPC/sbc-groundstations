@@ -12,6 +12,7 @@ from luma.core.render import canvas
 from PIL import ImageFont
 from dotenv import dotenv_values
 from smbus2 import SMBus, i2c_msg
+from pathlib import Path
 # import socket
 
 # ==========================================================
@@ -128,54 +129,90 @@ bus = SMBus(I2C_DEVICE)
 def detect_ina226():
     """Check whether INA226 exists on the I2C bus"""
     global ina226_available
-    try:
-        msg = i2c_msg.write(INA226_ADDR, [])
-        bus.i2c_rdwr(msg)
-        ina226_available = True
-        print("INA226 detected on I2C bus.")
-        return True
-    except Exception:
-        ina226_available = False
-        print("INA226 not detected, skip power monitoring.")
-        return False
+    if gs_conf['ina226_kernel_driver'] == 'no':
+        try:
+            msg = i2c_msg.write(INA226_ADDR, [])
+            bus.i2c_rdwr(msg)
+            ina226_available = True
+            print("INA226 detected on I2C bus.")
+            return True
+        except Exception:
+            ina226_available = False
+            print("INA226 not detected, skip power monitoring.")
+            return False
+    elif gs_conf['ina226_kernel_driver'] == 'yes':
+        hwmon_path = None
+        for name_file in Path("/sys/class/hwmon").glob("hwmon*/name"):
+            try:
+                if name_file.read_text().strip() == "ina226":
+                    hwmon_path = name_file.parent
+                    break
+            except Exception:
+                continue
+        if hwmon_path:
+            ina226_available = hwmon_path
+            print(f"INA226 kernel device detected {hwmon_path}.")
+            return True
+        else:
+            ina226_available = False
+            print("INA226 kernel device not detected, skip power monitoring.")
+            return False
 
 def init_ina226():
     global ina226_available
     if not ina226_available:
         return
-    try:
-        # Calculate calibration value: CAL = 0.00512 / (CURRENT_LSB * SHUNT_RESISTOR)
-        cal_value = int(0.00512 / (CURRENT_LSB * SHUNT_RESISTOR))
+    elif ina226_available is True:
+        try:
+            # Calculate calibration value: CAL = 0.00512 / (CURRENT_LSB * SHUNT_RESISTOR)
+            cal_value = int(0.00512 / (CURRENT_LSB * SHUNT_RESISTOR))
 
-        # Configure register: continuous mode, sampling rate, etc.
-        # 0x4127 = average 16 samples, conversion time 1ms
-        config = 0x4127
-        bus.write_i2c_block_data(INA226_ADDR, REG_CONFIG, [(config >> 8) & 0xFF, config & 0xFF])
-        bus.write_i2c_block_data(INA226_ADDR, REG_CALIB, [(cal_value >> 8) & 0xFF, cal_value & 0xFF])
-    except Exception as e:
-        print("INA226 init failed:", e)
-        ina226_available = False
+            # Configure register: continuous mode, sampling rate, etc.
+            # 0x4127 = average 16 samples, conversion time 1ms
+            config = 0x4127
+            bus.write_i2c_block_data(INA226_ADDR, REG_CONFIG, [(config >> 8) & 0xFF, config & 0xFF])
+            bus.write_i2c_block_data(INA226_ADDR, REG_CALIB, [(cal_value >> 8) & 0xFF, cal_value & 0xFF])
+        except Exception as e:
+            print("INA226 init failed:", e)
+            ina226_available = False
+    else:
+            print("INA226 is already inited by kernel driver.")
 
 def read_sensor():
     if not ina226_available:
         return 0.0, 0.0, 0.0
-    try:
-        # Read bus voltage (unit: V)
-        bus_voltage_raw = bus.read_i2c_block_data(INA226_ADDR, REG_BUSV, 2)
-        bus_voltage = (bus_voltage_raw[0] << 8 | bus_voltage_raw[1]) * 0.00125  # LSB=1.25mV
+    elif ina226_available is True:
+        try:
+            # Read bus voltage (unit: V)
+            bus_voltage_raw = bus.read_i2c_block_data(INA226_ADDR, REG_BUSV, 2)
+            bus_voltage = (bus_voltage_raw[0] << 8 | bus_voltage_raw[1]) * 0.00125  # LSB=1.25mV
 
-        # Read current (unit: A)
-        current_raw = bus.read_i2c_block_data(INA226_ADDR, REG_CURRENT, 2)
-        current = (current_raw[0] << 8 | current_raw[1]) * CURRENT_LSB
+            # Read current (unit: A)
+            current_raw = bus.read_i2c_block_data(INA226_ADDR, REG_CURRENT, 2)
+            current = (current_raw[0] << 8 | current_raw[1]) * CURRENT_LSB
 
-        # Read power (unit: W)
-        power_raw = bus.read_i2c_block_data(INA226_ADDR, REG_POWER, 2)
-        power = (power_raw[0] << 8 | power_raw[1]) * CURRENT_LSB * 25  # LSB=25*CURRENT_LSB
+            # Read power (unit: W)
+            power_raw = bus.read_i2c_block_data(INA226_ADDR, REG_POWER, 2)
+            power = (power_raw[0] << 8 | power_raw[1]) * CURRENT_LSB * 25  # LSB=25*CURRENT_LSB
 
-        return bus_voltage, current, power
-    except Exception as e:
-        print("INA226 read error:", e)
-        return 0.0, 0.0, 0.0
+            return bus_voltage, current, power
+        except Exception as e:
+            print("INA226 read error:", e)
+            return 0.0, 0.0, 0.0
+    else:
+        hwmon_path = ina226_available
+        def read_value(file_path):
+            try:
+                with open(file_path, "r") as f:
+                    return int(f.read().strip())
+            except Exception as e:
+                print(f"Error reading {file_path}: {e}")
+                return 0.0
+
+        in1_input   = read_value(os.path.join(hwmon_path, "in1_input"))
+        curr1_input = read_value(os.path.join(hwmon_path, "curr1_input"))
+        power1_input = read_value(os.path.join(hwmon_path, "power1_input"))
+        return in1_input/1000, curr1_input/1000, power1_input/1000000
 
 # ==========================================================
 # display

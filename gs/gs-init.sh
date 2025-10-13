@@ -46,6 +46,9 @@ fi
 dtc -I dts -O dtb -o /boot/dtbo/rk3566-hdmi-max-resolution-4k.dtbo.disabled /gs/rk3566-hdmi-max-resolution-4k.dts
 # enbale USB OTG role switch
 dtc -I dts -O dtb -o /boot/dtbo/rk3566-dwc3-otg-role-switch.dtbo /gs/rk3566-dwc3-otg-role-switch.dts
+# INA226 device, disabled by default
+dtc -I dts -O dtb -o /boot/dtbo/rk3566-ina226-overlay.dtbo.disabled /gs/rk3566-ina226-overlay.dts
+
 
 # Add br0 network configuration
 [ -f /etc/systemd/network/br0.netdev ] || cat > /etc/systemd/network/br0.netdev << EOF
