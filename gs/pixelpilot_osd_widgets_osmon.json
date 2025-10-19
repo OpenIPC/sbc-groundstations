@@ -1,0 +1,41 @@
+{
+    "widgets": [
+        {
+            "type": "IconTplTextWidget",
+            "name": "CPU load widget",
+            "x": 10,
+            "y": 30,
+            "icon_path": "memory.png",
+            "template": "CPU: %u IO: %u",
+            "facts": [
+                {"name": "os_mon.cpu.load_total"},
+                {"name": "os_mon.cpu.load_iowait"}
+            ]
+        },
+        {
+            "type": "TemperatureWidget",
+            "name": "Thermal sensors",
+            "x": 10,
+            "y": 60,
+            "icon_path": "device_thermostat.png",
+            "template": "CPU: %i⁰C, GPU: %i⁰C",
+            "facts": [
+                {"name": "os_mon.temperature", "tags": {"name": "soc-thermal"}},
+                {"name": "os_mon.temperature", "tags": {"name": "gpu-thermal"}}
+            ]
+        },
+        {
+            "type": "PowerWidget",
+            "name": "Battery usage widget",
+            "__comment": "Make sure you have only one power sensor! Otherwise filter them by tags",
+            "x": 10,
+            "y": 90,
+            "icon_path": "battery_android_frame_full.png",
+            "facts": [
+                {"name": "os_mon.power.voltage"},
+                {"name": "os_mon.power.current"},
+                {"name": "os_mon.power.power"}
+            ]
+        }
+    ]
+}

@@ -65,6 +65,12 @@ if [ -z "$osd_config_file" ]; then
 			osd_config_file="/etc/pixelpilot/pixelpilot_osd.json"
 			;;
 	esac
+
+	# append os mon widget to osd config file
+	if [ "$osd_widgets_osmon" == "yes" ]; then
+		jq '.widgets += (input.widgets)' "$osd_config_file" /etc/pixelpilot/pixelpilot_osd_widgets_osmon.json > /run/pixelpilot_osd.json
+		osd_config_file="/run/pixelpilot_osd.json"
+	fi
 fi
 
 GPIO_RED_LED=$(gpiofind PIN_${red_led_pin})
