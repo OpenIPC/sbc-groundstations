@@ -29,7 +29,7 @@ if [ -n "$losetupList" ]; then
 fi
 
 apt update
-apt install -y qemu-user-static gdisk dosfstools
+apt install -y gdisk dosfstools
 
 IMAGE=$(ls | grep $(basename "$IMAGE_URL" ${IMAGE_URL: -3}) | grep .img$ ) || true # Search basename.img
 if [ -f "$IMAGE" ]; then
