@@ -68,7 +68,7 @@ if [ -z "$osd_config_file" ]; then
 
 	# append os mon widget to osd config file
 	if [ "$osd_widgets_osmon" == "yes" ]; then
-		jq '.widgets += (input.widgets)' "$osd_config_file" /etc/pixelpilot/pixelpilot_osd_widgets_osmon.json > /run/pixelpilot_osd.json
+		jq '.widgets += (input.widgets)' "$osd_config_file" /etc/pixelpilot/pixelpilot_osd_osmon.json > /run/pixelpilot_osd.json
 		osd_config_file="/run/pixelpilot_osd.json"
 	fi
 fi

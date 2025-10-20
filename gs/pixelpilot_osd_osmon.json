@@ -13,28 +13,36 @@
             ]
         },
         {
-            "type": "TemperatureWidget",
+            "type": "IconTplTextWidget",
             "name": "Thermal sensors",
             "x": 10,
             "y": 60,
             "icon_path": "device_thermostat.png",
-            "template": "CPU: %i⁰C, GPU: %i⁰C",
+            "template": "CPU: %.0f⁰C, GPU: %.0f⁰C",
             "facts": [
-                {"name": "os_mon.temperature", "tags": {"name": "soc-thermal"}},
-                {"name": "os_mon.temperature", "tags": {"name": "gpu-thermal"}}
+                {"name": "os_mon.temperature",
+                 "tags": {"name": "soc-thermal"},
+                 "convert": "x / 1000"},
+                {"name": "os_mon.temperature",
+                 "tags": {"name": "gpu-thermal"},
+                 "convert": "x / 1000"}
             ]
         },
         {
-            "type": "PowerWidget",
+            "type": "IconTplTextWidget",
             "name": "Battery usage widget",
             "__comment": "Make sure you have only one power sensor! Otherwise filter them by tags",
             "x": 10,
             "y": 90,
             "icon_path": "battery_android_frame_full.png",
+            "template": "Power: %.2fV, %.2fA, %.2fW",
             "facts": [
-                {"name": "os_mon.power.voltage"},
-                {"name": "os_mon.power.current"},
-                {"name": "os_mon.power.power"}
+                {"name": "os_mon.power.voltage",
+                 "convert": "x / 1000"},
+                {"name": "os_mon.power.current",
+                 "convert": "x / 1000"},
+                {"name": "os_mon.power.power",
+                 "convert": "x / 1000000"}
             ]
         }
     ]
