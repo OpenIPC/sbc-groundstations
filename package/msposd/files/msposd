@@ -1,0 +1,2 @@
+MSPOSD_ARGS="--osd --ahi 0 --matrix 11 -v -r 5 --master 0.0.0.0:14551 -subtitle /media/dvr"
+MSPOSD_ENABLED=false

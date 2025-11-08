@@ -1,0 +1,226 @@
+#!/bin/sh
+args="$@"
+LOCK_FILE=/tmp/sysupgrade.lock
+
+echo_c() {
+	# 31 red, 32 green, 33 yellow, 34 blue, 35 magenta, 36 cyan, 37 white, 38 grey
+	[ -z "$HASERLVER" ] && t="\e[1;$1m$2\e[0m" || t="$2"
+	echo -e "$t"
+}
+
+die() {
+	echo_c 31 "$1 Aborting."
+	rm -f /overlay/.firstboot
+	rm -f $archive
+	reboot_system
+	exit 1
+}
+
+do_update_uboot() {
+	local x=$1
+	local root_dev=${BOOT_DISK:-"/dev/$(basename $(readlink -f /dev/disk/by-partlabel/rootfs) p1)"}
+	[ -z "$x" ] && die "$X not found"
+	[ -b "$root_dev" ] || die "$root_dev not found"
+	echo_c 33 "\nU-boot"
+	echo "Update u-boot from $x"
+	dd if=$x of=$root_dev seek=64 status=progress
+	sync;sync;sync
+	echo_c 32 "\nU-boot updated"
+}
+
+download_firmware() {
+	echo_c 33 "\nFirmware"
+	defconfig=$(get_system_build)
+	if [ -n "$archive" ]; then
+		[ ! -f "$archive" ] && die "File $archive not found"
+		gzip -d "$archive" -c | tar xf - -C /tmp && echo_c 32 "Local archive unpacked" || die "Cannot extract $archive"
+		rm $archive
+	else
+		[ -z "$url" ] && url=$(get_system_upgrade || echo "https://github.com/OpenIPC/sbc-groundstations/releases/download/latest/${defconfig}.tar.gz")
+		echo "Download from $url"
+		[ "$(curl -o /dev/null -s -k -w '%{http_code}\n' "$url")" = "000" ] && die "Check your network!"
+		curl --connect-timeout 30 -s -k -m 120 -L "$url" -s -o - | gzip -d | tar xf - -C /tmp && echo_c 32 "Received and unpacked" || die "Cannot retrieve $url"
+	fi
+	if [ "1" != "$skip_md5" ]; then
+		(cd /tmp && md5sum --quiet -c *.md5sum) || die "Wrong checksum!"
+	fi
+	uboot_file=/tmp/u-boot.bin
+	rootfs_file=/tmp/rootfs.squashfs
+}
+
+get_system_build() {
+	grep "BUILD_CONFIG" "/etc/os-release" | head -1 | cut -d= -f2
+}
+
+get_system_upgrade() {
+	grep "UPGRADE" "/etc/os-release" | head -1 | cut -d= -f2
+}
+
+do_update_rootfs() {
+	local x=$1
+	local root_dev=${BOOT_DISK:-"/dev/$(basename $(readlink -f /dev/disk/by-partlabel/rootfs) p1)"}
+	[ -z "$x" ] && die "$X not found"
+	[ -b "$root_dev" ] || die "$root_dev not found"
+	echo_c 33 "\nRootFS"
+	echo "Update rootfs from $x"
+	dd if=$x of=${root_dev}p1 status=progress # ToDo: check if image fits partition
+	sync;sync;sync
+	echo_c 32 "\nRootFS updated"
+}
+
+do_wipe_overlay() {
+	echo_c 33 "\nOverlayFS"
+	echo "Erase overlay partition, will be done on reboot."
+	touch /overlay/.firstboot
+	sync
+}
+
+free_resources() {
+	echo_c 37 "\nStop services, sync files, free up memory"
+	/etc/init.d/S99pixelpilot stop
+	/etc/init.d/S98adaptive-link stop
+	/etc/init.d/S98msposd stop
+	/etc/init.d/S50crond stop
+	/etc/init.d/S02klogd stop
+	/etc/init.d/S01syslogd stop
+	sleep 1
+
+	sync
+	echo_c 34 "\nMemory:"
+	free -h
+	echo_c 34 "\nProcesses:"
+	ps | grep -v '\['
+}
+
+create_lock() {
+	if [ -f $LOCK_FILE ]; then
+		echo_c 31 "\nAnother sysupgrade process is already running!"
+		exit 1
+	fi
+	touch $LOCK_FILE
+}
+
+print_usage() {
+	echo "
+Usage: $0 [options]
+Where:
+  -u                  Update uboot from online repository.
+  -r                  Update rootfs from online repository.
+  --url=[URL]         Custom URL to update from (.tar.gz format).
+  --uboot=[FILE]      Update uboot from file (bin format).
+  --rootfs=[FILE]     Update rootfs from file (squashfs format).
+  --archive=[FILE]    Custom archive to update from (.tar.gz format).
+  -f, --force_md5     Do not validate md5sum anything.
+  -n, --wipe_overlay  Wipe overlay partition.
+  -x, --no_reboot     Do not reboot after updating.
+  -h, --help          Display this help and exit.
+"
+}
+
+reboot_system() {
+	if [ "1" = "$skip_reboot" ]; then
+		echo_c 33 "\nYou asked me not to reboot, so I won't."
+		echo_c 31 "Although a reboot is required to apply the changes."
+		echo_c 37 "Please reboot the vrx manually whenever possible."
+		rm $LOCK_FILE
+		exit 1
+	else
+		echo_c 37 "\nUnconditional reboot"
+		echo s > /proc/sysrq-trigger  # Sync filesystems
+		echo u > /proc/sysrq-trigger  # Remount filesystems read-only
+		(sleep 1; echo b > /proc/sysrq-trigger) & # Reboot
+	fi
+}
+
+for i in "$@"; do
+	case $i in
+		-h | --help)
+			print_usage
+			exit 0
+			;;
+
+		-u)
+			update_uboot=1
+			remote_update=1
+			shift
+			;;
+
+		--uboot=*)
+			update_uboot=1
+			uboot_file="${i#*=}"
+			shift
+			;;
+
+		-r)
+			update_rootfs=1
+			remote_update=1
+			shift
+			;;
+
+		--rootfs=*)
+			update_rootfs=1
+			rootfs_file="${i#*=}"
+			shift
+			;;
+
+		--url=*)
+			update_uboot=1
+			update_rootfs=1
+			remote_update=1
+			url="${i#*=}"
+			shift
+			;;
+
+		--archive=*)
+			update_uboot=1
+			update_rootfs=1
+			remote_update=1
+			archive="${i#*=}"
+			shift
+			;;
+
+		-f | --force_md5)
+			skip_md5=1
+			shift
+			;;
+
+		-n | --wipe_overlay)
+			clear_overlay=1
+			shift
+			;;
+
+		-x | --no_reboot)
+			skip_reboot=1
+			shift
+			;;
+
+		*)
+			echo_c 37 "\nUnknown option: $1"
+			print_usage
+			exit 1
+			;;
+	esac
+done
+
+
+[ "1" != "$clear_overlay" ] &&
+[ "1" != "$update_rootfs" ] &&
+[ "1" != "$update_uboot" ] &&
+	echo_c 37 "\nTry '$(basename "$0") --help' for options." &&
+	exit 0
+
+
+create_lock
+free_resources
+
+[ "1" = "$clear_overlay" ] && do_wipe_overlay
+[ "1" = "$remote_update" ] && download_firmware
+[ "1" = "$update_uboot" ] && do_update_uboot "$uboot_file"
+[ "1" = "$update_rootfs" ] && do_update_rootfs "$rootfs_file"
+
+reboot_system
+
+exit 0
+
+
+

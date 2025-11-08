@@ -1,0 +1,4 @@
+PIXELPILOT_OSD_ARGS="--osd --osd-custom-message --osd-config /etc/pixelpilot/osd.json"
+PIXELPILOT_SCREEN_MODE="1920x1080@60"
+PIXELPILOT_DVR_FRAMERATE="60"
+PIXELPILOT_ARGS="$PIXELPILOT_OSD_ARGS --screen-mode $PIXELPILOT_SCREEN_MODE --dvr-framerate $PIXELPILOT_DVR_FRAMERATE --dvr-fmp4 --dvr-sequenced-files --dvr-template /media/dvr/record_%Y-%m-%d_%H-%M-%S.mp4"

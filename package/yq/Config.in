@@ -1,0 +1,6 @@
+config BR2_PACKAGE_YQ
+	bool "yq"
+	help
+	  yq is a portable command-line YAML, JSON, XML, CSV, TOML and properties processor
+
+	  https://github.com/mikefarah/yq

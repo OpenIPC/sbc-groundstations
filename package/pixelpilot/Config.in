@@ -1,0 +1,7 @@
+config BR2_PACKAGE_PIXELPILOT
+	bool "pixelpilot"
+	select BR2_PACKAGE_ROCKCHIP_MPP
+	help
+	  Application that decodes an RTP Video Stream and displays it on screen, for Rockchip devices.
+
+	  https://github.com/OpenIPC/PixelPilot_rk

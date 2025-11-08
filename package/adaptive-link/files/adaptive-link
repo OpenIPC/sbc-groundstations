@@ -1,0 +1,2 @@
+ADAPTIVE_LINK_ARGS="--config /etc/alink_gs.conf"
+ADAPTIVE_LINK_ENABLED=true

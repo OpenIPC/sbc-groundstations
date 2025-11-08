@@ -1,0 +1,11 @@
+ROCKCHIP_MPP_VERSION = develop
+ROCKCHIP_MPP_SITE = https://github.com/rockchip-linux/mpp.git
+ROCKCHIP_MPP_SITE_METHOD = git
+ROCKCHIP_MPP_INSTALL_STAGING = YES
+ROCKCHIP_MPP_INSTALL_TARGET = YES
+
+ROCKCHIP_MPP_CONF_OPTS = \
+	-DRKPLAT=ON \
+	-DHAVE_DRM=ON
+
+$(eval $(cmake-package))

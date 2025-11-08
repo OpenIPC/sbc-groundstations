@@ -1,0 +1,9 @@
+config BR2_PACKAGE_WFB_SERVER
+	bool "wfb-server"
+	depends on BR2_PACKAGE_PYTHON3
+	depends on BR2_PACKAGE_WIFIBROADCAST_NG
+	select BR2_PACKAGE_PYTHON_SETUPTOOLS
+	help
+	  Control Plane for wfb-ng
+	  Long-range packet radio link based on raw WiFi radio.
+	  https://github.com/svpcom/wfb-ng

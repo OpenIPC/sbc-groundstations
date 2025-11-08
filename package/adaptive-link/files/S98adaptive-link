@@ -1,0 +1,47 @@
+#!/bin/sh
+#
+# Starts adaptive-link.
+#
+
+# Allow a few customizations from a config file
+test -r /etc/default/adaptive-link && . /etc/default/adaptive-link
+
+if [ x$ADAPTIVE_LINK_ENABLED = x"false" ]
+then
+	echo "Starting adaptive-link... skipped (disabled)"
+	exit 0
+fi
+
+start() {
+	printf "Starting adaptive-link: "
+
+	start-stop-daemon -S -b -q -m -p /var/run/adaptive-link.pid \
+		--exec /usr/bin/alink_gs -- $ADAPTIVE_LINK_ARGS
+	[ $? = 0 ] && echo "OK" || echo "FAIL"
+}
+stop() {
+	printf "Stopping adaptive-link: "
+	start-stop-daemon -K -q -p /var/run/adaptive-link.pid
+	[ $? = 0 ] && echo "OK" || echo "FAIL"
+}
+restart() {
+	stop
+	start
+}
+
+case "$1" in
+  start)
+  	start
+	;;
+  stop)
+  	stop
+	;;
+  restart|reload)
+  	restart
+	;;
+  *)
+	echo "Usage: $0 {start|stop|restart}"
+	exit 1
+esac
+
+exit $?

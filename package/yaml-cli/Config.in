@@ -1,0 +1,6 @@
+config BR2_PACKAGE_YAML_CLI
+	bool "yaml-cli"
+	help
+	  Simple YAML console tool
+
+	  https://github.com/OpenIPC/yaml-cli.git

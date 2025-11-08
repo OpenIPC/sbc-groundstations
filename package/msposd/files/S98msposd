@@ -1,0 +1,47 @@
+#!/bin/sh
+#
+# Starts msposd.
+#
+
+# Allow a few customizations from a config file
+test -r /etc/default/msposd && . /etc/default/msposd
+
+if [ x$MSPOSD_ENABLED = x"false" ]
+then
+	echo "Starting msposd... skipped (disabled)"
+	exit 0
+fi
+
+start() {
+	printf "Starting msposd: "
+
+	start-stop-daemon -S -b -q -m -p /var/run/msposd.pid \
+		--exec /usr/bin/msposd -- $MSPOSD_ARGS
+	[ $? = 0 ] && echo "OK" || echo "FAIL"
+}
+stop() {
+	printf "Stopping msposd: "
+	start-stop-daemon -K -q -p /var/run/msposd.pid
+	[ $? = 0 ] && echo "OK" || echo "FAIL"
+}
+restart() {
+	stop
+	start
+}
+
+case "$1" in
+  start)
+  	start
+	;;
+  stop)
+  	stop
+	;;
+  restart|reload)
+  	restart
+	;;
+  *)
+	echo "Usage: $0 {start|stop|restart}"
+	exit 1
+esac
+
+exit $?

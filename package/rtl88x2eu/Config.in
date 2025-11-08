@@ -1,0 +1,4 @@
+config BR2_PACKAGE_RTL88X2EU
+	bool "rtl88x2eu"
+	help
+		Linux Driver for WiFi Adapters that are based on the RTL8812EU and RTL8822EU Chipsets with packet injection patch

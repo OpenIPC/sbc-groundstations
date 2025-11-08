@@ -1,0 +1,6 @@
+config BR2_PACKAGE_ROCKCHIP_MPP
+	bool "rockchip-mpp"
+	help
+	  Rockchip Media Process Platform (MPP)
+
+	  https://github.com/rockchip-linux/mpp
