@@ -10,10 +10,8 @@ echo "BUILD_DATE=\"$(date)\"" >> $TARGET_DIR/etc/os-release
 
 cp ${O}/.config $TARGET_DIR/etc/default/br-config
 
-grep -q automount $TARGET_DIR/etc/inittab || echo '
-# Start automount daemon
-::sysinit:/usr/sbin/automount
-' >> $TARGET_DIR/etc/inittab
+AUTOMOUNT_INSERT_LINE=$(grep -n "# now run any rc scripts" $TARGET_DIR/etc/inittab| cut -d: -f1)
+grep -q automount $TARGET_DIR/etc/inittab || sed -i "${AUTOMOUNT_INSERT_LINE}i # Start automount daemon\n::sysinit:/usr/sbin/automount\n" $TARGET_DIR/etc/inittab
 
 grep -q gadget $TARGET_DIR/etc/inittab || echo '
 # Start gadget
