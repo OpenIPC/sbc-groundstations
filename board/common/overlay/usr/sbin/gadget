@@ -33,7 +33,7 @@ if [ -d /sys/kernel/config/usb_gadget/g1 ]; then
 	# [ -e /var/run/adbd.pid ] && start-stop-daemon --stop --oknodo --pidfile /var/run/adbd.pid --remove-pidfile --retry 5
 	# [ -e /dev/usb-ffs/adb ] && umount /dev/usb-ffs/adb
 	# [ -e /dev/usb-ffs ] && rmdir /dev/usb-ffs/adb /dev/usb-ffs
-	systemctl stop serial-getty@ttyGS0.service
+	# systemctl stop serial-getty@ttyGS0.service
 	cd /sys/kernel/config/usb_gadget/g1
 	echo '' > UDC
 	#remove all links
