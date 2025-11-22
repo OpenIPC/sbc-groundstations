@@ -20,7 +20,7 @@ sysupg() {
         echo "<0>autoupdate: Please reboot" > /dev/kmsg
         sleep infinity
     else
-        echo "<0>autoupdate: Update file ${BUILD_CONFIG}.tar.gz not found on $dev" > /dev/kmsg
+        echo "<1>autoupdate: Update file ${BUILD_CONFIG}.tar.gz not found on $dev" > /dev/kmsg
         umount "$dev"
     fi
 }
@@ -28,6 +28,8 @@ sysupg() {
 mount -t proc proc /proc || exit 1
 mount -t sysfs sys /sys || exit 1
 mount -t tmp /tmp || exit 1
+
+fbv -c -u -i -y /usr/share/splash.png
 
 # Extract root device info from mountinfo
 root_dev=$(grep -w '/.*squashfs' /proc/self/mountinfo | awk '{print $3}')
