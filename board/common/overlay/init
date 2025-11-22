@@ -64,7 +64,7 @@ then
   FIRST_START=$(parted -s $BOOT_DISK unit MiB print | awk '/^ [0-9]+/ {print $2}' | tr -d 'MiB' | head -n1 | cut -d. -f1)
   FIRST_SIZE=$(( FIRST_END - FIRST_START ))
   NEW_SIZE=$(( FIRST_SIZE + 1 ))
-  START_MB=$(( LAST_END + 1 ))
+  START_MB=$(( LAST_END + 20 ))
   END_MB=$(( START_MB + NEW_SIZE ))
   parted --fix -s $BOOT_DISK mkpart primary ext4 "${START_MB}MiB" "${END_MB}MiB"
   partprobe $BOOT_DISK
@@ -86,7 +86,7 @@ dvr_dev=$(blkid  | grep 'LABEL="DVR"'| cut -d : -f 1)
 if [ -z $dvr_dev ]
 then
   LAST_END=$(parted -s $BOOT_DISK print | awk '/^ [0-9]+/ {print $3}' | tr -d 'MB' | sort -n | tail -1)
-  START_MB=$(( LAST_END + 1 ))
+  START_MB=$(( LAST_END + 21 ))
   parted --fix -s $BOOT_DISK mkpart primary fat32 "${START_MB}MB" 100%
   partprobe $BOOT_DISK
   PART_NUM=$(parted -s $BOOT_DISK print | awk '/^ [0-9]+/ {print $1}' | tail -1)
