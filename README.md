@@ -14,7 +14,7 @@ A unified OpenIPC ground station image builder using Buildroot 2.
 - Use `sysupgrade -u -r` for an online update. See `sysupgrade --help` for more options.
 - Use `make ssh-flash` to flash a local build to `BR2_BOARD_HOST`. See menuconfig.
 - Use `make flash` to flash a local build to the eMMC using `rkdeveloptool` (maskrom).
-- Flash `<vrx name>_sdcard.img` using RKDevTool, see: [Wiki](https://docs.openipc.org/hardware/runcam/vrx/recoverbadflash/])
+- Flash `<vrx name>_sdcard.img` using RKDevTool/rkdeveloptool, see: [Wiki](https://docs.openipc.org/hardware/runcam/vrx/recoverbadflash/])
 
 # Factory Reset
 
@@ -67,7 +67,13 @@ SBC-GS 2 Beta 2 and older versions will not boot squashfs-based systems. A new b
 
 ## Option 3
 
-- Use RKDevTool/rkdeveloptool and flash SBC-GS to the eMMC:
+- Full replace the eMMC
+
+  Flash `<vrx name>_sdcard.img` using RKDevTool/rkdeveloptool, see: [Wiki](https://docs.openipc.org/hardware/runcam/vrx/recoverbadflash/])
+
+  or
+
+  Use dd from SD booted system
   ```
   dd if=/tmp/<vrx name>_sdcard.img of=/dev/mmcblk0 status=progress
   ```
@@ -91,3 +97,9 @@ load mmc 1:1 0x03000000 /boot/Image
 load mmc 1:1 0x05000000 /boot/rockchip/rk3566-radxa-zero3.dtb
 booti 0x03000000 - 0x05000000
 ```
+
+# CC Edition Maintained by @zhouruixi
+
+See the CC branch
+* Radxa zero 3W/E
+  [v0.9-beta](https://github.com/zhouruixi/SBC-GS/releases/tag/v0.9-beta)
