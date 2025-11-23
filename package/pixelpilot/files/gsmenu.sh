@@ -711,6 +711,9 @@ case "$@" in
     "values gs wfbng txpower")
         echo -n -e "1\n100"
         ;;
+    "values gs system video_scale")
+        echo -n 0.5 1.0
+        ;;
     "values gs system rx_mode")
         echo -n -e "wfb\napfpv"
         ;;
@@ -819,6 +822,13 @@ EOF
         else
             : #noop
         fi
+        ;;
+    "get gs system video_scale")
+        . /etc/default/pixelpilot
+        echo $PIXELPILOT_VIDEO_SCALE
+        ;;
+    "set gs system video_scale"*)
+        sed -i "s/^PIXELPILOT_VIDEO_SCALE=.*/PIXELPILOT_VIDEO_SCALE=$5/" /etc/default/pixelpilot
         ;;
     "get gs wifi hotspot")
         [ -f /etc/wpa_supplicant.hotspot.conf ] && echo 1 || echo 0

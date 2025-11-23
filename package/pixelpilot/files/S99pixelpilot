@@ -10,7 +10,7 @@ start() {
 	printf "Starting pixelpilot: "
 
 	start-stop-daemon -S -b -q -p /var/run/pixelpilot.pid \
-		--exec /usr/bin/pixelpilot.sh -- $PIXELPILOT_ARGS
+		--exec /usr/bin/pixelpilot.sh
 	[ $? = 0 ] && echo "OK" || echo "FAIL"
 }
 stop() {
