@@ -1,5 +1,11 @@
-PIXELPILOT_VERSION=6ffe03d3dc1777149b3724ef0d4b4c3370477189
-PIXELPILOT_SITE=https://github.com/henkwiedig/PixelPilot_rk.git
+###############################################################################
+#
+# pixelpilot
+#
+###############################################################################
+
+PIXELPILOT_VERSION=336678bd8e0de08322c8a170522c7d6fb17508b3
+PIXELPILOT_SITE=https://github.com/OpenIPC/PixelPilot_rk.git
 PIXELPILOT_SITE_METHOD = git
 PIXELPILOT_GIT_SUBMODULES = YES
 PIXELPILOT_INSTALL_STAGING = NO
