@@ -22,6 +22,7 @@ jobs:
       fail-fast: false
       matrix:
         platform:
+          - radxa_zero3
           - runcam_wifilink
           - emax_wyvern-link
 
