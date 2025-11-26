@@ -19,7 +19,7 @@ die() {
 do_update_uboot() {
 	local x=$1
 	local root_dev=${BOOT_DISK:-"/dev/$(basename $(readlink -f /dev/disk/by-partlabel/rootfs) p1)"}
-	[ -z "$x" ] && die "$X not found"
+	[ -z "$x" ] && die "$x not found"
 	[ -b "$root_dev" ] || die "$root_dev not found"
 	echo_c 33 "\nU-boot"
 	echo "Update u-boot from $x"
@@ -59,11 +59,18 @@ get_system_upgrade() {
 do_update_rootfs() {
 	local x=$1
 	local root_dev=${BOOT_DISK:-"/dev/$(basename $(readlink -f /dev/disk/by-partlabel/rootfs) p1)"}
-	[ -z "$x" ] && die "$X not found"
+	[ -z "$x" ] && die "$x not found"
 	[ -b "$root_dev" ] || die "$root_dev not found"
 	echo_c 33 "\nRootFS"
+	IMAGE_SIZE=99999999999
+	PARTITION_SIZE=0
+	IMAGE_SIZE=$(stat -c%s "$x")
+	PARTITION_SIZE=$(fdisk -l "${root_dev}p1" 2>/dev/null | grep -E "^Disk ${root_dev}p1:" | awk '{print $5}')
+	if [ "$IMAGE_SIZE" -ge "$PARTITION_SIZE" ]; then
+		die "$x is to big. Repartition needed. Image: $IMAGE_SIZE, Partition: $PARTITION_SIZE"
+	fi
 	echo "Update rootfs from $x"
-	dd if=$x of=${root_dev}p1 status=progress # ToDo: check if image fits partition
+	dd if=$x of=${root_dev}p1 status=progress
 	sync;sync;sync
 	echo_c 32 "\nRootFS updated"
 }
