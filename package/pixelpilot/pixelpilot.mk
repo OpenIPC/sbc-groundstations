@@ -25,6 +25,7 @@ endef
 define PIXELPILOT_POST_INSTALL_TARGET_HOOK
 	mkdir -p $(TARGET_DIR)/etc/default
 	mkdir -p $(TARGET_DIR)/etc/pixelpilot
+	mkdir -p $(TARGET_DIR)/usr/share/fonts
 
 	$(INSTALL) -D -m 0644 $(BR2_EXTERNAL_OPENIPC_SBC_GS_PATH)/package/pixelpilot/files/pixelpilot \
 		$(TARGET_DIR)/etc/default/pixelpilot
@@ -34,6 +35,9 @@ define PIXELPILOT_POST_INSTALL_TARGET_HOOK
 
 	$(INSTALL) -D -m 0755 $(PIXELPILOT_PKGDIR)/files/gsmenu.sh \
 		$(TARGET_DIR)/usr/bin/gsmenu.sh
+
+	$(INSTALL) -D -m 0644 $(PIXELPILOT_PKGDIR)/files/Roboto-Regular.ttf \
+		$(TARGET_DIR)/usr/share/fonts/Roboto-Regular.ttf
 
 endef
 
