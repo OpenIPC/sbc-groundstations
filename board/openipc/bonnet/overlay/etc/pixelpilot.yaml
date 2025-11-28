@@ -1,0 +1,28 @@
+gsmenu:
+  enabled: true
+  gpio:
+    left: 13
+    right: 12
+    up: 16
+    down: 18
+    center: 11
+    rec: 22
+
+# enables collection of `os_mon.*` OSD facts
+os_sensors:
+  cpu: true      # Monitor CPU load percentage
+  power: auto
+    # Monitor power supply voltage and current (advanced: requires INA226 sensor to be installed)
+    # It can be several, but normally you just install one to monitor battery
+    # - type: ina226  # currently the only type supported
+    #   hwmon_id: hwmon3  # /sys/class/hwmon/{hwmon_id}/name should be ina226
+  temperature:
+    # Monitor Radxa chip temperatures, see /sys/class/thermal/thermal_zone*/
+    - thermal_zone: thermal_zone0  # CPU on Radxa
+    - thermal_zone: thermal_zone1  # GPU on Radxa
+
+# OS sensors can be auto-discovered
+# os_sensors:
+#   cpu: auto
+#   power: auto
+#   temperature: auto

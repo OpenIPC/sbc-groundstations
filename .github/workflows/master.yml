@@ -23,6 +23,7 @@ jobs:
       matrix:
         platform:
           - radxa_zero3
+          - openipc_bonnet
           - runcam_wifilink
           - emax_wyvern-link
 
