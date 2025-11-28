@@ -1,0 +1,7 @@
+config BR2_PACKAGE_DRM_INFO
+	bool "drm_info"
+	select BR2_PACKAGE_JSON_C
+	help
+	  Small utility to dump info about DRM devices
+	
+	  https://gitlab.freedesktop.org/emersion/drm_info

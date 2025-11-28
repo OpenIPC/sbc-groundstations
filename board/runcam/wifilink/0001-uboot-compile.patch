@@ -1,0 +1,10 @@
+--- a/.src/u-boot/board/rockchip/evb_rk3568/evb_rk3568.c	2025-11-12 20:00:41.805393421 +0100
++++ b/.src/u-boot/board/rockchip/evb_rk3568/evb_rk3568.c	2025-11-13 19:24:38.353152117 +0100
+@@ -6,6 +6,7 @@
+ #include <dm.h>
+ #include <adc.h>
+ #include <asm/global_data.h>
++#include <env.h>
+ 
+ #define SARADC_ADDR	"saradc@fe720000"
+ #define HW_ID_CHANNEL	1

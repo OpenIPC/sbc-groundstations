@@ -1,0 +1,4 @@
+config BR2_PACKAGE_AIC8800
+	bool "aic8800"
+	help
+	  Build kernel using Radxa BSP tooling

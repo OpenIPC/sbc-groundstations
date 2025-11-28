@@ -1,0 +1,4 @@
+# Minimal autofs configuration
+#
+# This file exists to stop warnings about missing /etc/defaults/autofs
+# All other settings are defaults.

@@ -1,0 +1,7 @@
+#!/bin/sh
+
+touch /overlay/.firstboot
+sync
+echo s > /proc/sysrq-trigger  # Sync filesystems
+echo u > /proc/sysrq-trigger  # Remount filesystems read-only
+echo b > /proc/sysrq-trigger  # Reboot

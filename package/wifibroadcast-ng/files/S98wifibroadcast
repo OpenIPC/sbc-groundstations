@@ -1,0 +1,40 @@
+#!/bin/sh
+#
+# Starts wifibroadcast.
+#
+
+# Allow a few customizations from a config file
+test -r /etc/default/wifibroadcast && . /etc/default/wifibroadcast
+
+if [ x$WIFIBROADCAST_ENABLED = x"false" ]
+then
+	echo "Starting wifibroadcast... skipped (disabled)"
+	exit 0
+fi
+
+case "$1" in
+	start)
+		printf "Starting wifibroadcast... "
+		modprobe tun
+		start-stop-daemon -S -b -q -m -p /var/run/wifibroadcast.pid \
+			-x /usr/bin/wfb-server -- --profiles gs --wlans ${WFB_NICS} $WIFIBROADCAST_ARGS
+		[ $? = 0 ] && echo "OK" || echo "FAIL"
+		;;
+
+	stop)
+		echo "Stopping wifibroadcast... "
+		start-stop-daemon -K -p /var/run/wifibroadcast.pid
+		[ $? = 0 ] && echo "OK" || echo "FAIL"
+		;;
+
+	restart)
+		$0 stop
+		sleep 1
+		$0 start
+		;;
+
+	*)
+		echo "Usage: $0 {start|stop}"
+		exit 1
+		;;
+esac

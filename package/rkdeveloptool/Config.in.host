@@ -1,0 +1,8 @@
+config BR2_PACKAGE_HOST_RKDEVELOPTOOL
+        bool "host rkdeveloptool"
+        help
+          rkdeveloptool is a USB flashing software developed by Rockchip for Linux/macOS platforms.
+
+          rkdeveloptool can be thought of as upgrade_tool for open source version.
+
+          https://github.com/rockchip-linux/rkdeveloptool

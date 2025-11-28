@@ -1,0 +1,143 @@
+#!/bin/sh
+
+on_exit() {
+	mountpoint -q /proc && umount /proc
+	exec /sbin/init "$*"
+}
+
+trap on_exit EXIT
+
+sysupg() {
+    dev=$1
+    mount -t vfat "$dev" /mnt
+    if [ -f "/mnt/${BUILD_CONFIG}.tar.gz" ]; then
+        echo "<0>autoupdate: Starting sysupgrade with ${BUILD_CONFIG}.tar.gz" > /dev/kmsg
+        sysupgrade --archive="/mnt/${BUILD_CONFIG}.tar.gz" --no_reboot 2>&1 | while IFS= read -r line; do
+            echo "<0>autoupdate: $line" > /dev/kmsg
+        done
+        echo "<0>autoupdate: Upgrade process completed" > /dev/kmsg
+        umount "$dev"
+        echo "<0>autoupdate: Please reboot" > /dev/kmsg
+        sleep infinity
+    else
+        echo "<0>autoupdate: Update file ${BUILD_CONFIG}.tar.gz not found on $dev" > /dev/kmsg
+        umount "$dev"
+    fi
+}
+
+mount -t proc proc /proc || exit 1
+mount -t sysfs sys /sys || exit 1
+mount -t tmp /tmp || exit 1
+
+# Extract root device info from mountinfo
+root_dev=$(grep -w '/.*squashfs' /proc/self/mountinfo | awk '{print $3}')
+
+# root_dev format is "major:minor" (e.g., "179:2")
+major=$(echo "$root_dev" | cut -d: -f1)
+minor=$(echo "$root_dev" | cut -d: -f2)
+
+# Find the block device with this major/minor
+for device in /sys/block/*; do
+    [ -d "$device" ] || continue
+    
+    device_name="/dev/$(basename "$device")"
+    
+    # Check if this is the disk containing our root partition
+    if find "$device" -type f -name "dev" -exec cat {} \; | grep -q "^$major:$minor$"; then
+        echo "$device_name"
+    fi
+    
+    # Check partitions of this disk
+    for part in "$device"/"$(basename "$device")"*; do
+        [ -f "$part/dev" ] || continue
+        if grep -q "^$major:$minor$" "$part/dev" 2>/dev/null; then
+            export BOOT_DISK="$device_name"
+        fi
+    done
+done
+
+overlayfs_dev=$(blkid  | grep 'LABEL="overlayfs"'| cut -d : -f 1)
+if [ -z $overlayfs_dev ]
+then
+  FIRST_END=$(parted -s $BOOT_DISK unit MiB print | awk '/^ [0-9]+/ {print $3}' | tr -d 'MiB' | head -n1 | cut -d. -f1)
+  LAST_END=$(parted -s $BOOT_DISK unit MiB print | awk '/^ [0-9]+/ {print $3}' | tr -d 'MiB' | sort -n | tail -1 | cut -d. -f1)
+  FIRST_START=$(parted -s $BOOT_DISK unit MiB print | awk '/^ [0-9]+/ {print $2}' | tr -d 'MiB' | head -n1 | cut -d. -f1)
+  FIRST_SIZE=$(( FIRST_END - FIRST_START ))
+  NEW_SIZE=$(( FIRST_SIZE + 1 ))
+  START_MB=$(( LAST_END + 1 ))
+  END_MB=$(( START_MB + NEW_SIZE ))
+  parted --fix -s $BOOT_DISK mkpart primary ext4 "${START_MB}MiB" "${END_MB}MiB"
+  partprobe $BOOT_DISK
+  PART_NUM=$(parted -s $BOOT_DISK print | awk '/^ [0-9]+/ {print $1}' | tail -1)
+  parted -s $BOOT_DISK name $PART_NUM overlayfs
+  NEW_PARTITION="${BOOT_DISK}p${PART_NUM}"
+  mke2fs -t ext4 -F "$NEW_PARTITION" -L overlayfs
+  overlayfs_dev=$(blkid  | grep 'LABEL="overlayfs"'| cut -d : -f 1)
+fi
+mount $overlayfs_dev /overlay
+
+if [ -f /overlay/.initshell ]
+then
+  /bin/sh
+  rm /overlay/.initshell
+fi
+
+dvr_dev=$(blkid  | grep 'LABEL="DVR"'| cut -d : -f 1)
+if [ -z $dvr_dev ]
+then
+  LAST_END=$(parted -s $BOOT_DISK print | awk '/^ [0-9]+/ {print $3}' | tr -d 'MB' | sort -n | tail -1)
+  START_MB=$(( LAST_END + 1 ))
+  parted --fix -s $BOOT_DISK mkpart primary fat32 "${START_MB}MB" 100%
+  partprobe $BOOT_DISK
+  PART_NUM=$(parted -s $BOOT_DISK print | awk '/^ [0-9]+/ {print $1}' | tail -1)
+  parted -s $BOOT_DISK name $PART_NUM DVR
+  NEW_PARTITION="${BOOT_DISK}p${PART_NUM}"
+  mkfs.vfat $NEW_PARTITION -n DVR
+  dvr_dev=$(blkid  | grep 'LABEL="DVR"'| cut -d : -f 1)
+fi
+
+# Sysupgrade
+. /etc/os-release
+sysupg "$dvr_dev"
+if [ -b /dev/mmcblk1p1 ] && file -s /dev/mmcblk1p1 | grep -q 'FAT'; then
+    sysupg "/dev/mmcblk1p1"
+fi
+
+. /etc/default/br-config 2> /dev/null
+if [ -f /overlay/.firstboot -o "$(gpioget $BR2_FACTORY_RESET_GPIO_CHIP $BR2_FACTORY_RESET_GPIO_LINE)" = "1" ]
+then
+  echo '<0>firstboot: #####################################################################' > /dev/kmsg
+  echo '<0>firstboot: #                                                                   #' > /dev/kmsg
+  echo '<0>firstboot: #                          firstboot                                #' > /dev/kmsg
+  echo '<0>firstboot: #                                                                   #' > /dev/kmsg
+  echo '<0>firstboot: #####################################################################' > /dev/kmsg
+  umount /overlay
+  mke2fs -t ext4 -F $overlayfs_dev -L overlayfs
+  mount $overlayfs_dev /overlay
+fi
+
+if [ "$(gpioget $BR2_GADGET_MODE_GPIO_CHIP $BR2_GADGET_MODE_GPIO_LINE)" = "1" ]
+then
+  echo '<0>gadget_mode: #####################################################################' > /dev/kmsg
+  echo '<0>gadget_mode: #                                                                   #' > /dev/kmsg
+  echo '<0>gadget_mode: #                         Gadget Mode                               #' > /dev/kmsg
+  echo '<0>gadget_mode: #                                                                   #' > /dev/kmsg
+  echo '<0>gadget_mode: #####################################################################' > /dev/kmsg
+  touch /tmp/gadget
+fi
+
+overlay_rootdir=/overlay/root
+overlay_workdir=/overlay/work
+mkdir -p $overlay_rootdir $overlay_workdir
+
+if ! mount -t overlay overlay -o lowerdir=/,upperdir=$overlay_rootdir,workdir=$overlay_workdir /mnt; then
+	umount /overlay
+	exit 1
+fi
+
+/sbin/pivot_root /mnt /mnt/rom
+mount -o noatime,move /rom/proc /proc
+mount -o noatime,move /rom/sys /sys
+mount -o noatime,move /rom/dev /dev
+mount -o noatime,move /rom/overlay /overlay
+mount -o noatime,move /rom/tmp /tmp

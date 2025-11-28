@@ -1,0 +1,99 @@
+diff -ur a/Makefile b/Makefile
+--- a/Makefile	2025-11-05 20:34:01.119164171 +0100
++++ b/Makefile	2025-11-05 21:23:16.146826771 +0100
+@@ -70,3 +70,10 @@
+ 	$(eval LIB = `pkg-config --libs cairo x11` -lm -lrt)
+ 	$(eval BUILD = $(CC) $(SRCS) -I $(SDK)/include -L $(DRV) $(CFLAGS) $(LIB) -levent_core -O0 -g -o $(OUTPUT))
+ 	$(BUILD)
++
++br-rockchip: version.h
++	$(eval SDK = ./sdk/gk7205v300)
++	$(eval CFLAGS += -D__ROCKCHIP__)
++	$(eval LIB = `pkg-config --libs cairo` -lm -lrt)
++	$(eval BUILD = $(CC) $(SRCS) -I $(SDK)/include -L $(TARGET_LD) $(CFLAGS) $(LIB) -levent_core -O0 -g -o $(OUTPUT) -Wno-incompatible-pointer-types)
++	$(BUILD)
+\ Kein Zeilenumbruch am Dateiende.
+diff -ur a/osd/util/Render_gs.c b/osd/util/Render_gs.c
+--- a/osd/util/Render_gs.c	2025-11-05 20:34:01.215162650 +0100
++++ b/osd/util/Render_gs.c	2025-11-05 21:12:25.321344018 +0100
+@@ -1,15 +1,15 @@
+ #include "../../bmp/bitmap.h"
+-#include <X11/Xatom.h>
+-#include <X11/Xlib.h>
+-#include <X11/Xutil.h>
+-#include <cairo/cairo-xlib.h>
++// #include <X11/Xatom.h>
++// #include <X11/Xlib.h>
++// #include <X11/Xutil.h>
++// #include <cairo/cairo-xlib.h>
+ #include <cairo/cairo.h>
+ #include <stdio.h>
+ #include <stdlib.h>
+ #include <string.h>
+ #include <unistd.h>
+ 
+-#include <X11/keysym.h>
++// #include <X11/keysym.h>
+ #include <event2/event.h>
+ 
+ #if defined(_x86)
+@@ -394,6 +394,7 @@
+ extern float Transform_Pitch;
+ bool outlined = true;
+ 
++#if defined(_x86)
+ void drawLineGS(int x0, int y0, int x1, int y1, uint32_t color, double thickness, bool Transpose) {
+ 
+ 	if (Transpose) {
+@@ -462,6 +463,7 @@
+ 		cairo_restore(cr);
+ 	}
+ }
++#endif
+ 
+ // Function to draw rotated text with rotation
+ int getTextWidth(const char *text, double size) {
+@@ -485,6 +487,7 @@
+ 	// Set the color using RGBA values (each between 0.0 and 1.0)
+ 	cairo_set_source_rgba(cr, r, g, b, a);
+ 
++#if defined(_x86)
+ 	if (Transpose) {
+ 		uint32_t width = Transform_OVERLAY_WIDTH;
+ 		uint32_t height = Transform_OVERLAY_HEIGHT;
+@@ -503,6 +506,7 @@
+ 		x = rotated_pos.x;
+ 		y = rotated_pos.y;
+ 	}
++#endif
+ 
+ 	cairo_set_font_size(cr, size);
+ 
+diff -ur a/osd.c b/osd.c
+--- a/osd.c	2025-11-05 20:34:01.211162713 +0100
++++ b/osd.c	2025-11-05 21:21:08.192889713 +0100
+@@ -723,9 +723,11 @@
+ 
+ void LineDirect(uint8_t *bmpData, uint32_t width, uint32_t height, int x0, int y0, int x1, int y1,
+ 	uint8_t color, int thickness) {
+-#if defined(_x86) || defined(__ROCKCHIP__)
++#if defined(_x86)
+ 
+ 	drawLineGS(x0, y0, x1, y1, getcolor(color), thickness, false);
++#elif defined(__ROCKCHIP__)
++	// noop
+ #else
+ 	drawLineI4(bmpData, width, height, x0, y0, x1, y1, color, thickness);
+ #endif
+@@ -733,8 +735,10 @@
+ 
+ void LineTranspose(
+ 	uint8_t *bmpData, int posX0, int posY0, int posX1, int posY1, uint8_t color, int thickness) {
+-#if defined(_x86) || defined(__ROCKCHIP__)
++#if defined(_x86)
+ 	drawLineGS(posX0, posY0, posX1, posY1, getcolor(color), thickness, true);
++#elif defined(__ROCKCHIP__)
++	// noop
+ #else
+ 	drawLine(bmpData, posX0, posY0, posX1, posY1, color, thickness);
+ #endif

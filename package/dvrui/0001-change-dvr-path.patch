@@ -1,0 +1,11 @@
+--- a/app.py	2025-11-08 15:44:50.677798510 +0100
++++ b/app.py	2025-11-16 10:14:17.061979374 +0100
+@@ -5,7 +5,7 @@
+ app = Flask(__name__)
+ 
+ # Configure the video directory
+-VIDEO_DIR = '/dvr'
++VIDEO_DIR = '/media/dvr'
+ ALLOWED_EXTENSIONS = {'mp4'}
+ 
+ def get_video_files():

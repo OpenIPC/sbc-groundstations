@@ -1,0 +1,8 @@
+gsmenu:
+  enabled: true
+  gpio:
+    left: 38
+    right: 32
+    up: 16
+    down: 18
+

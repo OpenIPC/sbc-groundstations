@@ -1,0 +1,6 @@
+config BR2_PACKAGE_MSPOSD
+	bool "msposd"
+	help
+	  OpenIPC implementation of MSP Displayport OSD for INAV/Betaflight/ArduPilot
+
+	  https://github.com/OpenIPC/msposd

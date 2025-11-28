@@ -1,0 +1,8 @@
+PRETTY_NAME="OpenIPC SBC GS"
+NAME="OpenIPC SBC GS"
+VERSION="2"
+VERSION_ID="2.5"
+ID=buildroot
+HOME_URL="https://github.com/OpenIPC/sbc-groundstations"
+SUPPORT_URL="https://t.me/+BMyMoolVOpkzNWUy"
+BUG_REPORT_URL="https://github.com/OpenIPC/sbc-groundstations/issues"

@@ -1,0 +1,4 @@
+config BR2_PACKAGE_DVRUI
+	bool "dvrui"
+	help
+	  dvr webUI server

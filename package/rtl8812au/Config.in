@@ -1,0 +1,6 @@
+config BR2_PACKAGE_RTL8812AU
+	bool "rtl8812au"
+	help
+	  Patched rtl88xxau drivers for wfb-ng
+	
+	  https://github.com/svpcom/rtl8812au

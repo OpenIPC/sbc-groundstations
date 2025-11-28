@@ -1,0 +1,12 @@
+--- a/meson.build	2025-11-06 20:23:28.368231390 +0100
++++ b/meson.build	2025-11-06 20:45:47.055523178 +0100
+@@ -67,6 +67,9 @@
+   fourcc_h = libdrm.get_variable(pkgconfig: 'pc_sysrootdir') + libdrm.get_variable(pkgconfig: 'includedir') / 'libdrm/drm_fourcc.h'
+ endif
+ 
++## Buildroot xcompile fix
++fourcc_h = libdrm.get_variable(pkgconfig: 'includedir') / 'libdrm/drm_fourcc.h'
++
+ if libpci.found()
+   add_project_arguments('-DHAVE_LIBPCI', language: 'c')
+ endif

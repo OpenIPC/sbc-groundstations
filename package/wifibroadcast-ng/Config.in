@@ -1,0 +1,8 @@
+config BR2_PACKAGE_WIFIBROADCAST_NG
+	bool "wifibroadcast-ng"
+	select BR2_PACKAGE_LIBPCAP
+	select BR2_PACKAGE_LIBSODIUM
+	select BR2_PACKAGE_LIBEVENT
+	help
+	  Long-range packet radio link based on raw WiFi radio.
+	  https://github.com/svpcom/wfb-ng
