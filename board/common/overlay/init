@@ -61,6 +61,15 @@ done
 overlayfs_dev=$(blkid  | grep 'LABEL="overlayfs"'| cut -d : -f 1)
 if [ -z $overlayfs_dev ]
 then
+
+  ROOT_PART_NUM=1
+  ROOT_START=$(parted -s $BOOT_DISK unit MiB print | awk '/^ *1 / {print $2}' | tr -d 'MiB')
+  ROOT_END=$(parted -s $BOOT_DISK unit MiB print | awk '/^ *1 / {print $3}' | tr -d 'MiB')
+  ROOT_SIZE=$(echo "$ROOT_END - $ROOT_START" | bc)
+  NEW_ROOT_SIZE=$(echo "$ROOT_SIZE * 0.1" | bc | cut -d. -f1)
+  NEW_ROOT_END=$(echo "$ROOT_END + $NEW_ROOT_SIZE" | bc | cut -d. -f1)
+  parted --fix -s $BOOT_DISK resizepart $ROOT_PART_NUM "${NEW_ROOT_END}MiB"
+
   FIRST_END=$(parted -s $BOOT_DISK unit MiB print | awk '/^ [0-9]+/ {print $3}' | tr -d 'MiB' | head -n1 | cut -d. -f1)
   LAST_END=$(parted -s $BOOT_DISK unit MiB print | awk '/^ [0-9]+/ {print $3}' | tr -d 'MiB' | sort -n | tail -1 | cut -d. -f1)
   FIRST_START=$(parted -s $BOOT_DISK unit MiB print | awk '/^ [0-9]+/ {print $2}' | tr -d 'MiB' | head -n1 | cut -d. -f1)
