@@ -17,3 +17,8 @@ grep -q gadget $TARGET_DIR/etc/inittab || echo '
 # Start gadget
 ::sysinit:/usr/sbin/gadget init
 ' >> $TARGET_DIR/etc/inittab
+
+grep -q "Run customize.sh if it exists" $TARGET_DIR/etc/inittab || echo -e '
+# Run customize.sh if it exists
+::sysinit:/bin/sh -c '\''[ -f /media/dvr/costomize.sh ] && /bin/sh /media/dvr/costomize.sh'\''
+' >> $TARGET_DIR/etc/inittab
