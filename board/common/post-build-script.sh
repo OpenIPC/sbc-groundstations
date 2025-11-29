@@ -15,10 +15,12 @@ grep -q automount $TARGET_DIR/etc/inittab || sed -i "${AUTOMOUNT_INSERT_LINE}i #
 
 grep -q gadget $TARGET_DIR/etc/inittab || echo '
 # Start gadget
-::sysinit:/usr/sbin/gadget init
-' >> $TARGET_DIR/etc/inittab
+::sysinit:/usr/sbin/gadget init' >> $TARGET_DIR/etc/inittab
 
 grep -q "Run customize.sh if it exists" $TARGET_DIR/etc/inittab || echo -e '
 # Run customize.sh if it exists
-::sysinit:/bin/sh -c '\''[ -f /media/dvr/costomize.sh ] && /bin/sh /media/dvr/costomize.sh'\''
-' >> $TARGET_DIR/etc/inittab
+::sysinit:/bin/sh -c '\''[ -f /media/dvr/costomize.sh ] && /bin/sh /media/dvr/costomize.sh'\''' >> $TARGET_DIR/etc/inittab
+
+grep -q "framebuffer getty" $TARGET_DIR/etc/inittab || echo '
+# framebuffer getty
+tty1::askfirst:/sbin/getty -L tty1 0 vt100' >> $TARGET_DIR/etc/inittab

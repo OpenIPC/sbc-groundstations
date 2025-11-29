@@ -1,0 +1,11 @@
+--- a/init/init.c	2024-04-16 09:23:50.000000000 +0200
++++ b/init/init.c	2025-11-29 06:27:53.901561198 +0100
+@@ -509,7 +509,7 @@
+ #ifdef CUSTOMIZED_BANNER
+ #include CUSTOMIZED_BANNER
+ #endif
+-			"\nPlease press Enter to activate this console. ";
++			"";
+ 		char c;
+ 		/*
+ 		 * Save memory by not exec-ing anything large (like a shell)
