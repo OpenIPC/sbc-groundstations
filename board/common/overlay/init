@@ -106,7 +106,21 @@ if [ -b /dev/mmcblk1p1 ] && file -s /dev/mmcblk1p1 | grep -q 'FAT'; then
 fi
 
 . /etc/default/br-config 2> /dev/null
-if [ -f /overlay/.firstboot -o "$(gpioget $BR2_FACTORY_RESET_GPIO_CHIP $BR2_FACTORY_RESET_GPIO_LINE)" = "1" ]
+
+if [ x$BR2_BOARD_GPIO_CONFIG_PIN = x"y" ] ; then
+  FACTORY_RESET_GPIO_CHIP=$(gpiofind PIN_$BR2_FACTORY_RESET_GPIO_PIN_NUMER | cut -d' ' -f1)
+  FACTORY_RESET_GPIO_LINE=$(gpiofind PIN_$BR2_FACTORY_RESET_GPIO_PIN_NUMER | cut -d' ' -f2)
+  GADGET_MODE_GPIO_CHIP=$(gpiofind PIN_$BR2_GADGET_MODE_GPIO_PIN_NUMBER | cut -d' ' -f1)
+  GADGET_MODE_GPIO_LINE=$(gpiofind PIN_$BR2_GADGET_MODE_GPIO_PIN_NUMBER | cut -d' ' -f2)
+fi
+if [ x$BR2_BOARD_GPIO_CONFIG_CHIP_LINE = x"y" ] ; then
+  FACTORY_RESET_GPIO_CHIP=$BR2_FACTORY_RESET_GPIO_CHIP
+  FACTORY_RESET_GPIO_LINE=$BR2_FACTORY_RESET_GPIO_LINE
+  GADGET_MODE_GPIO_CHIP=$BR2_GADGET_MODE_GPIO_CHIP
+  GADGET_MODE_GPIO_LINE=$BR2_GADGET_MODE_GPIO_LINE
+fi
+
+if [ -f /overlay/.firstboot -o "$(gpioget $FACTORY_RESET_GPIO_CHIP $FACTORY_RESET_GPIO_LINE)" = "1" ]
 then
   echo '<0>firstboot: #####################################################################' > /dev/kmsg
   echo '<0>firstboot: #                                                                   #' > /dev/kmsg
@@ -118,7 +132,7 @@ then
   mount $overlayfs_dev /overlay
 fi
 
-if [ "$(gpioget $BR2_GADGET_MODE_GPIO_CHIP $BR2_GADGET_MODE_GPIO_LINE)" = "1" ]
+if [ "$(gpioget $GADGET_MODE_GPIO_CHIP $GADGET_MODE_GPIO_LINE)" = "1" ]
 then
   echo '<0>gadget_mode: #####################################################################' > /dev/kmsg
   echo '<0>gadget_mode: #                                                                   #' > /dev/kmsg
