@@ -1,0 +1,1 @@
+SUBSYSTEM=="net", ACTION=="add", ENV{ID_BUS}=="usb", ENV{INTERFACE}=="eth0", RUN+="/sbin/ifup eth0"
