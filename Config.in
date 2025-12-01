@@ -23,50 +23,52 @@ config BR2_BOARD_GPIO_CONFIG_CHIP_LINE
     help
       Specify GPIO using chip name and line number.
 
-config BR2_BOARD_GPIO_CONFIG_PIN
-    bool "Use GPIO pin number"
+config BR2_BOARD_GPIO_CONFIG_PIN_NAME
+    bool "Use GPIO pin name"
     help
-      Specify GPIO using direct pin number.
+      Specify GPIO using pin name.
 
 endchoice
 
 config BR2_FACTORY_RESET_GPIO_CHIP
-	string "Factory reset GPIO chip"
-	default "gpiochip3"
-	depends on BR2_BOARD_GPIO_CONFIG_CHIP_LINE
-	help
-	  When detected high during boot (initrd phase) issue a factory reset.
+    string "Factory reset GPIO chip"
+    default ""
+    depends on BR2_BOARD_GPIO_CONFIG_CHIP_LINE
+    help
+      When detected high during boot (initrd phase) issue a factory reset.
 
 config BR2_FACTORY_RESET_GPIO_LINE
-	string "Factory reset GPIO line"
-	default "6"
-	depends on BR2_BOARD_GPIO_CONFIG_CHIP_LINE
-	help
-	  When detected high during boot (initrd phase) issue a factory reset.
-
-config BR2_FACTORY_RESET_GPIO_PIN_NUMER
-    string "Factory reset GPIO pin"
-    depends on BR2_BOARD_GPIO_CONFIG_PIN
+    string "Factory reset GPIO line"
+    default ""
+    depends on BR2_BOARD_GPIO_CONFIG_CHIP_LINE
     help
-	  When detected high during boot (initrd phase) issue a factory reset.
+      When detected high during boot (initrd phase) issue a factory reset.
+
+config BR2_FACTORY_RESET_GPIO_PIN_NAME
+    string "Factory reset GPIO pin name"
+    default ""
+    depends on BR2_BOARD_GPIO_CONFIG_PIN_NAME
+    help
+      When detected high during boot (initrd phase) issue a factory reset.
 
 config BR2_GADGET_MODE_GPIO_CHIP
     string "Gadget mode GPIO chip"
-    default "gpiochip3"
+    default ""
     depends on BR2_BOARD_GPIO_CONFIG_CHIP_LINE
     help
       Starts gadget mode when detected high during boot (initrd phase).
 
 config BR2_GADGET_MODE_GPIO_LINE
     string "Gadget mode GPIO line"
-    default "2"
+    default ""
     depends on BR2_BOARD_GPIO_CONFIG_CHIP_LINE
     help
       Starts gadget mode when detected high during boot (initrd phase).
 
-config BR2_GADGET_MODE_GPIO_PIN_NUMBER
-    string "Gadget mode GPIO pin"
-    depends on BR2_BOARD_GPIO_CONFIG_PIN
+config BR2_GADGET_MODE_GPIO_PIN_NAME
+    string "Gadget mode GPIO pin name"
+    default ""
+    depends on BR2_BOARD_GPIO_CONFIG_PIN_NAME
     help
       Starts gadget mode when detected high during boot (initrd phase).
 

@@ -107,20 +107,22 @@ fi
 
 . /etc/default/br-config 2> /dev/null
 
-if [ x$BR2_BOARD_GPIO_CONFIG_PIN = x"y" ] ; then
-  FACTORY_RESET_GPIO_CHIP=$(gpiofind PIN_$BR2_FACTORY_RESET_GPIO_PIN_NUMER | cut -d' ' -f1)
-  FACTORY_RESET_GPIO_LINE=$(gpiofind PIN_$BR2_FACTORY_RESET_GPIO_PIN_NUMER | cut -d' ' -f2)
-  GADGET_MODE_GPIO_CHIP=$(gpiofind PIN_$BR2_GADGET_MODE_GPIO_PIN_NUMBER | cut -d' ' -f1)
-  GADGET_MODE_GPIO_LINE=$(gpiofind PIN_$BR2_GADGET_MODE_GPIO_PIN_NUMBER | cut -d' ' -f2)
+if [ x$BR2_BOARD_GPIO_CONFIG_PIN_NAME = x"y" ] ; then
+  FACTORY_RESET_GPIO=$(gpiofind $BR2_FACTORY_RESET_GPIO_PIN_NAME)
+  GADGET_MODE_GPIO=$(gpiofind $BR2_GADGET_MODE_GPIO_PIN_NAME)
 fi
 if [ x$BR2_BOARD_GPIO_CONFIG_CHIP_LINE = x"y" ] ; then
-  FACTORY_RESET_GPIO_CHIP=$BR2_FACTORY_RESET_GPIO_CHIP
-  FACTORY_RESET_GPIO_LINE=$BR2_FACTORY_RESET_GPIO_LINE
-  GADGET_MODE_GPIO_CHIP=$BR2_GADGET_MODE_GPIO_CHIP
-  GADGET_MODE_GPIO_LINE=$BR2_GADGET_MODE_GPIO_LINE
+  FACTORY_RESET_GPIO="$BR2_FACTORY_RESET_GPIO_CHIP $BR2_FACTORY_RESET_GPIO_LINE"
+  GADGET_MODE_GPIO="$BR2_GADGET_MODE_GPIO_CHIP $BR2_GADGET_MODE_GPIO_LINE"
 fi
 
-if [ -f /overlay/.firstboot -o "$(gpioget $FACTORY_RESET_GPIO_CHIP $FACTORY_RESET_GPIO_LINE)" = "1" ]
+if [ -n "$FACTORY_RESET_GPIO" ]; then
+  if [ "$(gpioget $FACTORY_RESET_GPIO)" = "1" ]; then
+    sleep 1
+    FACTORY_RESET_GPIO_STATE=$(gpioget $FACTORY_RESET_GPIO)
+  fi
+fi
+if [ -f /overlay/.firstboot -o "$FACTORY_RESET_GPIO_STATE" = "1" ]
 then
   echo '<0>firstboot: #####################################################################' > /dev/kmsg
   echo '<0>firstboot: #                                                                   #' > /dev/kmsg
@@ -132,7 +134,13 @@ then
   mount $overlayfs_dev /overlay
 fi
 
-if [ "$(gpioget $GADGET_MODE_GPIO_CHIP $GADGET_MODE_GPIO_LINE)" = "1" ]
+if [ -n "$GADGET_MODE_GPIO" ]; then
+  if [ "$(gpioget $GADGET_MODE_GPIO)" = "1" ]; then
+    sleep 1
+    GADGET_MODE_GPIO_STATE=$(gpioget $GADGET_MODE_GPIO)
+  fi
+fi
+if [ "$(gpioget $GADGET_MODE_GPIO_STATE)" = "1" ]
 then
   echo '<0>gadget_mode: #####################################################################' > /dev/kmsg
   echo '<0>gadget_mode: #                                                                   #' > /dev/kmsg
