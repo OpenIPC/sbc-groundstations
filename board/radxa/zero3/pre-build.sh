@@ -11,6 +11,9 @@ then
     sed -i 's/^#"radxa-zero3"/"radxa-zero3"/' u-boot/latest/fork.conf
     ./bsp u-boot latest radxa-zero3 --no-build
     patch -p1 -i ${BR2_EXTERNAL_OPENIPC_SBC_GS_PATH}/board/radxa/zero3/0001-uboot-compile.patch
+    if [ "$CI" = "true" ]; then
+        docker image rm -f ghcr.io/radxa-repo/bsp:builder ghcr.io/radxa-repo/bsp:main
+    fi
 else
     echo "bsp already downloaded, skipping ..."
 fi
