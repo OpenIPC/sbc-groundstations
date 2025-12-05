@@ -36,7 +36,7 @@ download_firmware() {
 		gzip -d "$archive" -c | tar xf - -C /tmp && echo_c 32 "Local archive unpacked" || die "Cannot extract $archive"
 		rm $archive
 	else
-		[ -z "$url" ] && url=$(get_system_upgrade || echo "https://github.com/OpenIPC/sbc-groundstations/releases/download/latest/${defconfig}.tar.gz")
+		[ -z "$url" ] && url=$(get_system_upgrade || echo "https://github.com/OpenIPC/sbc-groundstations/releases/download/buildroot-snapshot/${defconfig}.tar.gz")
 		echo "Download from $url"
 		[ "$(curl -o /dev/null -s -k -w '%{http_code}\n' "$url")" = "000" ] && die "Check your network!"
 		curl --connect-timeout 30 -s -k -m 120 -L "$url" -s -o - | gzip -d | tar xf - -C /tmp && echo_c 32 "Received and unpacked" || die "Cannot retrieve $url"
