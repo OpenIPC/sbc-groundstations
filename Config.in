@@ -1,5 +1,6 @@
 source "$BR2_EXTERNAL_OPENIPC_SBC_GS_PATH/package/rkdeveloptool/Config.in.host"
 source "$BR2_EXTERNAL_OPENIPC_SBC_GS_PATH/package/aic8800/Config.in"
+source "$BR2_EXTERNAL_OPENIPC_SBC_GS_PATH/package/rtl88x2cu/Config.in"
 source "$BR2_EXTERNAL_OPENIPC_SBC_GS_PATH/package/rtl88x2eu/Config.in"
 source "$BR2_EXTERNAL_OPENIPC_SBC_GS_PATH/package/rtl8812au/Config.in"
 source "$BR2_EXTERNAL_OPENIPC_SBC_GS_PATH/package/wifibroadcast-ng/Config.in"
