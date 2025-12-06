@@ -88,9 +88,9 @@ jobs:
       - name: Create/Update Latest Release
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: latest
+          tag_name: buildroot-snapshot
           body: |
-            Latest development build from master branch
+            Snapshot development build from master branch
             Commit: ${{ github.sha }}
           files: artifacts/**/*
           prerelease: true
