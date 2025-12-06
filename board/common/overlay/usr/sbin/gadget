@@ -10,13 +10,13 @@ fi
 rm -f /tmp/gadget
 
 # debugfs
-[ ! -e /sys/kernel/debug/usb/fcc00000.dwc3/mode ] && mount -t debugfs none /sys/kernel/debug
+[ ! -e /sys/kernel/debug/usb/fcc00000.usb/mode ] && mount -t debugfs none /sys/kernel/debug
 # 挂载ConfigFS
 grep -q "/sys/kernel/config configfs" /proc/mounts || mount -t configfs none /sys/kernel/config
 
 # 切换OTG端口为device模式
-if [ "$(cat /sys/kernel/debug/usb/fcc00000.dwc3/mode)" == "host" ]; then
-	echo device > /sys/kernel/debug/usb/fcc00000.dwc3/mode || exit 1
+if [ "$(cat /sys/kernel/debug/usb/fcc00000.usb/mode)" == "host" ]; then
+	echo device > /sys/kernel/debug/usb/fcc00000.usb/mode || exit 1
 	sleep 0.5
 fi
 
