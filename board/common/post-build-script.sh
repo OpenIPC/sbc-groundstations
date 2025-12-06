@@ -4,9 +4,31 @@ eval $(grep BR2_DEFCONFIG ${O}/.config)
 echo "BUILD_CONFIG=$(basename $(basename $BR2_DEFCONFIG) _defconfig)" >> $TARGET_DIR/etc/os-release
 
 DOWNLOAD_URL="${GITHUB_SERVER_URL:-https://github.com}/${GITHUB_REPOSITORY:-OpenIPC/sbc-groundstations}/releases/download/buildroot-snapshot/$(basename $(basename $BR2_DEFCONFIG) _defconfig).tar.gz"
-echo "UPGRADE=$DOWNLOAD_URL" >> $TARGET_DIR/etc/os-release
+# Get version: tag or short SHA, add -dirty if repo is dirty
+if git describe --tags --exact-match >/dev/null 2>&1; then
+    # Building from a tag
+    VERSION=$(git describe --tags)
+else
+    # Not a tag, use short SHA
+    VERSION=$(git rev-parse --short HEAD)
+fi
 
-echo "BUILD_DATE=\"$(date)\"" >> $TARGET_DIR/etc/os-release
+# Check if repo is dirty (has uncommitted changes)
+if ! git diff --quiet || ! git diff --cached --quiet; then
+    VERSION="${VERSION}-dirty"
+fi
+
+cat <<EOF >$TARGET_DIR/etc/os-release
+PRETTY_NAME="OpenIPC SBC GS"
+NAME="OpenIPC SBC GS"
+HOME_URL="https://github.com/OpenIPC/sbc-groundstations"
+SUPPORT_URL="https://t.me/+BMyMoolVOpkzNWUy"
+BUG_REPORT_URL="https://github.com/OpenIPC/sbc-groundstations/issues"
+BUILD_CONFIG=$(basename $(basename $BR2_DEFCONFIG) _defconfig)
+UPGRADE=$DOWNLOAD_URL
+BUILD_DATE="$(date)"
+VERSION="$VERSION"
+EOF
 
 cp ${O}/.config $TARGET_DIR/etc/default/br-config
 
