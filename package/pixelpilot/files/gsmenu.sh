@@ -1014,7 +1014,7 @@ EOF
         ;;
     "get gs main Version")
         . /etc/os-release
-        echo $PRETTY_NAME $VERSION_ID
+        echo $PRETTY_NAME $VERSION
         ;;
     "get gs main Disk")
         df -h /media/dvr | awk 'NR==2 {print $2, $4, $5}' | while read -r size avail pcent
