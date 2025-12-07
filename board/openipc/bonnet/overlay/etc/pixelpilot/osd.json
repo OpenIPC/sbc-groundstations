@@ -4,6 +4,38 @@
     "widgets": [
         {
             "type": "IconSelectorWidget",
+            "name": "APFPV RSSI of antenna 1",
+            "x": -96,
+            "y": 0,
+            "facts": [
+                {"name": "os_mon.wifi.rssi", "tags": {"type": "rssi_a"}}
+            ],
+            "ranges_and_icons": [
+                {"range": [1, 19], "icon_path": "signal5.png"},
+                {"range": [20, 29],"icon_path": "signal4.png"},
+                {"range": [30, 39],"icon_path": "signal3.png"},
+                {"range": [40, 49],"icon_path": "signal2.png"},
+                {"range": [50, 100],"icon_path": "signal1.png"}
+            ]
+        },
+        {
+            "type": "IconSelectorWidget",
+            "name": "APFPV RSSI of antenna 2",
+            "x": -192,
+            "y": 0,
+            "facts": [
+                {"name": "os_mon.wifi.rssi", "tags": {"type": "rssi_b"}}
+            ],
+            "ranges_and_icons": [
+                {"range": [1, 19], "icon_path": "signal5.png"},
+                {"range": [20, 29],"icon_path": "signal4.png"},
+                {"range": [30, 39],"icon_path": "signal3.png"},
+                {"range": [40, 49],"icon_path": "signal2.png"},
+                {"range": [50, 100],"icon_path": "signal1.png"}
+            ]
+        },
+        {
+            "type": "IconSelectorWidget",
             "name": "RSSI of antenna 1",
             "x": -96,
             "y": 0,
