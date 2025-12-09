@@ -1,0 +1,28 @@
+--- a/.src/u-boot/include/configs/rk3568_common.h	2025-12-07 11:15:26.719979370 +0100
++++ b/.src/u-boot/include/configs/rk3568_common.h	2025-12-09 08:51:50.445835523 +0100
+@@ -27,11 +27,24 @@
+ 	"kernel_comp_addr_r=0x08000000\0"	\
+ 	"kernel_comp_size=0x2000000\0"
+ 
++#define CONFIG_EXTRA_ENV_PREBOOT \
++    "preboot=echo Attempting to load custom environment...;" \
++    "if ext4load mmc 0:2 ${loadaddr} /root/boot/uboot.txt; then " \
++        "echo Imported env from MMC0;" \
++        "env import -t ${loadaddr} ${filesize};" \
++    "elif ext4load mmc 1:2 ${loadaddr} /root/boot/uboot.txt; then " \
++        "echo Imported env from MMC1;" \
++        "env import -t ${loadaddr} ${filesize};" \
++    "else " \
++        "echo No custom environment found, using defaults;" \
++    "fi\0"
++
+ #define CFG_EXTRA_ENV_SETTINGS		\
+ 	ENV_MEM_LAYOUT_SETTINGS			\
+ 	"fdtfile=" CONFIG_DEFAULT_FDT_FILE "\0" \
+ 	"partitions=" PARTS_DEFAULT		\
+ 	ROCKCHIP_DEVICE_SETTINGS \
+-	"boot_targets=" BOOT_TARGETS "\0"
++	"boot_targets=" BOOT_TARGETS "\0" \
++	CONFIG_EXTRA_ENV_PREBOOT
+ 
+ #endif

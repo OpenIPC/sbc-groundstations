@@ -11,6 +11,7 @@ then
     sed -i 's/^#"rock-3c"/"rock-3c"/' u-boot/latest/fork.conf
     ./bsp u-boot latest rock-3c --no-build
     patch -p1 -i ${BR2_EXTERNAL_OPENIPC_SBC_GS_PATH}/board/radxa/zero3/0001-uboot-compile.patch
+    patch -p1 -i ${BR2_EXTERNAL_OPENIPC_SBC_GS_PATH}/board/radxa/rock3-c/0002-uboot-load-env-from-ext4.patch
     if [ "$CI" = "true" ]; then
         docker image rm -f ghcr.io/radxa-repo/bsp:builder ghcr.io/radxa-repo/bsp:main
     fi

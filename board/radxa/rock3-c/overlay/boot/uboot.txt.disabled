@@ -1,0 +1,17 @@
+bootdev=1
+display=/boot/rockchip/overlays/rock-3c-radxa-display-8hd.dtb
+kernel=/boot/Image
+fdtfile=/boot/rockchip/rk3566-rock-3c-aic8800ds2.dtb
+fdtoverlays=/boot/rockchip/rk3566-dwc3-otg-role-switch.dtb
+bootargs=quiet loglevel=1 root=PARTLABEL=rootfs ro earlycon rootwait init=/init
+my_bootcmd=echo Loading custom fdtoverlays; \
+    load mmc ${bootdev}:1 ${kernel_addr_r} ${kernel}; \
+    load mmc ${bootdev}:1 ${fdt_addr_r} ${fdtfile}; \
+    fdt addr ${fdt_addr_r}; \
+    fdt resize 8192; \
+    for overlay in ${fdtoverlays} ${display}; do \
+        echo 'Applying overlay: ' ${overlay}; \
+        load mmc ${bootdev}:1 ${fdtoverlay_addr_r} ${overlay}; \
+        fdt apply ${fdtoverlay_addr_r}; \
+    done; \
+    booti ${kernel_addr_r} - ${fdt_addr_r}
