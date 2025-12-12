@@ -6,3 +6,8 @@ gsmenu:
     up: 16
     down: 18
     rec: 32
+
+  actions:
+    ground:
+      - label: Generate support package
+        action: /usr/bin/collect_support_data.sh
