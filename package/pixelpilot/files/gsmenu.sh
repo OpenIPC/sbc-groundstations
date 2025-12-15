@@ -720,6 +720,7 @@ case "$@" in
     "values gs system connector")
         connectors="HDMI"
         for overlay in /boot/rockchip/overlays/*; do
+            [[ -e "$overlay" ]] || continue
             connectors="$connectors\nDSI: $(fdtdump $overlay  | grep title| cut -d \" -f 2|sed 's/Enable //')"
         done
         echo -n -e $connectors
