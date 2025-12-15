@@ -52,7 +52,7 @@ SBC-GS 2 Beta 2 and older versions will not boot squashfs-based systems. A new b
 
 - Boot the old image.
 - Copy the new `<vrx name>_u-boot.bin` to your SBC.
-- Replace the bootloader on the eMMC:
+- Replace the bootloader on the eMMC by executing the following command:
   ```
   dd if=/tmp/runcam_wifilink_u-boot.bin of=/dev/mmcblk0 seek=64 status=progress
   ```
