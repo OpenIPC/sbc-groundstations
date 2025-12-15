@@ -29,7 +29,7 @@ case "$ID_USB_DRIVER" in
             TX_POWER=-2000
         fi
         ;;
-    "rtl88x2eu")
+    "rtl88x2eu"|"rtl88x2cu")
         if [ "$PHASE" = "post-up" ]; then
             TX_POWER=2500
         elif [ "$PHASE" = "pre-down" ]; then

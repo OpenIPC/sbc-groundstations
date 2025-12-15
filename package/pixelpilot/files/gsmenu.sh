@@ -935,14 +935,14 @@ EOF
         read first_card first_card_power < <(
             echo "$wifi_txpower" | cut -d = -f 2 | jq -r '"\(to_entries[0].key) \(to_entries[0].value)"'
         )
-        first_card_type=$(udevadm info /sys/class/net/${first_card} | grep -E 'ID_USB_DRIVER=(rtl88xxau_wfb|rtl88x2eu)'| cut -d = -f2)
+        first_card_type=$(udevadm info /sys/class/net/${first_card} | grep -E 'ID_USB_DRIVER=(rtl88xxau_wfb|rtl88x2eu|rtl88x2cu)'| cut -d = -f2)
         case "$first_card_type" in
         "rtl88xxau_wfb")
             min_phy_txpower=-1000
             max_phy_txpower=-3000
             ;;
 
-        "rtl88x2eu")
+        "rtl88x2eu"|"rtl88x2cu")
             min_phy_txpower=1000
             max_phy_txpower=2900
             ;;
@@ -981,14 +981,14 @@ EOF
         wifi_txpower=""
         for nic in $WFB_NICS
         do
-            card_type=$(udevadm info /sys/class/net/${nic} | grep -E 'ID_USB_DRIVER=(rtl88xxau_wfb|rtl88x2eu)'| cut -d = -f2)
+            card_type=$(udevadm info /sys/class/net/${nic} | grep -E 'ID_USB_DRIVER=(rtl88xxau_wfb|rtl88x2eu|rtl88x2cu)'| cut -d = -f2)
             case "$card_type" in
             "rtl88xxau_wfb")
                 min_phy_txpower=-1000
                 max_phy_txpower=-3000
                 ;;
 
-            "rtl88x2eu")
+            "rtl88x2eu"|"rtl88x2cu")
                 min_phy_txpower=1000
                 max_phy_txpower=2900
                 ;;
