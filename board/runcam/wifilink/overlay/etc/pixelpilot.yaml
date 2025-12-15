@@ -10,5 +10,7 @@ gsmenu:
 
   actions:
     ground:
+      - label: Toggle gadget mode
+        action: /usr/sbin/gadget
       - label: Generate support package
         action: /usr/bin/collect_support_data.sh
