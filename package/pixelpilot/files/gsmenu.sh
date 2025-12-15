@@ -718,7 +718,12 @@ case "$@" in
         echo -n -e "wfb\napfpv"
         ;;
     "values gs system connector")
-        echo -n -e "HDMI"
+        connectors="HDMI"
+        for overlay in /boot/rockchip/overlays/*; do
+            [[ -e "$overlay" ]] || continue
+            connectors="$connectors\nDSI: $(fdtdump $overlay  | grep title| cut -d \" -f 2|sed 's/Enable //')"
+        done
+        echo -n -e $connectors
         ;;
     "values gs system resolution")
         drm_info -j /dev/dri/card0 2>/dev/null | jq -r '."/dev/dri/card0".connectors[1].modes[] | select(.name | contains("i") | not) | .name + "@" + (.vrefresh|tostring)' | sort | uniq | head -c -1
@@ -739,6 +744,14 @@ case "$@" in
     "get gs system gs_rendering")
         . /etc/default/msposd
         [ x$MSPOSD_ENABLED = x"false" ] && echo 0 || echo 1
+        ;;
+    "get gs system connector")
+        if [ -f /boot/uboot.txt ] ; then
+            overlay=$(grep display /boot/uboot.txt | cut -d = -f 2)
+            echo "DSI: $(fdtdump $overlay  | grep title| cut -d \" -f 2|sed 's/Enable //')"
+        else
+            echo HDMI
+        fi
         ;;
     "get gs system resolution")
         drm_info -j /dev/dri/card0 2>/dev/null | jq -r '."/dev/dri/card0".crtcs[0].mode| .name + "@" + (.vrefresh|tostring)'
@@ -810,6 +823,22 @@ EOF
         else
             sed -i 's/MSPOSD_ENABLED.*/MSPOSD_ENABLED=true/' /etc/default/msposd
             /etc/init.d/S98msposd start
+        fi
+        ;;
+    "set gs system connector"*)
+        if [ "$5" = "HDMI" ]
+        then
+            rm -f /boot/uboot.txt
+        else
+            cp /boot/uboot.txt.disabled /boot/uboot.txt
+            root_dev="/dev/$(basename $(readlink -f /dev/disk/by-partlabel/rootfs) p1)"
+            bootdev=$(echo $root_dev | sed 's#/dev/mmcblk##')
+            sed -i "s#bootdev=.*#bootdev=$bootdev#" /boot/uboot.txt
+            for overlay in /boot/rockchip/overlays/*; do
+                if [ "$5" = "DSI: $(fdtdump $overlay | grep title| cut -d \" -f 2 |sed 's/Enable //')" ]; then
+                    sed -i "s#display=.*#display=$overlay#" /boot/uboot.txt
+                fi
+            done
         fi
         ;;
     "set gs system resolution"*)

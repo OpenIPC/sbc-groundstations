@@ -1,0 +1,14 @@
+gsmenu:
+  enabled: true
+  gpio:
+    left: 21
+    right: 29
+    up: 22
+    down: 24
+    center: 36
+    rec: 32
+
+  actions:
+    ground:
+      - label: Generate support package
+        action: /usr/bin/collect_support_data.sh
