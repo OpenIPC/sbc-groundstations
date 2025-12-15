@@ -717,6 +717,9 @@ case "$@" in
     "values gs system rx_mode")
         echo -n -e "wfb\napfpv"
         ;;
+    "values gs system connector")
+        echo -n -e "HDMI"
+        ;;
     "values gs system resolution")
         drm_info -j /dev/dri/card0 2>/dev/null | jq -r '."/dev/dri/card0".connectors[1].modes[] | select(.name | contains("i") | not) | .name + "@" + (.vrefresh|tostring)' | sort | uniq | head -c -1
         ;;
