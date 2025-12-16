@@ -26,3 +26,8 @@ os_sensors:
 #   cpu: auto
 #   power: auto
 #   temperature: auto
+
+  actions:
+    ground:
+      - label: Generate support package
+        action: /usr/bin/collect_support_data.sh
