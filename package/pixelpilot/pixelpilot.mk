@@ -10,7 +10,7 @@ PIXELPILOT_SITE_METHOD = git
 PIXELPILOT_GIT_SUBMODULES = YES
 PIXELPILOT_INSTALL_STAGING = NO
 PIXELPILOT_INSTALL_TARGET = YES
-PIXELPILOT_DEPENDENCIES = rockchip-mpp
+PIXELPILOT_DEPENDENCIES = rockchip-mpp libdrm cairo spdlog json-for-modern-cpp yaml-cpp libgpiod gstreamer1 gst1-plugins-base msgpack
 
 PIXELPILOT_CMAKE_OPTS += -DCMAKE_PREFIX_PATH=$(STAGING_DIR)/usr
 
