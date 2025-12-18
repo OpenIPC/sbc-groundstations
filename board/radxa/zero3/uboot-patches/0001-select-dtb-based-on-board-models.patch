@@ -1,0 +1,16 @@
+diff --git a/board/radxa/zero3-rk3566/zero3-rk3566.c b/board/radxa/zero3-rk3566/zero3-rk3566.c
+index cf30c4e3..467f3074 100644
+--- a/board/radxa/zero3-rk3566/zero3-rk3566.c
++++ b/board/radxa/zero3-rk3566/zero3-rk3566.c
+@@ -14,8 +14,10 @@ struct board_model {
+ };
+ 
+ static const struct board_model board_models[] = {
+-	{ 230, 270, "rockchip/rk3566-radxa-zero-3w.dtb" },
+ 	{ 400, 450, "rockchip/rk3566-radxa-zero-3e.dtb" },
++	{ 230, 270, "rockchip/rk3566-radxa-zero-3w-aic8800ds2.dtb" },
++	{ 451, 510, "rockchip/rk3566-radxa-zero-3w-ap6212.dtb" },
++	{ 300, 360, "rockchip/rk3566-rock-3c-aic8800ds2.dtb" },
+ };
+ 
+ static const struct board_model *get_board_model(void)
