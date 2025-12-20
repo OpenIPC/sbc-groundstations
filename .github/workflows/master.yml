@@ -28,6 +28,10 @@ jobs:
           - emax_wyvern-link
 
     steps:
+
+      - name: Display free disk space
+        run: df -hT
+
       - name: Checkout source
         uses: actions/checkout@v4
 
@@ -37,6 +41,9 @@ jobs:
           echo "CACHE_DATE=$(date +%m)" >> $GITHUB_ENV
           sudo apt update
           sudo apt install -y cpio rsync bc qemu-user-static binfmt-support
+          sudo mkdir -p /mnt/workspace
+          sudo chown $USER:$USER /mnt/workspace
+          rsync -a "$GITHUB_WORKSPACE/" /mnt/workspace/
 
       - name: Setup ccache
         uses: actions/cache@v4
@@ -45,6 +52,7 @@ jobs:
           key: ${{ matrix.platform }}-${{ env.CACHE_DATE }}
 
       - name: Build firmware
+        working-directory: /mnt/workspace
         run: |
           export GIT_HASH=$(git rev-parse --short $GITHUB_SHA)
           export GIT_BRANCH=${GITHUB_REF_NAME}
@@ -62,11 +70,11 @@ jobs:
         with:
           name: ${{ matrix.platform }}-images-${{ github.sha }}
           path: |
-            output/${{ matrix.platform }}_defconfig/images/${{ matrix.platform }}_sdcard.img
-            output/${{ matrix.platform }}_defconfig/images/${{ matrix.platform }}_u-boot.bin
-            output/${{ matrix.platform }}_defconfig/images/${{ matrix.platform }}_emmc_bootloader.img
-            output/${{ matrix.platform }}_defconfig/images/${{ matrix.platform }}_rootfs.squashfs
-            output/${{ matrix.platform }}_defconfig/images/${{ matrix.platform }}.tar.gz
+            /mnt/workspace/output/${{ matrix.platform }}_defconfig/images/${{ matrix.platform }}_sdcard.img
+            /mnt/workspace/output/${{ matrix.platform }}_defconfig/images/${{ matrix.platform }}_u-boot.bin
+            /mnt/workspace/output/${{ matrix.platform }}_defconfig/images/${{ matrix.platform }}_emmc_bootloader.img
+            /mnt/workspace/output/${{ matrix.platform }}_defconfig/images/${{ matrix.platform }}_rootfs.squashfs
+            /mnt/workspace/output/${{ matrix.platform }}_defconfig/images/${{ matrix.platform }}.tar.gz
           retention-days: 7
 
   release-on-master:
