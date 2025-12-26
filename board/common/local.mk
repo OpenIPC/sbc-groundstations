@@ -1,6 +1,3 @@
-LINUX_OVERRIDE_SRCDIR=$(BUILD_DIR)/radxa-bsp-main/.src/linux
-LINUX_CFLAGS = "-Wno-enum-int-mismatch"
-
 # We have tight space constraints on the gitlab runners
 ifeq ($(CI),true)
 
