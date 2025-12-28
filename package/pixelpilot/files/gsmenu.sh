@@ -711,6 +711,9 @@ case "$@" in
     "values gs wfbng txpower")
         echo -n -e "1\n100"
         ;;
+    "values gs system rx_codec")
+        echo -n -e "h264\nh265"
+        ;;
     "values gs system video_scale")
         echo -n 0.5 1.0
         ;;
@@ -726,7 +729,10 @@ case "$@" in
     "values gs system rec_fps")
         echo -n -e "60\n90\n120"
         ;;
-
+    "get gs system rx_codec")
+        . /etc/default/pixelpilot
+        echo $PIXELPILOT_CODEC
+    ;;
     "get gs system rx_mode")
         . /etc/default/wifibroadcast
         if [ x$WIFIBROADCAST_ENABLED = x"false" ]
@@ -746,6 +752,9 @@ case "$@" in
     "get gs system rec_fps")
         . /etc/default/pixelpilot
         echo $PIXELPILOT_DVR_FRAMERATE
+        ;;
+    "set gs system rx_codec"*)
+        sed -i "s/^PIXELPILOT_CODEC=.*/PIXELPILOT_CODEC=\"$5\"/" /etc/default/pixelpilot
         ;;
     "set gs system rx_mode"*)
             EXCLUDE_IFACE="wlan0"
