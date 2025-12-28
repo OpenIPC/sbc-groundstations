@@ -507,7 +507,7 @@ case "$@" in
         ;;
     "get air wfbng air_channel")
         channel=$(get_wfb_value '.wireless.channel' | tr -d '\n')
-        iw list | grep "\[$channel\]" | tr -d '[]' | awk '{print $4 " (" $2 " " $3 ")"}' | sort -n | uniq | tr -d '\n'| head -c -1
+        iw list | grep "\[$channel\]" | tr -d '[]' | awk '{print $4 " (" $2 " " $3 ")"}' | sort -n | uniq | tr -d '\n'
         ;;
     "get air wfbng width")
         get_wfb_value '.wireless.width'
@@ -755,7 +755,7 @@ case "$@" in
         ;;
     "set gs system rx_codec"*)
         sed -i "s/^PIXELPILOT_CODEC=.*/PIXELPILOT_CODEC=\"$5\"/" /etc/default/pixelpilot
-        ;;
+    ;;
     "set gs system rx_mode"*)
             EXCLUDE_IFACE="wlan0"
             SSID="${6:-OpenIPC}"
