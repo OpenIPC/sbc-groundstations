@@ -1,0 +1,13 @@
+diff --git a/db.txt b/db.txt
+index 16bcb32..0a66ed3 100644
+--- a/db.txt
++++ b/db.txt
+@@ -2142,3 +2142,8 @@ country ZW: DFS-ETSI
+ 	(5250 - 5330 @ 80), (20), DFS, AUTO-BW
+ 	(5490 - 5710 @ 160), (27), DFS
+ 
++# Added for WiFi FPV, Use at your own risk.
++country OO:
++	(920 - 928 @ 8), (40)
++	(2400 - 2742 @ 80), (40)
++	(4800 - 7125 @ 320), (40)
