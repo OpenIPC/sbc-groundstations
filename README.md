@@ -32,9 +32,7 @@ A unified OpenIPC ground station image builder using Buildroot 2.
 
 # Custom Build (Linux/WSL2)
 
-Custom builds rely on Buildroot [dependencies](https://buildroot.org/downloads/manual/manual.html#requirement), as well as Docker or Podman, which are needed for Radxa's kernel and U-Boot.
-
-When building in WSL2, ensure your WSL2 instance can run Docker.
+Custom builds rely on Buildroot [dependencies](https://buildroot.org/downloads/manual/manual.html#requirement).
 
 ```
 git clone https://github.com/OpenIPC/sbc-groundstations.git
