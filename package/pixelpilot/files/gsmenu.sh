@@ -843,10 +843,22 @@ EOF
         sed -i "s/^PIXELPILOT_VIDEO_SCALE=.*/PIXELPILOT_VIDEO_SCALE=$5/" /etc/default/pixelpilot
         ;;
     "get gs wifi hotspot")
-        [ -f /etc/wpa_supplicant.hotspot.conf ] && echo 1 || echo 0
+        # Check if hotspot config exists AND wlan0 is up with an IP
+        if [ -f /etc/wpa_supplicant.hotspot.conf ] && ip addr show wlan0 2>/dev/null | grep -q "inet "; then
+            echo 1
+        else
+            echo 0
+        fi
         ;;
     "get gs wifi wlan")
-        [ -f /etc/network/interfaces.d/wlan0 -a ! -f /etc/wpa_supplicant.hotspot.conf ] && echo 1 || echo 0
+        # Check if wlan0 config exists AND wlan0 is up with an IP (and not hotspot mode)
+        if [ -f /etc/network/interfaces.d/wlan0 ] && \
+        [ ! -f /etc/wpa_supplicant.hotspot.conf ] && \
+        ip addr show wlan0 2>/dev/null | grep -q "inet "; then
+            echo 1
+        else
+            echo 0
+        fi
         ;;
     "get gs wifi ssid")
         if [ -f /etc/wpa_supplicant.conf ]; then
