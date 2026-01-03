@@ -1,7 +1,7 @@
 # Paths
 RKTOOL          = $(HOST_DIR)/bin/rkdeveloptool
 RKBIN_BUILD_DIR  = $(BUILD_DIR)/rockchip-rkbin-custom
-LOADER_BIN       = $(RKBIN_BUILD_DIR)/bin/rk35/rk356x_spl_loader_v1.23.114.bin
+LOADER_BIN       = $(ROCKCHIP_RKBIN_DIR)/rk356x_spl_loader_v1.23.114.bin
 
 FLASH_IMG        = $(BINARIES_DIR)/sdcard.img
 ROOTFS_IMG       = $(BINARIES_DIR)/rootfs.squashfs
