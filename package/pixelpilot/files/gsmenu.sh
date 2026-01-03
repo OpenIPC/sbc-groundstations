@@ -507,7 +507,7 @@ case "$@" in
         ;;
     "get air wfbng air_channel")
         channel=$(get_wfb_value '.wireless.channel' | tr -d '\n')
-        iw list | grep "\[$channel\]" | tr -d '[]' | awk '{print $4 " (" $2 " " $3 ")"}' | sort -n | uniq | tr -d '\n'| head -c -1
+        iw list | grep "\[$channel\]" | tr -d '[]' | awk '{print $4 " (" $2 " " $3 ")"}' | sort -n | uniq | tr -d '\n'
         ;;
     "get air wfbng width")
         get_wfb_value '.wireless.width'
@@ -711,6 +711,9 @@ case "$@" in
     "values gs wfbng txpower")
         echo -n -e "1\n100"
         ;;
+    "values gs system rx_codec")
+        echo -n -e "h264\nh265"
+        ;;
     "values gs system video_scale")
         echo -n 0.5 1.0
         ;;
@@ -726,7 +729,10 @@ case "$@" in
     "values gs system rec_fps")
         echo -n -e "60\n90\n120"
         ;;
-
+    "get gs system rx_codec")
+        . /etc/default/pixelpilot
+        echo $PIXELPILOT_CODEC
+    ;;
     "get gs system rx_mode")
         . /etc/default/wifibroadcast
         if [ x$WIFIBROADCAST_ENABLED = x"false" ]
@@ -747,6 +753,9 @@ case "$@" in
         . /etc/default/pixelpilot
         echo $PIXELPILOT_DVR_FRAMERATE
         ;;
+    "set gs system rx_codec"*)
+        sed -i "s/^PIXELPILOT_CODEC=.*/PIXELPILOT_CODEC=\"$5\"/" /etc/default/pixelpilot
+    ;;
     "set gs system rx_mode"*)
             EXCLUDE_IFACE="wlan0"
             SSID="${6:-OpenIPC}"
