@@ -177,6 +177,9 @@ case "$@" in
     "values air aalink OSD_SCALE")
         echo -n 0.2 2
         ;;
+    "values air aalink OSD_LEVEL")
+        echo -n -e "0\n1\n2\n3"
+        ;;
     "values air aalink THROUGHPUT_PCT")
         echo -n 0 100
         ;;
@@ -670,6 +673,9 @@ case "$@" in
         get_alink_value $4
         ;;
 
+    "get air aalink SHOW_SIGNAL_BARS")
+        [ "$(get_aalink_value 'SHOW_SIGNAL_BARS')" = "true" ] && echo 1 || echo 0
+        ;;
     "get air aalink channel")
         $SSH "fw_printenv -n wlanchan || echo 157"
         ;;
@@ -680,6 +686,22 @@ case "$@" in
 
     "set air aalink channel"*)
         echo "set_ap_channel $5" | nc -w 11 $REMOTE_IP 12355
+        ;;
+
+    "set air aalink SHOW_SIGNAL_BARS"*)
+        case "$5" in
+        on|true|1|yes)
+            val=true
+            ;;
+        off|false|0|no|"")
+            val=false
+            ;;
+        *)
+            val=false
+            ;;
+        esac
+
+        $SSH "sed -i 's/^SHOW_SIGNAL_BARS=.*/SHOW_SIGNAL_BARS=$val/' /etc/aalink.conf && kill -SIGHUP \$(pidof aalink)"
         ;;
 
     "set air alink"*)
