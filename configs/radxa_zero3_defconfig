@@ -23,6 +23,7 @@ BR2_LINUX_KERNEL_DEFCONFIG="rockchip_linux"
 BR2_LINUX_KERNEL_CONFIG_FRAGMENT_FILES="${BR2_EXTERNAL_OPENIPC_SBC_GS_PATH}/board/radxa/zero3/linux-fragment/radxa-bsp-0001-common-kconfig.conf ${BR2_EXTERNAL_OPENIPC_SBC_GS_PATH}/board/radxa/zero3/linux-fragment/radxa-bsp-0002-rockchip-kconfig.conf ${BR2_EXTERNAL_OPENIPC_SBC_GS_PATH}/board/radxa/zero3/linux-fragment/radxa-bsp-0003-rk2410-kconfig.conf ${BR2_EXTERNAL_OPENIPC_SBC_GS_PATH}/board/radxa/zero3/linux.fragment"
 BR2_LINUX_KERNEL_DTS_SUPPORT=y
 BR2_LINUX_KERNEL_INTREE_DTS_NAME="rockchip/rk3566-radxa-zero-3e rockchip/rk3566-radxa-zero-3w-aic8800ds2 rockchip/rk3566-radxa-zero-3w-ap6212"
+BR2_LINUX_KERNEL_INTREE_DTSO_NAMES="rockchip/overlay/rk3568-i2c3-m0 rockchip/overlay/rk3566-ina226-overlay"
 BR2_LINUX_KERNEL_CUSTOM_DTS_DIR="${BR2_EXTERNAL_OPENIPC_SBC_GS_PATH}/board/radxa/zero3/dts"
 BR2_LINUX_KERNEL_DTB_KEEP_DIRNAME=y
 BR2_LINUX_KERNEL_DTB_OVERLAY_SUPPORT=y
