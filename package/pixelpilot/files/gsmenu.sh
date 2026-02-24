@@ -211,7 +211,7 @@ case "$@" in
         echo -n -e "disabled\n50\n60"
         ;;
     "values air camera sensor_file")
-        echo -n -e "imx307\nimx335\nimx335_fpv\nimx415_fpv\nimx415_fpv\nimx415_milos10\nimx415_milos15\nimx335_milos12tweak\nimx335_greg15\nimx335_spike5\ngregspike05"
+        echo -n -e "imx335\nimx335_infinity6e\nimx415\nimx415_infinity6e"
         ;;
     "values air telemetry serial")
         echo -n -e "ttyS0\nttyS1\nttyS2\nttyS3"
