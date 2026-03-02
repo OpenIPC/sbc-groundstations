@@ -733,6 +733,42 @@ case "$@" in
     "values gs wfbng txpower")
         echo -n -e "1\n100"
         ;;
+
+    "values gs system dvr_reenc_codec"*)
+        echo -n -e "h264\nh265"
+        ;;
+    "values gs system dvr_reenc_fps"*)
+        echo -n -e "30\n60"
+        ;;
+    "values gs system dvr_reenc_bitrate"*)
+        echo -n -e "2000\n4000\n6000\n8000\n10000\n12000\n16000\n18000\n20000\n22000\n24000"
+        ;;
+
+    "set gs system dvr_reenc_enabled"*)
+        if [ "$5" = "on" ]
+        then
+            sed -i "s/^PIXELPILOT_DVR_REENC=.*/PIXELPILOT_DVR_REENC=\"--dvr-reenc\"/" /etc/default/pixelpilot
+        else
+            sed -i "s/^PIXELPILOT_DVR_REENC=.*/PIXELPILOT_DVR_REENC=\"\"/" /etc/default/pixelpilot
+        fi
+        ;;
+    "set gs system dvr_reenc_codec"*)
+        sed -i "s/^PIXELPILOT_DVR_CODEC=.*/PIXELPILOT_DVR_CODEC=\"$5\"/" /etc/default/pixelpilot
+        ;;
+    "set gs system dvr_reenc_fps"*)
+        sed -i "s/^PIXELPILOT_DVR_FPS=.*/PIXELPILOT_DVR_FPS=\"$5\"/" /etc/default/pixelpilot
+        ;;
+    "set gs system dvr_reenc_bitrate"*)
+        sed -i "s/^PIXELPILOT_DVR_BITRATE=.*/PIXELPILOT_DVR_BITRATE=\"$5\"/" /etc/default/pixelpilot
+        ;;
+    "set gs system dvr_osd"*)
+        if [ "$5" = "on" ]
+        then
+            sed -i "s/^PIXELPILOT_DVR_OSD=.*/PIXELPILOT_DVR_OSD=\"--dvr-osd\"/" /etc/default/pixelpilot
+        else
+            sed -i "s/^PIXELPILOT_DVR_OSD=.*/PIXELPILOT_DVR_OSD=\"\"/" /etc/default/pixelpilot
+        fi
+        ;;
     "values gs system rx_codec")
         echo -n -e "h264\nh265"
         ;;
@@ -777,6 +813,14 @@ case "$@" in
         ;;
     "set gs system rx_codec"*)
         sed -i "s/^PIXELPILOT_CODEC=.*/PIXELPILOT_CODEC=\"$5\"/" /etc/default/pixelpilot
+    ;;
+    "set gs system gs_live_colortrans"*)
+        if [ "$5" = "on" ]
+        then
+            sed -i "s/^PIXELPILOT_LIVE_COLORTRANS=.*/PIXELPILOT_LIVE_COLORTRANS=\"--live-colortrans\"/" /etc/default/pixelpilot
+        else
+            sed -i "s/^PIXELPILOT_LIVE_COLORTRANS=.*/PIXELPILOT_LIVE_COLORTRANS=\"\"/" /etc/default/pixelpilot
+        fi
     ;;
     "set gs system rx_mode"*)
             EXCLUDE_IFACE="wlan0"
