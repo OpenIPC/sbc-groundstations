@@ -734,8 +734,21 @@ case "$@" in
         echo -n -e "1\n100"
         ;;
 
+    "values gs system dvr_mode"*)
+        echo -n -e "raw\nreencode\nboth"
+        ;;
+    "get gs system dvr_mode"*)
+        . /etc/default/pixelpilot
+        echo $PIXELPILOT_DVR_MODE
+        ;;
+    "set gs system dvr_mode"*)
+        sed -i "s/^PIXELPILOT_DVR_MODE=.*/PIXELPILOT_DVR_MODE=\"$5\"/" /etc/default/pixelpilot
+        ;;
     "values gs system dvr_reenc_codec"*)
         echo -n -e "h264\nh265"
+        ;;
+    "values gs system dvr_reenc_resolution"*)
+        echo -n -e "720p\n1080p"
         ;;
     "values gs system dvr_reenc_fps"*)
         echo -n -e "30\n60"
@@ -751,6 +764,9 @@ case "$@" in
         else
             sed -i "s/^PIXELPILOT_DVR_REENC=.*/PIXELPILOT_DVR_REENC=\"\"/" /etc/default/pixelpilot
         fi
+        ;;
+    "set gs system dvr_reenc_resolution"*)
+        sed -i "s/^PIXELPILOT_DVR_RESOLUTION=.*/PIXELPILOT_DVR_RESOLUTION=\"$5\"/" /etc/default/pixelpilot
         ;;
     "set gs system dvr_reenc_codec"*)
         sed -i "s/^PIXELPILOT_DVR_CODEC=.*/PIXELPILOT_DVR_CODEC=\"$5\"/" /etc/default/pixelpilot
