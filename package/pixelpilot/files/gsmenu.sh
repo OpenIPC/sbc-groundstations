@@ -744,6 +744,16 @@ case "$@" in
     "set gs system dvr_mode"*)
         sed -i "s/^PIXELPILOT_DVR_MODE=.*/PIXELPILOT_DVR_MODE=\"$5\"/" /etc/default/pixelpilot
         ;;
+    "values gs system dvr_max_size"*)
+        echo -n "1 40" # This will be multiplied by 100
+        ;;
+    "get gs system dvr_max_size"*)
+        . /etc/default/pixelpilot
+        echo $(( $PIXELPILOT_DVR_MAX_SIZE / 100 ))
+        ;;
+    "set gs system dvr_max_size"*)
+        sed -i "s/^PIXELPILOT_DVR_MAX_SIZE=.*/PIXELPILOT_DVR_MAX_SIZE=\"$(( $5 * 100 ))\"/" /etc/default/pixelpilot
+        ;;
     "values gs system dvr_reenc_codec"*)
         echo -n -e "h264\nh265"
         ;;

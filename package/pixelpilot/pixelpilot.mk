@@ -4,7 +4,7 @@
 #
 ###############################################################################
 
-PIXELPILOT_VERSION=b092eb0580392b4f2676b78423cd17971607f286
+PIXELPILOT_VERSION=9048712dff4c0b7be5b353916121d247d4e87492
 PIXELPILOT_SITE=https://github.com/OpenIPC/PixelPilot_rk.git
 PIXELPILOT_SITE_METHOD = git
 PIXELPILOT_GIT_SUBMODULES = YES
