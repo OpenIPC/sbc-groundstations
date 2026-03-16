@@ -764,7 +764,7 @@ case "$@" in
         echo -n -e "30\n60"
         ;;
     "values gs system dvr_reenc_bitrate"*)
-        echo -n -e "2000\n4000\n6000\n8000\n10000\n12000\n16000\n18000\n20000\n22000\n24000"
+        echo -n -e "5000\n10000\n15000\n20000\n25000\n30000\n35000\n40000\n45000\n50000"
         ;;
 
     "set gs system dvr_reenc_enabled"*)
