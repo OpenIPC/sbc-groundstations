@@ -45,11 +45,17 @@ jobs:
           sudo chown $USER:$USER /mnt/workspace
           rsync -a "$GITHUB_WORKSPACE/" /mnt/workspace/
 
-      - name: Setup ccache
+      - name: Cache ccache
         uses: actions/cache@v4
         with:
           path: /tmp/ccache
           key: ${{ matrix.platform }}-${{ env.CACHE_DATE }}
+
+      - name: Cache buildroot dl
+        uses: actions/cache@v4
+        with:
+          path: /mnt/workspace/buildroot/dl
+          key: sbc-${{ matrix.platform }}-dl-${{ env.CACHE_DATE }}
 
       - name: Build firmware
         working-directory: /mnt/workspace
@@ -60,7 +66,7 @@ jobs:
           echo "GIT_BRANCH=${GITHUB_BRANCH}" >> $GITHUB_ENV
 
           mkdir -p /tmp/ccache
-          ln -s /tmp/ccache ${HOME}/.ccache
+          export BR2_CCACHE_DIR=/tmp/ccache
 
           NAME=${{ matrix.platform }}
           DEFCONFIG=${NAME}_defconfig bash build.sh
