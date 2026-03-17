@@ -733,6 +733,68 @@ case "$@" in
     "values gs wfbng txpower")
         echo -n -e "1\n100"
         ;;
+
+    "values gs system dvr_mode"*)
+        echo -n -e "raw\nreencode\nboth"
+        ;;
+    "get gs system dvr_mode"*)
+        . /etc/default/pixelpilot
+        echo $PIXELPILOT_DVR_MODE
+        ;;
+    "set gs system dvr_mode"*)
+        sed -i "s/^PIXELPILOT_DVR_MODE=.*/PIXELPILOT_DVR_MODE=\"$5\"/" /etc/default/pixelpilot
+        ;;
+    "values gs system dvr_max_size"*)
+        echo -n "1 40" # This will be multiplied by 100
+        ;;
+    "get gs system dvr_max_size"*)
+        . /etc/default/pixelpilot
+        echo $(( $PIXELPILOT_DVR_MAX_SIZE / 100 ))
+        ;;
+    "set gs system dvr_max_size"*)
+        sed -i "s/^PIXELPILOT_DVR_MAX_SIZE=.*/PIXELPILOT_DVR_MAX_SIZE=\"$(( $5 * 100 ))\"/" /etc/default/pixelpilot
+        ;;
+    "values gs system dvr_reenc_codec"*)
+        echo -n -e "h264\nh265"
+        ;;
+    "values gs system dvr_reenc_resolution"*)
+        echo -n -e "720p\n1080p"
+        ;;
+    "values gs system dvr_reenc_fps"*)
+        echo -n -e "30\n60"
+        ;;
+    "values gs system dvr_reenc_bitrate"*)
+        echo -n -e "5000\n10000\n15000\n20000\n25000\n30000\n35000\n40000\n45000\n50000"
+        ;;
+
+    "set gs system dvr_reenc_enabled"*)
+        if [ "$5" = "on" ]
+        then
+            sed -i "s/^PIXELPILOT_DVR_REENC=.*/PIXELPILOT_DVR_REENC=\"--dvr-reenc\"/" /etc/default/pixelpilot
+        else
+            sed -i "s/^PIXELPILOT_DVR_REENC=.*/PIXELPILOT_DVR_REENC=\"\"/" /etc/default/pixelpilot
+        fi
+        ;;
+    "set gs system dvr_reenc_resolution"*)
+        sed -i "s/^PIXELPILOT_DVR_RESOLUTION=.*/PIXELPILOT_DVR_RESOLUTION=\"$5\"/" /etc/default/pixelpilot
+        ;;
+    "set gs system dvr_reenc_codec"*)
+        sed -i "s/^PIXELPILOT_DVR_CODEC=.*/PIXELPILOT_DVR_CODEC=\"$5\"/" /etc/default/pixelpilot
+        ;;
+    "set gs system dvr_reenc_fps"*)
+        sed -i "s/^PIXELPILOT_DVR_FPS=.*/PIXELPILOT_DVR_FPS=\"$5\"/" /etc/default/pixelpilot
+        ;;
+    "set gs system dvr_reenc_bitrate"*)
+        sed -i "s/^PIXELPILOT_DVR_BITRATE=.*/PIXELPILOT_DVR_BITRATE=\"$5\"/" /etc/default/pixelpilot
+        ;;
+    "set gs system dvr_osd"*)
+        if [ "$5" = "on" ]
+        then
+            sed -i "s/^PIXELPILOT_DVR_OSD=.*/PIXELPILOT_DVR_OSD=\"--dvr-osd\"/" /etc/default/pixelpilot
+        else
+            sed -i "s/^PIXELPILOT_DVR_OSD=.*/PIXELPILOT_DVR_OSD=\"\"/" /etc/default/pixelpilot
+        fi
+        ;;
     "values gs system rx_codec")
         echo -n -e "h264\nh265"
         ;;
@@ -777,6 +839,14 @@ case "$@" in
         ;;
     "set gs system rx_codec"*)
         sed -i "s/^PIXELPILOT_CODEC=.*/PIXELPILOT_CODEC=\"$5\"/" /etc/default/pixelpilot
+    ;;
+    "set gs system gs_live_colortrans"*)
+        if [ "$5" = "on" ]
+        then
+            sed -i "s/^PIXELPILOT_LIVE_COLORTRANS=.*/PIXELPILOT_LIVE_COLORTRANS=\"--live-colortrans\"/" /etc/default/pixelpilot
+        else
+            sed -i "s/^PIXELPILOT_LIVE_COLORTRANS=.*/PIXELPILOT_LIVE_COLORTRANS=\"\"/" /etc/default/pixelpilot
+        fi
     ;;
     "set gs system rx_mode"*)
             EXCLUDE_IFACE="wlan0"
