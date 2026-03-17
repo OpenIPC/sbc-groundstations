@@ -49,13 +49,9 @@ jobs:
         uses: actions/cache@v4
         with:
           path: /tmp/ccache
-          key: ${{ matrix.platform }}-${{ env.CACHE_DATE }}
-
-      - name: Cache buildroot dl
-        uses: actions/cache@v4
-        with:
-          path: /mnt/workspace/buildroot/dl
-          key: sbc-${{ matrix.platform }}-dl-${{ env.CACHE_DATE }}
+          key: ${{ matrix.platform }}-ccache-${{ env.CACHE_DATE }}
+          restore-keys: |
+            ${{ matrix.platform }}-ccache-
 
       - name: Build firmware
         working-directory: /mnt/workspace
