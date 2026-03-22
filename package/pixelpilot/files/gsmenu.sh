@@ -91,6 +91,158 @@ esac
 
 case "$@" in
 
+    "values air presets preset")
+        if [ -d $PRESET_DIR ]; then
+            for dir in $PRESET_DIR/presets/*; do
+                echo $(basename $dir)
+            done
+        fi
+    ;;
+    "values air wfbng mcs_index")
+        echo -n 0 10
+        ;;
+    "values air wfbng fec_k")
+        echo -n 0 15
+        ;;
+    "values air wfbng fec_n")
+        echo -n 0 15
+        ;;
+    "values air wfbng mlink")
+        echo -n -e "1500\n1600\n1700\n1800\n1900\n2000\n2100\n2200\n2300\n2400\n2500\n2600\n2700\n2800\n2900\n3000\n3100\n3200\n3300\n3400\n3500\n3600\n3700\n3800\n3900\n4000"
+        ;;
+    "values air camera contrast")
+        echo -n 0 100
+        ;;
+    "values air camera hue")
+        echo -n 0 100
+        ;;
+    "values air camera saturation")
+        echo -n 0 100
+        ;;
+    "values air camera luminace")
+        echo -n 0 100
+        ;;
+    "values air camera gopsize")
+        echo -n 0 10
+        ;;
+    "values air camera rec_split")
+        echo -n 0 60
+        ;;
+    "values air camera rec_maxusage")
+        echo -n 0 100
+        ;;
+    "values air camera exposure")
+        echo -n 5 50
+        ;;
+    "values air camera noiselevel")
+        echo -n 0 1
+        ;;
+    "values air telemetry osd_fps")
+        echo -n 0 60
+        ;;
+    "values air wfbng power")
+        echo -n -e "1\n20\n25\n30\n35\n40\n45\n50\n55\n58"
+        ;;
+    "values air wfbng air_channel")
+        iw list | grep MHz | grep -v disabled | grep -v "radar detection" | grep \* | tr -d '[]' | awk '{print $4 " (" $2 " " $3 ")"}' | grep '^[1-9]' | sort -n |  uniq  | head -c -1
+        ;;
+    "values air wfbng width")
+        echo -n -e "20\n40"
+        ;;
+    "values air alink power_level_0_to_4")
+        echo -n -e "0\n1\n2\n3\n4"
+        ;;
+    "values air alink fallback_ms")
+        echo -n  1 2000
+        ;;
+    "values air alink hold_fallback_mode_s")
+        echo -n  1 10
+        ;;
+    "values air alink min_between_changes_ms")
+        echo -n 1 10000
+        ;;
+    "values air alink hold_modes_down_s")
+        echo -n 1 10
+        ;;
+    "values air alink hysteresis_percent")
+        echo -n 0 100
+        ;;
+    "values air alink hysteresis_percent_down")
+        echo -n 0 100
+        ;;
+    "values air alink exp_smoothing_factor")
+        echo -n 0 1.6
+        ;;
+    "values air alink exp_smoothing_factor_down")
+        echo -n 0 1.6
+        ;;
+    "values air alink check_xtx_period_ms")
+        echo -n 1 5000
+        ;;
+    "values air alink request_keyframe_interval_ms")
+        echo -n 1 5000
+        ;;
+    "values air alink osd_level")
+        echo -n -e "0\n1\n2\n3\n4\n5\n6"
+        ;;
+    "values air alink multiply_font_size_by")
+        echo -n 0 1.5
+        ;;
+    "values air aalink channel")
+        echo -n -e "36\n40\n44\n48\n52\n56\n60\n64\n100\n104\n108\n112\n116\n120\n124\n128\n132\n136\n140\n144\n149\n153\n157\n161\n165\n36_40\n44_48\n52_56\n60_64\n100_104\n108_112\n116_120\n124_128\n132_136\n140_144\n149_153\n157_161\n36_48\n52_64\n100_112\n116_128\n132_144\n149_161"
+        ;;
+    "values air aalink SCALE_TX_POWER")
+        echo -n 0.2 1.2
+        ;;
+    "values air aalink THRESH_SHIFT")
+        echo -n -50 50
+        ;;
+    "values air aalink OSD_SCALE")
+        echo -n 0.2 2
+        ;;
+    "values air aalink OSD_LEVEL")
+        echo -n -e "0\n1\n2\n3"
+        ;;
+    "values air aalink THROUGHPUT_PCT")
+        echo -n 0 100
+        ;;
+    "values air aalink HIGH_TEMP")
+        echo -n 70 100
+        ;;
+    "values air aalink MCS_SOURCE")
+        echo -n -e "lowest\ndownlink"
+        ;;
+    "values air camera size")
+        echo -n -e "1280x720\n1456x816\n1920x1080\n1440x1080\n1920x1440\n2104x1184\n2208x1248\n2240x1264\n2312x1304\n2436x1828\n2512x1416\n2560x1440\n2560x1920\n2720x1528\n2944x1656\n3200x1800\n3840x2160"
+        ;;
+    "values air camera video_mode")
+        echo -ne "16:9 720p 30\n16:9 720p 30 50HzAC\n16:9 1080p 30\n16:9 1080p 30 50HzAC\n16:9 1440p 30\n16:9 1440p 30 50HzAC\n16:9 4k 2160p 30\n16:9 4k 2160p 30 50HzAC\n16:9 540p 60\n16:9 540p 60 50HzAC\n16:9 720p 60\n16:9 720p 60 50HzAC\n16:9 1080p 60\n16:9 1080p 60 50HzAC\n16:9 1440p 60\n16:9 1440p 60 50HzAC\n16:9 1688p 60\n16:9 1688p 60 50HzAC\n16:9 540p 90\n16:9 540p 90 50HzAC\n16:9 720p 90\n16:9 720p 90 50HzAC\n16:9 1080p 90\n16:9 1080p 90 50HzAC\n16:9 540p 120\n16:9 720p 120\n16:9 816p 120\n4:3 720p 30\n4:3 720p 30 50HzAC\n4:3 960p 30\n4:3 960p 30 50HzAC\n4:3 1080p 30\n4:3 1080p 30 50HzAC\n4:3 1440p 30\n4:3 1440p 30 50HzAC\n4:3 2160p 30\n4:3 2160p 30 50HzAC\n4:3 720p 60\n4:3 720p 60 50HzAC\n4:3 960p 60\n4:3 960p 60 50HzAC\n4:3 1080p 60\n4:3 1080p 60 50HzAC\n4:3 1440p 60\n4:3 1440p 60 50HzAC\n4:3 1688p 60\n4:3 1688p 60 50HzAC\n4:3 720p 90\n4:3 720p 90 50HzAC\n4:3 960p 90\n4:3 960p 90 50HzAC\n4:3 1080p 90\n4:3 1080p 90 50HzAC\n4:3 540p 120\n4:3 720p 120\n4:3 816p 120"
+        ;;
+    "values air camera fps")
+        echo -n -e "60\n90\n120"
+        ;;
+    "values air camera bitrate")
+        echo -n -e "1000\n2000\n3000\n4000\n5000\n6000\n7000\n8000\n9000\n10000\n11000\n12000\n13000\n14000\n15000\n16000\n17000\n18000\n19000\n20000\n21000\n22000\n23000\n24000\n25000\n26000\n27000\n28000\n29000\n30000"
+        ;;
+    "values air camera codec")
+        echo -n -e "h264\nh265"
+        ;;
+    "values air camera rc_mode")
+        echo -n -e "vbr\navbr\ncbr"
+        ;;
+    "values air camera antiflicker")
+        echo -n -e "disabled\n50\n60"
+        ;;
+    "values air camera sensor_file")
+        echo -n -e "imx335\nimx335_infinity6e\nimx415\nimx415_infinity6e"
+        ;;
+    "values air telemetry serial")
+        echo -n -e "ttyS0\nttyS1\nttyS2\nttyS3"
+        ;;
+    "values air telemetry router")
+        echo -n -e "mavfwd\nmsposd"
+        ;;
+
 # ── Air: Presets ─────────────────────────────────────────────────────────────
 
     "get air presets info"*)
@@ -610,6 +762,72 @@ case "$@" in
         $SSH 'sed -i "s/'$4'=.*/'$4'='$5'/" /etc/aalink.conf; kill -SIGHUP $(pidof aalink)'
         ;;
 
+
+    "values gs system dvr_mode"*)
+        echo -n -e "raw\nreencode\nboth"
+        ;;
+    "get gs system dvr_mode"*)
+        . /etc/default/pixelpilot
+        echo $PIXELPILOT_DVR_MODE
+        ;;
+    "set gs system dvr_mode"*)
+        sed -i "s/^PIXELPILOT_DVR_MODE=.*/PIXELPILOT_DVR_MODE=\"$5\"/" /etc/default/pixelpilot
+        ;;
+    "values gs system dvr_max_size"*)
+        echo -n "1 40" # This will be multiplied by 100
+        ;;
+    "get gs system dvr_max_size"*)
+        . /etc/default/pixelpilot
+        echo $(( $PIXELPILOT_DVR_MAX_SIZE / 100 ))
+        ;;
+    "set gs system dvr_max_size"*)
+        sed -i "s/^PIXELPILOT_DVR_MAX_SIZE=.*/PIXELPILOT_DVR_MAX_SIZE=\"$(( $5 * 100 ))\"/" /etc/default/pixelpilot
+        ;;
+    "values gs system dvr_reenc_codec"*)
+        echo -n -e "h264\nh265"
+        ;;
+    "values gs system dvr_reenc_resolution"*)
+        echo -n -e "720p\n1080p"
+        ;;
+    "values gs system dvr_reenc_fps"*)
+        echo -n -e "30\n60"
+        ;;
+    "values gs system dvr_reenc_bitrate"*)
+        echo -n -e "5000\n10000\n15000\n20000\n25000\n30000\n35000\n40000\n45000\n50000"
+        ;;
+
+    "set gs system dvr_reenc_enabled"*)
+        if [ "$5" = "on" ]
+        then
+            sed -i "s/^PIXELPILOT_DVR_REENC=.*/PIXELPILOT_DVR_REENC=\"--dvr-reenc\"/" /etc/default/pixelpilot
+        else
+            sed -i "s/^PIXELPILOT_DVR_REENC=.*/PIXELPILOT_DVR_REENC=\"\"/" /etc/default/pixelpilot
+        fi
+        ;;
+    "set gs system dvr_reenc_resolution"*)
+        sed -i "s/^PIXELPILOT_DVR_RESOLUTION=.*/PIXELPILOT_DVR_RESOLUTION=\"$5\"/" /etc/default/pixelpilot
+        ;;
+    "set gs system dvr_reenc_codec"*)
+        sed -i "s/^PIXELPILOT_DVR_CODEC=.*/PIXELPILOT_DVR_CODEC=\"$5\"/" /etc/default/pixelpilot
+        ;;
+    "set gs system dvr_reenc_fps"*)
+        sed -i "s/^PIXELPILOT_DVR_FPS=.*/PIXELPILOT_DVR_FPS=\"$5\"/" /etc/default/pixelpilot
+        ;;
+    "set gs system dvr_reenc_bitrate"*)
+        sed -i "s/^PIXELPILOT_DVR_BITRATE=.*/PIXELPILOT_DVR_BITRATE=\"$5\"/" /etc/default/pixelpilot
+        ;;
+    "set gs system dvr_osd"*)
+        if [ "$5" = "on" ]
+        then
+            sed -i "s/^PIXELPILOT_DVR_OSD=.*/PIXELPILOT_DVR_OSD=\"--dvr-osd\"/" /etc/default/pixelpilot
+        else
+            sed -i "s/^PIXELPILOT_DVR_OSD=.*/PIXELPILOT_DVR_OSD=\"\"/" /etc/default/pixelpilot
+        fi
+        ;;
+    "values gs system rx_codec")
+        echo -n -e "h264\nh265"
+        ;;
+
 # ── GS: WFB-NG ──────────────────────────────────────────────────────────────
 
     "get gs wfbng gs_channel")
@@ -768,6 +986,14 @@ case "$@" in
 
     "set gs system rx_codec"*)
         sed -i "s/^PIXELPILOT_CODEC=.*/PIXELPILOT_CODEC=\"$5\"/" /etc/default/pixelpilot
+        ;;
+    "set gs system gs_live_colortrans"*)
+        if [ "$5" = "on" ]
+        then
+            sed -i "s/^PIXELPILOT_LIVE_COLORTRANS=.*/PIXELPILOT_LIVE_COLORTRANS=\"--live-colortrans\"/" /etc/default/pixelpilot
+        else
+            sed -i "s/^PIXELPILOT_LIVE_COLORTRANS=.*/PIXELPILOT_LIVE_COLORTRANS=\"\"/" /etc/default/pixelpilot
+        fi
         ;;
     "set gs system rx_mode"*)
         EXCLUDE_IFACE="wlan0"

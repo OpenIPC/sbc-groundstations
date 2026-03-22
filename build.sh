@@ -45,7 +45,7 @@ fi
 
 # Function to download and extract Buildroot
 setup_buildroot() {
-    if [ ! -d "$BUILDROOT_DIR" ]; then
+    if [ ! -f "$BUILDROOT_DIR/Makefile" ]; then
         echo "Downloading Buildroot ${BUILDROOT_VERSION}..."
         if command -v wget >/dev/null 2>&1; then
             wget "$BUILDROOT_SOURCE"
@@ -59,7 +59,9 @@ setup_buildroot() {
         echo "Extracting Buildroot..."
         tar -xzf "$BUILDROOT_TARBALL"
         rm "$BUILDROOT_TARBALL"
-        mv "buildroot-${BUILDROOT_VERSION}" "$BUILDROOT_DIR"
+        # Use rsync to merge with any existing directory (e.g. cached dl/)
+        rsync -a "buildroot-${BUILDROOT_VERSION}/" "$BUILDROOT_DIR/"
+        rm -rf "buildroot-${BUILDROOT_VERSION}"
     else
         echo "Buildroot source already exists at $BUILDROOT_DIR"
     fi

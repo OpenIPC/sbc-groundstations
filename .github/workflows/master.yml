@@ -33,7 +33,7 @@ jobs:
         run: df -hT
 
       - name: Checkout source
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Prepare firmware
         run: |
@@ -45,11 +45,13 @@ jobs:
           sudo chown $USER:$USER /mnt/workspace
           rsync -a "$GITHUB_WORKSPACE/" /mnt/workspace/
 
-      - name: Setup ccache
-        uses: actions/cache@v4
+      - name: Cache ccache
+        uses: actions/cache@v5
         with:
           path: /tmp/ccache
-          key: ${{ matrix.platform }}-${{ env.CACHE_DATE }}
+          key: ${{ matrix.platform }}-ccache-${{ env.CACHE_DATE }}
+          restore-keys: |
+            ${{ matrix.platform }}-ccache-
 
       - name: Build firmware
         working-directory: /mnt/workspace
@@ -60,13 +62,13 @@ jobs:
           echo "GIT_BRANCH=${GITHUB_BRANCH}" >> $GITHUB_ENV
 
           mkdir -p /tmp/ccache
-          ln -s /tmp/ccache ${HOME}/.ccache
+          export BR2_CCACHE_DIR=/tmp/ccache
 
           NAME=${{ matrix.platform }}
           DEFCONFIG=${NAME}_defconfig bash build.sh
 
       - name: Upload images to workflow artifacts
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: ${{ matrix.platform }}-images-${{ github.sha }}
           path: |
@@ -86,10 +88,10 @@ jobs:
     
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Download all artifacts
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           path: artifacts/
 
@@ -113,10 +115,10 @@ jobs:
     
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Download all artifacts
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           path: artifacts/
 
