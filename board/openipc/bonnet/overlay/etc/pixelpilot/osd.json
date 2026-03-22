@@ -3,6 +3,21 @@
     "assets_dir": "/usr/share/pixelpilot/",
     "widgets": [
         {
+            "name": "Metrics background",
+            "type": "BoxWidget",
+            "x": -270,
+            "y": 0,
+            "width": 270,
+            "height": 130,
+            "color": {
+                "r": 0.0,
+                "g": 0.0,
+                "b": 0.0,
+                "alpha": 0.4
+            },
+            "facts": []
+        },
+        {
             "type": "IconSelectorWidget",
             "name": "APFPV RSSI of antenna 1",
             "x": -250,
@@ -166,21 +181,6 @@
                 {"range": [-1, 1], "icon_path": "no_signal.png"}
             ]
         },
-        {
-            "name": "Metrics background",
-            "type": "BoxWidget",
-            "x": -270,
-            "y": 0,
-            "width": 270,
-            "height": 130,
-            "color": {
-                "r": 0.0,
-                "g": 0.0,
-                "b": 0.0,
-                "alpha": 0.4
-            },
-            "facts": []
-        },        
         {
             "name": "Video FPS and resolution",
             "type": "VideoWidget",
