@@ -26,14 +26,14 @@
                 {"name": "os_mon.wifi.rssi", "tags": {"type": "rssi_a"}}
             ],
             "ranges_and_icons": [
-                {"range": [90, 100], "icon_path": "signal1.png"},
-                {"range": [80, 89], "icon_path": "signal2.png"},
-                {"range": [70, 79], "icon_path": "signal3.png"},
-                {"range": [60, 69], "icon_path": "signal4.png"},
-                {"range": [50, 59], "icon_path": "signal5.png"},
-                {"range": [40, 49], "icon_path": "signal6.png"},
-                {"range": [30, 39], "icon_path": "signal7.png"},
-                {"range": [1, 29], "icon_path": "signal8.png"}
+                {"range": [70, 100], "icon_path": "signal1.png"},
+                {"range": [60, 69],  "icon_path": "signal2.png"},
+                {"range": [50, 59],  "icon_path": "signal3.png"},
+                {"range": [40, 49],  "icon_path": "signal4.png"},
+                {"range": [30, 39],  "icon_path": "signal5.png"},
+                {"range": [20, 29],  "icon_path": "signal6.png"},
+                {"range": [10, 19],  "icon_path": "signal7.png"},
+                {"range": [1, 9],    "icon_path": "signal8.png"}
             ]
         },
         {
@@ -45,14 +45,14 @@
                 {"name": "os_mon.wifi.rssi", "tags": {"type": "rssi_b"}}
             ],
             "ranges_and_icons": [
-                {"range": [90, 100], "icon_path": "signal1.png"},
-                {"range": [80, 89], "icon_path": "signal2.png"},
-                {"range": [70, 79], "icon_path": "signal3.png"},
-                {"range": [60, 69], "icon_path": "signal4.png"},
-                {"range": [50, 59], "icon_path": "signal5.png"},
-                {"range": [40, 49], "icon_path": "signal6.png"},
-                {"range": [30, 39], "icon_path": "signal7.png"},
-                {"range": [1, 29], "icon_path": "signal8.png"}
+                {"range": [70, 100], "icon_path": "signal1.png"},
+                {"range": [60, 69],  "icon_path": "signal2.png"},
+                {"range": [50, 59],  "icon_path": "signal3.png"},
+                {"range": [40, 49],  "icon_path": "signal4.png"},
+                {"range": [30, 39],  "icon_path": "signal5.png"},
+                {"range": [20, 29],  "icon_path": "signal6.png"},
+                {"range": [10, 19],  "icon_path": "signal7.png"},
+                {"range": [1, 9],    "icon_path": "signal8.png"}
             ]
         },
         {
@@ -64,14 +64,14 @@
                 {"name": "wfbcli.rx.ant_stats.rssi_avg","tags": {"ant_id": "0", "id": "video rx"}}
             ],
             "ranges_and_icons": [
-                {"range": [-49, 1], "icon_path": "signal1.png"},
-                {"range": [-59, -50], "icon_path": "signal2.png"},
-                {"range": [-69, -60], "icon_path": "signal3.png"},
-                {"range": [-79, -70], "icon_path": "signal4.png"},
-                {"range": [-89, -80], "icon_path": "signal5.png"},
-                {"range": [-99, -90], "icon_path": "signal6.png"},
-                {"range": [-114, -100], "icon_path": "signal7.png"},
-                {"range": [-130, -115], "icon_path": "signal8.png"}
+                {"range": [-40, 1], "icon_path": "signal1.png"},
+                {"range": [-48, -41], "icon_path": "signal2.png"},
+                {"range": [-56, -49], "icon_path": "signal3.png"},
+                {"range": [-64, -57], "icon_path": "signal4.png"},
+                {"range": [-72, -65], "icon_path": "signal5.png"},
+                {"range": [-80, -73], "icon_path": "signal6.png"},
+                {"range": [-90, -81], "icon_path": "signal7.png"},
+                {"range": [-130, -91], "icon_path": "signal8.png"}
             ]
         },
         {
@@ -83,14 +83,14 @@
                 {"name": "wfbcli.rx.ant_stats.rssi_avg","tags": {"ant_id": "1", "id": "video rx"}}
             ],
             "ranges_and_icons": [
-                {"range": [-49, 1], "icon_path": "signal1.png"},
-                {"range": [-59, -50], "icon_path": "signal2.png"},
-                {"range": [-69, -60], "icon_path": "signal3.png"},
-                {"range": [-79, -70], "icon_path": "signal4.png"},
-                {"range": [-89, -80], "icon_path": "signal5.png"},
-                {"range": [-99, -90], "icon_path": "signal6.png"},
-                {"range": [-114, -100], "icon_path": "signal7.png"},
-                {"range": [-130, -115], "icon_path": "signal8.png"}
+                {"range": [-40, 1], "icon_path": "signal1.png"},
+                {"range": [-48, -41], "icon_path": "signal2.png"},
+                {"range": [-56, -49], "icon_path": "signal3.png"},
+                {"range": [-64, -57], "icon_path": "signal4.png"},
+                {"range": [-72, -65], "icon_path": "signal5.png"},
+                {"range": [-80, -73], "icon_path": "signal6.png"},
+                {"range": [-90, -81], "icon_path": "signal7.png"},
+                {"range": [-130, -91], "icon_path": "signal8.png"}
             ]
         },
         {
@@ -102,14 +102,14 @@
                 {"name": "wfbcli.rx.ant_stats.rssi_avg","tags": {"ant_id": "256", "id": "video rx"}}
             ],
             "ranges_and_icons": [
-                {"range": [-49, 1], "icon_path": "signal1.png"},
-                {"range": [-59, -50], "icon_path": "signal2.png"},
-                {"range": [-69, -60], "icon_path": "signal3.png"},
-                {"range": [-79, -70], "icon_path": "signal4.png"},
-                {"range": [-89, -80], "icon_path": "signal5.png"},
-                {"range": [-99, -90], "icon_path": "signal6.png"},
-                {"range": [-114, -100], "icon_path": "signal7.png"},
-                {"range": [-130, -115], "icon_path": "signal8.png"}
+                {"range": [-40, 1], "icon_path": "signal1.png"},
+                {"range": [-48, -41], "icon_path": "signal2.png"},
+                {"range": [-56, -49], "icon_path": "signal3.png"},
+                {"range": [-64, -57], "icon_path": "signal4.png"},
+                {"range": [-72, -65], "icon_path": "signal5.png"},
+                {"range": [-80, -73], "icon_path": "signal6.png"},
+                {"range": [-90, -81], "icon_path": "signal7.png"},
+                {"range": [-130, -91], "icon_path": "signal8.png"}
             ]
         },
         {
@@ -121,14 +121,14 @@
                 {"name": "wfbcli.rx.ant_stats.rssi_avg","tags": {"ant_id": "257", "id": "video rx"}}
             ],
             "ranges_and_icons": [
-                {"range": [-49, 1], "icon_path": "signal1.png"},
-                {"range": [-59, -50], "icon_path": "signal2.png"},
-                {"range": [-69, -60], "icon_path": "signal3.png"},
-                {"range": [-79, -70], "icon_path": "signal4.png"},
-                {"range": [-89, -80], "icon_path": "signal5.png"},
-                {"range": [-99, -90], "icon_path": "signal6.png"},
-                {"range": [-114, -100], "icon_path": "signal7.png"},
-                {"range": [-130, -115], "icon_path": "signal8.png"}
+                {"range": [-40, 1], "icon_path": "signal1.png"},
+                {"range": [-48, -41], "icon_path": "signal2.png"},
+                {"range": [-56, -49], "icon_path": "signal3.png"},
+                {"range": [-64, -57], "icon_path": "signal4.png"},
+                {"range": [-72, -65], "icon_path": "signal5.png"},
+                {"range": [-80, -73], "icon_path": "signal6.png"},
+                {"range": [-90, -81], "icon_path": "signal7.png"},
+                {"range": [-130, -91], "icon_path": "signal8.png"}
             ]
         },
         {
@@ -140,14 +140,14 @@
                 {"name": "wfbcli.rx.ant_stats.rssi_avg","tags": {"ant_id": "512", "id": "video rx"}}
             ],
             "ranges_and_icons": [
-                {"range": [-49, 1], "icon_path": "signal1.png"},
-                {"range": [-59, -50], "icon_path": "signal2.png"},
-                {"range": [-69, -60], "icon_path": "signal3.png"},
-                {"range": [-79, -70], "icon_path": "signal4.png"},
-                {"range": [-89, -80], "icon_path": "signal5.png"},
-                {"range": [-99, -90], "icon_path": "signal6.png"},
-                {"range": [-114, -100], "icon_path": "signal7.png"},
-                {"range": [-130, -115], "icon_path": "signal8.png"}
+                {"range": [-40, 1], "icon_path": "signal1.png"},
+                {"range": [-48, -41], "icon_path": "signal2.png"},
+                {"range": [-56, -49], "icon_path": "signal3.png"},
+                {"range": [-64, -57], "icon_path": "signal4.png"},
+                {"range": [-72, -65], "icon_path": "signal5.png"},
+                {"range": [-80, -73], "icon_path": "signal6.png"},
+                {"range": [-90, -81], "icon_path": "signal7.png"},
+                {"range": [-130, -91], "icon_path": "signal8.png"}
             ]
         },
         {
@@ -159,14 +159,14 @@
                 {"name": "wfbcli.rx.ant_stats.rssi_avg","tags": {"ant_id": "513", "id": "video rx"}}
             ],
             "ranges_and_icons": [
-                {"range": [-49, 1], "icon_path": "signal1.png"},
-                {"range": [-59, -50], "icon_path": "signal2.png"},
-                {"range": [-69, -60], "icon_path": "signal3.png"},
-                {"range": [-79, -70], "icon_path": "signal4.png"},
-                {"range": [-89, -80], "icon_path": "signal5.png"},
-                {"range": [-99, -90], "icon_path": "signal6.png"},
-                {"range": [-114, -100], "icon_path": "signal7.png"},
-                {"range": [-130, -115], "icon_path": "signal8.png"}
+                {"range": [-40, 1], "icon_path": "signal1.png"},
+                {"range": [-48, -41], "icon_path": "signal2.png"},
+                {"range": [-56, -49], "icon_path": "signal3.png"},
+                {"range": [-64, -57], "icon_path": "signal4.png"},
+                {"range": [-72, -65], "icon_path": "signal5.png"},
+                {"range": [-80, -73], "icon_path": "signal6.png"},
+                {"range": [-90, -81], "icon_path": "signal7.png"},
+                {"range": [-130, -91], "icon_path": "signal8.png"}
             ]
         },
         {
