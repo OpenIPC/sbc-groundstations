@@ -75,6 +75,11 @@ list_wifi_channels() {
     iw list | grep MHz | grep -v disabled | grep -v "radar detection" | grep \* | tr -d '[]' | awk '{print $4 " (" $2 " " $3 ")"}' | grep '^[1-9]' | sort -n | uniq | head -c -1
 }
 
+send_cmd() {
+    echo "$1" | nc -w 11 $REMOTE_IP 12355
+}
+
+
 # ══════════════════════════════════════════════════════════════════════════════
 # Cache refresh (only for air get commands, excluding presets)
 # ══════════════════════════════════════════════════════════════════════════════
@@ -292,8 +297,8 @@ case "$@" in
         emit_values "1280x720\n1456x816\n1920x1080\n1440x1080\n1920x1440\n2104x1184\n2208x1248\n2240x1264\n2312x1304\n2436x1828\n2512x1416\n2560x1440\n2560x1920\n2720x1528\n2944x1656\n3200x1800\n3840x2160"
         ;;
     "get air camera video_mode")
-        echo get_current_video_mode | nc -w 11 $REMOTE_IP 12355
-        emit_values "16:9 720p 30\n16:9 720p 30 50HzAC\n16:9 1080p 30\n16:9 1080p 30 50HzAC\n16:9 1440p 30\n16:9 1440p 30 50HzAC\n16:9 4k 2160p 30\n16:9 4k 2160p 30 50HzAC\n16:9 540p 60\n16:9 540p 60 50HzAC\n16:9 720p 60\n16:9 720p 60 50HzAC\n16:9 1080p 60\n16:9 1080p 60 50HzAC\n16:9 1440p 60\n16:9 1440p 60 50HzAC\n16:9 1688p 60\n16:9 1688p 60 50HzAC\n16:9 540p 90\n16:9 540p 90 50HzAC\n16:9 720p 90\n16:9 720p 90 50HzAC\n16:9 1080p 90\n16:9 1080p 90 50HzAC\n16:9 540p 120\n16:9 720p 120\n16:9 816p 120\n4:3 720p 30\n4:3 720p 30 50HzAC\n4:3 960p 30\n4:3 960p 30 50HzAC\n4:3 1080p 30\n4:3 1080p 30 50HzAC\n4:3 1440p 30\n4:3 1440p 30 50HzAC\n4:3 2160p 30\n4:3 2160p 30 50HzAC\n4:3 720p 60\n4:3 720p 60 50HzAC\n4:3 960p 60\n4:3 960p 60 50HzAC\n4:3 1080p 60\n4:3 1080p 60 50HzAC\n4:3 1440p 60\n4:3 1440p 60 50HzAC\n4:3 1688p 60\n4:3 1688p 60 50HzAC\n4:3 720p 90\n4:3 720p 90 50HzAC\n4:3 960p 90\n4:3 960p 90 50HzAC\n4:3 1080p 90\n4:3 1080p 90 50HzAC\n4:3 540p 120\n4:3 720p 120\n4:3 816p 120"
+        send_cmd get_current_video_mode
+        emit_values_cmd send_cmd get_all_video_modes
         ;;
     "get air camera fps")
         get_majestic_value '.video0.fps'
@@ -301,7 +306,7 @@ case "$@" in
         ;;
     "get air camera bitrate")
         get_majestic_value '.video0.bitrate'
-        emit_values "1024\n2048\n3072\n4096\n5120\n6144\n7168\n8192\n9216\n10240\n11264\n12288\n13312\n14336\n15360\n16384\n17408\n18432\n19456\n20480\n21504\n22528\n23552\n24576\n25600\n26624\n27648\n28672\n29692\n30720"
+        emit_values "1000\n2000\n3000\n4000\n5000\n6000\n7000\n8000\n9000\n10000\n11000\n12000\n13000\n14000\n15000\n16000\n17000\n18000\n19000\n20000\n21000\n22000\n23000\n24000\n25000\n26000\n27000\n28000\n29000\n30000"
         ;;
     "get air camera codec")
         get_majestic_value '.video0.codec'
@@ -561,8 +566,8 @@ case "$@" in
         [ "$(get_aalink_value 'SHOW_SIGNAL_BARS')" = "true" ] && echo 1 || echo 0
         ;;
     "get air aalink channel")
-        $SSH "fw_printenv -n wlanchan || echo 157"
-        emit_values "36\n40\n44\n48\n52\n56\n60\n64\n100\n104\n108\n112\n116\n120\n124\n128\n132\n136\n140\n144\n149\n153\n157\n161\n165\n36_40\n44_48\n52_56\n60_64\n100_104\n108_112\n116_120\n124_128\n132_136\n140_144\n149_153\n157_161\n36_48\n52_64\n100_112\n116_128\n132_144\n149_161"
+        send_cmd get_current_ap_channel
+        emit_values_cmd send_cmd get_all_ap_channels
         ;;
     "get air aalink SCALE_TX_POWER")
         get_aalink_value SCALE_TX_POWER
@@ -763,7 +768,7 @@ case "$@" in
     "get gs system dvr_reenc_bitrate")
         . /etc/default/pixelpilot
         echo $PIXELPILOT_DVR_BITRATE
-        emit_values "2000\n4000\n6000\n8000\n10000\n12000\n16000\n18000\n20000\n22000\n24000"
+        emit_values "5000\n10000\n15000\n20000\n25000\n30000\n35000\n40000\n45000\n50000"
         ;;
 
     "set gs system rx_codec"*)
