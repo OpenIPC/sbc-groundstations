@@ -612,7 +612,7 @@ case "$@" in
         $SSH "sed -i 's/^SHOW_SIGNAL_BARS=.*/SHOW_SIGNAL_BARS=$val/' /etc/aalink.conf && kill -SIGHUP \$(pidof aalink)"
         ;;
     "set air aalink"*)
-        $SSH 'sed -i "s/'$4'=.*/'$4'='$5'/" /etc/aalink.conf; kill -SIGHUP $(pidof aalink)'
+        $SSH 'sed -i "s/^'$4'=.*/'$4'='$5'/" /etc/aalink.conf; kill -SIGHUP $(pidof aalink)'
         ;;
 
 # ── GS: WFB-NG ──────────────────────────────────────────────────────────────
@@ -869,13 +869,6 @@ EOF
         ;;
     "set gs system dvr_max_size"*)
         sed -i "s/^PIXELPILOT_DVR_MAX_SIZE=.*/PIXELPILOT_DVR_MAX_SIZE=\"$(( $5 * 100 ))\"/" /etc/default/pixelpilot
-        ;;
-    "set gs system dvr_reenc_enabled"*)
-        if [ "$5" = "on" ]; then
-            sed -i "s/^PIXELPILOT_DVR_REENC=.*/PIXELPILOT_DVR_REENC=\"--dvr-reenc\"/" /etc/default/pixelpilot
-        else
-            sed -i "s/^PIXELPILOT_DVR_REENC=.*/PIXELPILOT_DVR_REENC=\"\"/" /etc/default/pixelpilot
-        fi
         ;;
     "set gs system dvr_reenc_resolution"*)
         sed -i "s/^PIXELPILOT_DVR_RESOLUTION=.*/PIXELPILOT_DVR_RESOLUTION=\"$5\"/" /etc/default/pixelpilot
