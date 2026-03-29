@@ -3,153 +3,12 @@
     "assets_dir": "/usr/share/pixelpilot/",
     "widgets": [
         {
-            "type": "IconSelectorWidget",
-            "name": "APFPV RSSI of antenna 1",
-            "x": -96,
-            "y": 0,
-            "facts": [
-                {"name": "os_mon.wifi.rssi", "tags": {"type": "rssi_a"}}
-            ],
-            "ranges_and_icons": [
-                {"range": [1, 19], "icon_path": "signal5.png"},
-                {"range": [20, 29],"icon_path": "signal4.png"},
-                {"range": [30, 39],"icon_path": "signal3.png"},
-                {"range": [40, 49],"icon_path": "signal2.png"},
-                {"range": [50, 100],"icon_path": "signal1.png"}
-            ]
-        },
-        {
-            "type": "IconSelectorWidget",
-            "name": "APFPV RSSI of antenna 2",
-            "x": -192,
-            "y": 0,
-            "facts": [
-                {"name": "os_mon.wifi.rssi", "tags": {"type": "rssi_b"}}
-            ],
-            "ranges_and_icons": [
-                {"range": [1, 19], "icon_path": "signal5.png"},
-                {"range": [20, 29],"icon_path": "signal4.png"},
-                {"range": [30, 39],"icon_path": "signal3.png"},
-                {"range": [40, 49],"icon_path": "signal2.png"},
-                {"range": [50, 100],"icon_path": "signal1.png"}
-            ]
-        },
-        {
-            "type": "IconSelectorWidget",
-            "name": "RSSI of antenna 1",
-            "x": -96,
-            "y": 0,
-            "facts": [
-                {"name": "wfbcli.rx.ant_stats.rssi_avg","tags": {"ant_id": "0", "id": "video rx"}}
-            ],
-            "ranges_and_icons": [
-                {"range": [-49, 1], "icon_path": "signal1.png"},
-                {"range": [-59, -50],"icon_path": "signal2.png"},
-                {"range": [-69, -60],"icon_path": "signal3.png"},
-                {"range": [-79, -70],"icon_path": "signal4.png"},
-                {"range": [-130, -80],"icon_path": "signal5.png"}
-            ]
-        },
-        {
-            "type": "IconSelectorWidget",
-            "name": "RSSI of antenna 2",
-            "x": -192,
-            "y": 0,
-            "facts": [
-                {"name": "wfbcli.rx.ant_stats.rssi_avg","tags": {"ant_id": "1", "id": "video rx"}}
-            ],
-            "ranges_and_icons": [
-                {"range": [-49, 1], "icon_path": "signal1.png"},
-                {"range": [-59, -50],"icon_path": "signal2.png"},
-                {"range": [-69, -60],"icon_path": "signal3.png"},
-                {"range": [-79, -70],"icon_path": "signal4.png"},
-                {"range": [-130, -80],"icon_path": "signal5.png"}
-            ],
-            "calculation": "wfbcli_rx_ant_stats_rssi_avg_ant_id_1_id_video_rx"
-        },
-        {
-            "type": "IconSelectorWidget",
-            "name": "RSSI of antenna 3",
-            "x": -288,
-            "y": 0,
-            "facts": [
-                {"name": "wfbcli.rx.ant_stats.rssi_avg","tags": {"ant_id": "256", "id": "video rx"}}
-            ],
-            "ranges_and_icons": [
-                {"range": [-49, 1], "icon_path": "signal1.png"},
-                {"range": [-59, -50],"icon_path": "signal2.png"},
-                {"range": [-69, -60],"icon_path": "signal3.png"},
-                {"range": [-79, -70],"icon_path": "signal4.png"},
-                {"range": [-130, -80],"icon_path": "signal5.png"}
-            ]
-        },
-        {
-            "type": "IconSelectorWidget",
-            "name": "RSSI of antenna 4",
-            "x": -384,
-            "y": 0,
-            "facts": [
-                {"name": "wfbcli.rx.ant_stats.rssi_avg","tags": {"ant_id": "257", "id": "video rx"}}
-            ],
-            "ranges_and_icons": [
-                {"range": [-49, 1], "icon_path": "signal1.png"},
-                {"range": [-59, -50],"icon_path": "signal2.png"},
-                {"range": [-69, -60],"icon_path": "signal3.png"},
-                {"range": [-79, -70],"icon_path": "signal4.png"},
-                {"range": [-130, -80],"icon_path": "signal5.png"}
-            ]
-        },
-        {
-            "type": "IconSelectorWidget",
-            "name": "RSSI of antenna 5",
-            "x": -480,
-            "y": 0,
-            "facts": [
-                {"name": "wfbcli.rx.ant_stats.rssi_avg","tags": {"ant_id": "512", "id": "video rx"}}
-            ],
-            "ranges_and_icons": [
-                {"range": [-49, 1], "icon_path": "signal1.png"},
-                {"range": [-59, -50],"icon_path": "signal2.png"},
-                {"range": [-69, -60],"icon_path": "signal3.png"},
-                {"range": [-79, -70],"icon_path": "signal4.png"},
-                {"range": [-130, -80],"icon_path": "signal5.png"}
-            ]
-        },
-        {
-            "type": "IconSelectorWidget",
-            "name": "RSSI of antenna 6",
-            "x": -576,
-            "y": 0,
-            "facts": [
-                {"name": "wfbcli.rx.ant_stats.rssi_avg","tags": {"ant_id": "513", "id": "video rx"}}
-            ],
-            "ranges_and_icons": [
-                {"range": [-49, 1], "icon_path": "signal1.png"},
-                {"range": [-59, -50],"icon_path": "signal2.png"},
-                {"range": [-69, -60],"icon_path": "signal3.png"},
-                {"range": [-79, -70],"icon_path": "signal4.png"},
-                {"range": [-130, -80],"icon_path": "signal5.png"}
-            ]
-        },
-        {
-            "type": "IconSelectorWidget",
-            "name": "No signal icon",
-            "x": -270,
-            "y": 0,
-            "facts": [
-                {"name": "wfbcli.rx.packets.all.total","tags": {"id": "video rx"}}
-            ],
-            "ranges_and_icons": [
-                {"range": [-1, 1], "icon_path": "signal5.png"}
-            ]
-        },
-        {
             "name": "Metrics background",
             "type": "BoxWidget",
             "x": -270,
-            "y": 100,
+            "y": 0,
             "width": 270,
-            "height": 100,
+            "height": 130,
             "color": {
                 "r": 0.0,
                 "g": 0.0,
@@ -157,12 +16,176 @@
                 "alpha": 0.4
             },
             "facts": []
-        },        
+        },
+        {
+            "type": "IconSelectorWidget",
+            "name": "APFPV RSSI of antenna 1",
+            "x": -250,
+            "y": 0,
+            "facts": [
+                {"name": "os_mon.wifi.rssi", "tags": {"type": "rssi_a"}}
+            ],
+            "ranges_and_icons": [
+                {"range": [70, 100], "icon_path": "signal1.png"},
+                {"range": [60, 69],  "icon_path": "signal2.png"},
+                {"range": [50, 59],  "icon_path": "signal3.png"},
+                {"range": [40, 49],  "icon_path": "signal4.png"},
+                {"range": [30, 39],  "icon_path": "signal5.png"},
+                {"range": [20, 29],  "icon_path": "signal6.png"},
+                {"range": [10, 19],  "icon_path": "signal7.png"},
+                {"range": [1, 9],    "icon_path": "signal8.png"}
+            ]
+        },
+        {
+            "type": "IconSelectorWidget",
+            "name": "APFPV RSSI of antenna 2",
+            "x": -216,
+            "y": 0,
+            "facts": [
+                {"name": "os_mon.wifi.rssi", "tags": {"type": "rssi_b"}}
+            ],
+            "ranges_and_icons": [
+                {"range": [70, 100], "icon_path": "signal1.png"},
+                {"range": [60, 69],  "icon_path": "signal2.png"},
+                {"range": [50, 59],  "icon_path": "signal3.png"},
+                {"range": [40, 49],  "icon_path": "signal4.png"},
+                {"range": [30, 39],  "icon_path": "signal5.png"},
+                {"range": [20, 29],  "icon_path": "signal6.png"},
+                {"range": [10, 19],  "icon_path": "signal7.png"},
+                {"range": [1, 9],    "icon_path": "signal8.png"}
+            ]
+        },
+        {
+            "type": "IconSelectorWidget",
+            "name": "RSSI of antenna 1",
+            "x": -250,
+            "y": 0,
+            "facts": [
+                {"name": "wfbcli.rx.ant_stats.rssi_avg","tags": {"ant_id": "0", "id": "video rx"}}
+            ],
+            "ranges_and_icons": [
+                {"range": [-40, 1], "icon_path": "signal1.png"},
+                {"range": [-48, -41], "icon_path": "signal2.png"},
+                {"range": [-56, -49], "icon_path": "signal3.png"},
+                {"range": [-64, -57], "icon_path": "signal4.png"},
+                {"range": [-72, -65], "icon_path": "signal5.png"},
+                {"range": [-80, -73], "icon_path": "signal6.png"},
+                {"range": [-90, -81], "icon_path": "signal7.png"},
+                {"range": [-130, -91], "icon_path": "signal8.png"}
+            ]
+        },
+        {
+            "type": "IconSelectorWidget",
+            "name": "RSSI of antenna 2",
+            "x": -216,
+            "y": 0,
+            "facts": [
+                {"name": "wfbcli.rx.ant_stats.rssi_avg","tags": {"ant_id": "1", "id": "video rx"}}
+            ],
+            "ranges_and_icons": [
+                {"range": [-40, 1], "icon_path": "signal1.png"},
+                {"range": [-48, -41], "icon_path": "signal2.png"},
+                {"range": [-56, -49], "icon_path": "signal3.png"},
+                {"range": [-64, -57], "icon_path": "signal4.png"},
+                {"range": [-72, -65], "icon_path": "signal5.png"},
+                {"range": [-80, -73], "icon_path": "signal6.png"},
+                {"range": [-90, -81], "icon_path": "signal7.png"},
+                {"range": [-130, -91], "icon_path": "signal8.png"}
+            ]
+        },
+        {
+            "type": "IconSelectorWidget",
+            "name": "RSSI of antenna 3",
+            "x": -182,
+            "y": 0,
+            "facts": [
+                {"name": "wfbcli.rx.ant_stats.rssi_avg","tags": {"ant_id": "256", "id": "video rx"}}
+            ],
+            "ranges_and_icons": [
+                {"range": [-40, 1], "icon_path": "signal1.png"},
+                {"range": [-48, -41], "icon_path": "signal2.png"},
+                {"range": [-56, -49], "icon_path": "signal3.png"},
+                {"range": [-64, -57], "icon_path": "signal4.png"},
+                {"range": [-72, -65], "icon_path": "signal5.png"},
+                {"range": [-80, -73], "icon_path": "signal6.png"},
+                {"range": [-90, -81], "icon_path": "signal7.png"},
+                {"range": [-130, -91], "icon_path": "signal8.png"}
+            ]
+        },
+        {
+            "type": "IconSelectorWidget",
+            "name": "RSSI of antenna 4",
+            "x": -148,
+            "y": 0,
+            "facts": [
+                {"name": "wfbcli.rx.ant_stats.rssi_avg","tags": {"ant_id": "257", "id": "video rx"}}
+            ],
+            "ranges_and_icons": [
+                {"range": [-40, 1], "icon_path": "signal1.png"},
+                {"range": [-48, -41], "icon_path": "signal2.png"},
+                {"range": [-56, -49], "icon_path": "signal3.png"},
+                {"range": [-64, -57], "icon_path": "signal4.png"},
+                {"range": [-72, -65], "icon_path": "signal5.png"},
+                {"range": [-80, -73], "icon_path": "signal6.png"},
+                {"range": [-90, -81], "icon_path": "signal7.png"},
+                {"range": [-130, -91], "icon_path": "signal8.png"}
+            ]
+        },
+        {
+            "type": "IconSelectorWidget",
+            "name": "RSSI of antenna 5",
+            "x": -114,
+            "y": 0,
+            "facts": [
+                {"name": "wfbcli.rx.ant_stats.rssi_avg","tags": {"ant_id": "512", "id": "video rx"}}
+            ],
+            "ranges_and_icons": [
+                {"range": [-40, 1], "icon_path": "signal1.png"},
+                {"range": [-48, -41], "icon_path": "signal2.png"},
+                {"range": [-56, -49], "icon_path": "signal3.png"},
+                {"range": [-64, -57], "icon_path": "signal4.png"},
+                {"range": [-72, -65], "icon_path": "signal5.png"},
+                {"range": [-80, -73], "icon_path": "signal6.png"},
+                {"range": [-90, -81], "icon_path": "signal7.png"},
+                {"range": [-130, -91], "icon_path": "signal8.png"}
+            ]
+        },
+        {
+            "type": "IconSelectorWidget",
+            "name": "RSSI of antenna 6",
+            "x": -80,
+            "y": 0,
+            "facts": [
+                {"name": "wfbcli.rx.ant_stats.rssi_avg","tags": {"ant_id": "513", "id": "video rx"}}
+            ],
+            "ranges_and_icons": [
+                {"range": [-40, 1], "icon_path": "signal1.png"},
+                {"range": [-48, -41], "icon_path": "signal2.png"},
+                {"range": [-56, -49], "icon_path": "signal3.png"},
+                {"range": [-64, -57], "icon_path": "signal4.png"},
+                {"range": [-72, -65], "icon_path": "signal5.png"},
+                {"range": [-80, -73], "icon_path": "signal6.png"},
+                {"range": [-90, -81], "icon_path": "signal7.png"},
+                {"range": [-130, -91], "icon_path": "signal8.png"}
+            ]
+        },
+        {
+            "type": "IconSelectorWidget",
+            "name": "No signal icon",
+            "x": -250,
+            "y": 0,
+            "facts": [
+                {"name": "wfbcli.rx.packets.all.total","tags": {"id": "video rx"}}
+            ],
+            "ranges_and_icons": [
+                {"range": [-1, 1], "icon_path": "no_signal.png"}
+            ]
+        },
         {
             "name": "Video FPS and resolution",
             "type": "VideoWidget",
             "x": -250,
-            "y": 126,
+            "y": 60,
             "icon_path": "framerate.png",
             "template": "%u fps | %ux%u",
             "per_second_window_s": 2,
@@ -184,7 +207,7 @@
             "name": "Video link throughput",
             "type": "VideoBitrateWidget",
             "x": -250,
-            "y": 156,
+            "y": 90,
             "icon_path": "network.png",
             "template": "%f Mbps",
             "per_second_window_s": 2,
@@ -200,7 +223,7 @@
             "name": "DVR status",
             "type": "DvrStatusWidget",
             "x": -250,
-            "y": 186,
+            "y": 120,
             "icon_path": "sdcard-white.png",
             "text": "Recording",
             "facts": [
