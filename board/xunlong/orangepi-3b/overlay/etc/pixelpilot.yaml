@@ -1,0 +1,28 @@
+gsmenu:
+  enabled: true
+  gpio:
+    up:
+      chip: gpiochip3
+      pin: 28
+    down:
+      chip: gpiochip3
+      pin: 31
+    left:
+      chip: gpiochip3
+      pin: 24
+    right:
+      chip: gpiochip3
+      pin: 27
+    center:
+      chip: gpiochip3
+      pin: 25
+    rec:
+      chip: gpiochip3
+      pin: 29
+
+  actions:
+    ground:
+      - label: Toggle gadget mode
+        action: /usr/sbin/gadget
+      - label: Generate support package
+        action: /usr/bin/collect_support_data.sh

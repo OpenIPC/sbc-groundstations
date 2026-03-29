@@ -22,10 +22,7 @@ jobs:
       fail-fast: false
       matrix:
         platform:
-          - radxa_zero3
-          - openipc_bonnet
-          - runcam_wifilink
-          - emax_wyvern-link
+          - xunlong_orangepi-3b
 
     steps:
 
@@ -40,7 +37,7 @@ jobs:
           echo "nameserver 8.8.8.8" | sudo tee /etc/resolv.conf
           echo "CACHE_DATE=$(date +%m)" >> $GITHUB_ENV
           sudo apt update
-          sudo apt install -y cpio rsync bc qemu-user-static binfmt-support
+          sudo apt install -y cpio rsync bc qemu-user-static binfmt-support u-boot-tools
           sudo mkdir -p /mnt/workspace
           sudo chown $USER:$USER /mnt/workspace
           rsync -a "$GITHUB_WORKSPACE/" /mnt/workspace/
