@@ -15,7 +15,6 @@ WFB_YAML="/etc/wfb.yaml"
 ALINK_CONF="/etc/alink.conf"
 AALINK_CONF="/etc/aalink.conf"
 TXPROFILES_CONF="/etc/txprofiles.conf"
-PRESET_DIR="/etc/presets"
 
 # ══════════════════════════════════════════════════════════════════════════════
 # SSH / SCP setup
@@ -81,12 +80,12 @@ send_cmd() {
 
 
 # ══════════════════════════════════════════════════════════════════════════════
-# Cache refresh (only for air get commands, excluding presets)
+# Cache refresh (only for air get commands)
 # ══════════════════════════════════════════════════════════════════════════════
 
 case "$@" in
   "get air"*)
-    [ "$3" != "presets" ] && refresh_cache
+    refresh_cache
     ;;
 esac
 
@@ -95,82 +94,6 @@ esac
 # ══════════════════════════════════════════════════════════════════════════════
 
 case "$@" in
-
-# ── Air: Presets ─────────────────────────────────────────────────────────────
-
-    "get air presets info"*)
-        if [ "$5" == "" ] ; then
-            echo ""
-        else
-            echo "Name: $(yaml-cli -i $PRESET_DIR/presets/$5/preset-config.yaml -g .name)"
-            echo "Author: $(yaml-cli -i $PRESET_DIR/presets/$5/preset-config.yaml -g .author)"
-            echo "Description: $(yaml-cli -i $PRESET_DIR/presets/$5/preset-config.yaml -g .description)"
-            echo "Category: $(yaml-cli -i $PRESET_DIR/presets/$5/preset-config.yaml -g .category)"
-            echo "Sensor: $(yaml-cli -i $PRESET_DIR/presets/$5/preset-config.yaml -g .sensor)"
-            echo "Status: $(yaml-cli -i $PRESET_DIR/presets/$5/preset-config.yaml -g .status)"
-            echo "Tags: $(yaml-cli -i $PRESET_DIR/presets/$5/preset-config.yaml -g .tags)"
-        fi
-        ;;
-
-    "get air presets update")
-        mkdir -p $PRESET_DIR
-        if [ -d "$PRESET_DIR/.git" ]; then
-            cd $PRESET_DIR
-            git fetch --all
-            git reset --hard origin/master
-            git pull origin master --force
-        else
-            git clone https://github.com/OpenIPC/fpv-presets.git $PRESET_DIR
-        fi
-        ;;
-
-    "get air presets preset")
-        echo -n ""
-        if [ -d $PRESET_DIR ]; then
-            printf '\x1e'
-            for dir in $PRESET_DIR/presets/*; do
-                echo $(basename $dir)
-            done
-        fi
-        ;;
-
-    "set air presets "*)
-        PRESET="$PRESET_DIR/presets/$4/preset-config.yaml"
-        REMOTE_SCRIPT=$(mktemp)
-        echo "#!/bin/sh" > "$REMOTE_SCRIPT"
-        echo "# Auto-generated configuration script" >> "$REMOTE_SCRIPT"
-        echo "echo 'Applying configuration...'" >> "$REMOTE_SCRIPT"
-
-        FILES=$(yq e '.files | keys | .[]' "$PRESET")
-        for FILE in $FILES; do
-            while IFS= read -r LINE; do
-                KEY="${LINE%% *}"
-                VALUE="${LINE#* }"
-                VALUE=${VALUE//\'/\'\\\'\'}
-                echo "echo \"Setting $KEY to $VALUE in $FILE\"" >> "$REMOTE_SCRIPT"
-                echo "cli -i '/etc/$FILE' -s '$KEY' '$VALUE'" >> "$REMOTE_SCRIPT"
-            done < <(yq e ".files[\"$FILE\"] | to_entries | .[] | \".\" + .key + \" \" + .value" "$PRESET")
-        done
-
-        yq e '.additional_files // [] | .[]' "$PRESET" | while read -r ADDITIONAL_FILE; do
-            LOCAL_FILE="$PRESET_DIR/presets/$4/$ADDITIONAL_FILE"
-            if [ -f "$LOCAL_FILE" ]; then
-                $SCP "$LOCAL_FILE" "root@$REMOTE_IP:/etc/"
-                echo "echo 'Copied additional file: $ADDITIONAL_FILE'"
-            else
-                echo "echo 'Warning: Additional file not found: $ADDITIONAL_FILE'"
-            fi
-        done
-
-        echo "echo 'Restarting services...'" >> "$REMOTE_SCRIPT"
-        echo "(wifibroadcast stop; wifibroadcast stop; sleep 1; wifibroadcast start) >/dev/null 2>&1 &" >> "$REMOTE_SCRIPT"
-        echo "killall -1 majestic" >> "$REMOTE_SCRIPT"
-        echo "echo 'Configuration applied successfully'" >> "$REMOTE_SCRIPT"
-
-        $SCP "$REMOTE_SCRIPT" "root@$REMOTE_IP:/tmp/apply_config.sh"
-        $SSH "sh /tmp/apply_config.sh"
-        rm "$REMOTE_SCRIPT"
-        ;;
 
 # ── Air: WFB-NG ─────────────────────────────────────────────────────────────
 
