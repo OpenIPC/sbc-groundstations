@@ -54,5 +54,23 @@ else
     echo ""
     echo "ERROR: Write failed!"
 fi
-fatrm mmc 1:1 boot.scr
-fatrm mmc 1:1 ${filename}
+fatrm ${src_device} boot.scr
+if test $? -eq 0; then
+    echo ""
+    echo "========================================"
+    echo "SUCCESS: Removal of boot.scr"
+    echo "========================================"
+else
+    echo ""
+    echo "ERROR: Remove of boot.scr failed!"
+fi
+fatrm ${src_device} ${filename}
+if test $? -eq 0; then
+    echo ""
+    echo "========================================"
+    echo "SUCCESS: Removal of ${filename}"
+    echo "========================================"
+else
+    echo ""
+    echo "ERROR: Remove of ${filename} failed!"
+fi
