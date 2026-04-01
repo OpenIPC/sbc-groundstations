@@ -69,32 +69,6 @@ See: [How to recover RunCam VRX from a bad flash](https://docs.openipc.org/hardw
 
 **Note:** This will erase all data on the internal flash.
 
-# Flash eMMC via SD Card (Windows)
-
-This method flashes the full image to eMMC by booting from an SD card — supports old sbc versions, no drivers, no special tools required.
-
-**What you need:**
-- An SD card (any size, FAT32 formatted)
-- `<platform>_sdcard.img` from the [releases](https://github.com/OpenIPC/sbc-groundstations/releases)
-- `<platform>_boot.scr` from the same release
-
-**Steps:**
-
-1. **Format the SD card as FAT32.**
-   - Open *Disk Management* (`Win + X` → Disk Management), right-click the SD card partition → Format → FAT32.
-   - For cards larger than 32 GB, Windows only offers exFAT. Use [fat32format (guiformat)](http://www.ridgecrop.demon.co.uk/guiformat.htm) to force FAT32.
-
-2. **Copy the files to the SD card.**
-   - Copy `<platform>_sdcard.img` to the root of the SD card.
-   - Copy `<platform>_boot.scr` to the root of the SD card and **rename it to `boot.scr`**.
-
-3. **Boot from the SD card.**
-   - Insert the SD card into the device and power it on.
-   - U-Boot will automatically detect and run `boot.scr`, which loads the image and writes it to eMMC.
-   - The process takes a few minutes. When complete, the device removes `boot.scr` and the image file from the SD card and reboots into the freshly flashed system.
-
-> **Note:** The device must have a working U-Boot on eMMC. If the eMMC is completely blank or U-Boot is corrupted, use RKDevTool instead — see [Upgrade from Older SBC Version](#upgrade-from-older-sbc-version-radxa-zero3-based).
-
 # Upgrade
 
 Once flashed, the Buildroot image can update itself via several ways:
