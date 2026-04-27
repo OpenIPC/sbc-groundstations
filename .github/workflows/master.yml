@@ -73,6 +73,7 @@ jobs:
           name: ${{ matrix.platform }}-images-${{ github.sha }}
           path: |
             /mnt/workspace/output/${{ matrix.platform }}_defconfig/images/${{ matrix.platform }}_sdcard.img
+            /mnt/workspace/output/${{ matrix.platform }}_defconfig/images/${{ matrix.platform }}_boot.scr
             /mnt/workspace/output/${{ matrix.platform }}_defconfig/images/${{ matrix.platform }}_u-boot.bin
             /mnt/workspace/output/${{ matrix.platform }}_defconfig/images/${{ matrix.platform }}_emmc_bootloader.img
             /mnt/workspace/output/${{ matrix.platform }}_defconfig/images/${{ matrix.platform }}_rootfs.squashfs
