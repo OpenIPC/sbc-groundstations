@@ -896,13 +896,8 @@ EOF
         fi
         ;;
     "get gs wifi wlan")
-        if [ -f /etc/network/interfaces.d/wlan0 ] && \
-        [ ! -f /etc/wpa_supplicant.hotspot.conf ] && \
-        ip addr show wlan0 2>/dev/null | grep -q "inet "; then
-            echo 1
-        else
-            echo 0
-        fi
+        [ ! -d /sys/class/net/wlan0 ] && { echo 0; exit 0; }
+        iw dev wlan0 link 2>/dev/null | grep -q "^Connected" && echo 1 || echo 0
         ;;
     "get gs wifi ssid")
         if [ -f /etc/wpa_supplicant.conf ]; then
@@ -920,6 +915,84 @@ EOF
         ;;
     "get gs wifi IP")
         ip -4 addr show | grep "inet " | awk '{print $2}'
+        ;;
+    "get gs wifi savednetworks")
+        [ -f /etc/pixelpilot_wifi_known.conf ] && cat /etc/pixelpilot_wifi_known.conf || true
+        ;;
+    "get gs wifi networks")
+        [ ! -d /sys/class/net/wlan0 ] && exit 0
+        ip link set wlan0 up 2>/dev/null || true
+        # Trigger a fresh scan via iw and parse the BSS list
+        iw dev wlan0 scan 2>/dev/null | awk '
+            BEGIN { ssid=""; sec="--"; sig_pct=0 }
+            /^BSS / {
+                if (ssid != "") {
+                    s = ssid; gsub(/:/, "\\:", s)
+                    printf "%s:%s:%d\n", s, sec, sig_pct
+                }
+                ssid=""; sec="--"; sig_pct=0
+            }
+            /SSID: / {
+                idx = index($0, "SSID: ")
+                if (idx > 0) ssid = substr($0, idx + 6)
+            }
+            /signal: / {
+                sig = $2 + 0
+                sig_pct = int(2 * (sig + 100))
+                if (sig_pct < 0) sig_pct = 0
+                if (sig_pct > 100) sig_pct = 100
+            }
+            /RSN:/ || /WPA:/ { sec = "WPA" }
+            END {
+                if (ssid != "") {
+                    s = ssid; gsub(/:/, "\\:", s)
+                    printf "%s:%s:%d\n", s, sec, sig_pct
+                }
+            }
+        ' || true
+        ;;
+    "set gs wifi connect"*)
+        [ ! -d /sys/class/net/wlan0 ] && exit 0
+        SSID="$5"
+        PASSWORD="$6"
+        # Write wpa_supplicant config
+        if [ -z "$PASSWORD" ]; then
+            printf 'network={\n    ssid="%s"\n    key_mgmt=NONE\n}\n' "$SSID" > /etc/wpa_supplicant.conf
+        else
+            printf 'network={\n    ssid="%s"\n    psk="%s"\n}\n' "$SSID" "$PASSWORD" > /etc/wpa_supplicant.conf
+            # Remember password for future auto-connect
+            ESCAPED_SSID=$(printf '%s' "$SSID" | sed 's/:/\\:/g')
+            touch /etc/pixelpilot_wifi_known.conf
+            grep -v "^${ESCAPED_SSID}:" /etc/pixelpilot_wifi_known.conf > /tmp/ppp_wifi_known 2>/dev/null || true
+            printf '%s:%s\n' "$ESCAPED_SSID" "$PASSWORD" >> /tmp/ppp_wifi_known
+            mv /tmp/ppp_wifi_known /etc/pixelpilot_wifi_known.conf
+        fi
+        # Clean up any active hotspot first
+        if [ -f /etc/wpa_supplicant.hotspot.conf ]; then
+            ifdown wlan0 2>/dev/null || true
+            rm -f /etc/network/interfaces.d/wlan0
+            rm -f /etc/wpa_supplicant.hotspot.conf
+            pkill udhcpd 2>/dev/null || true
+        fi
+        # Kill old wpa_supplicant and restart with new config
+        if [ -f /run/wpa_supplicant.wlan0.pid ]; then
+            kill "$(cat /run/wpa_supplicant.wlan0.pid)" 2>/dev/null || true
+        fi
+        pkill wpa_supplicant 2>/dev/null || true
+        pkill udhcpc 2>/dev/null || true
+        sleep 1
+        /usr/sbin/wpa_supplicant -B -i wlan0 -c /etc/wpa_supplicant.conf -P /run/wpa_supplicant.wlan0.pid
+        sleep 3
+        udhcpc -i wlan0 -q 2>/dev/null || true
+        # Write auto wlan0 entry so ifup -a at boot reconnects automatically
+        printf 'auto wlan0\niface wlan0 inet dhcp\n    wpa-conf /etc/wpa_supplicant.conf\n' > /etc/network/interfaces.d/wlan0
+        ;;
+    "set gs wifi disconnect"*)
+        [ ! -d /sys/class/net/wlan0 ] && exit 0
+        pkill wpa_supplicant 2>/dev/null || true
+        iw dev wlan0 disconnect 2>/dev/null || true
+        pkill udhcpc 2>/dev/null || true
+        rm -f /etc/network/interfaces.d/wlan0
         ;;
 
     "set gs wifi wlan"*)
@@ -950,10 +1023,18 @@ EOF
     "set gs wifi hotspot"*)
         [ ! -d /sys/class/net/wlan0 ] && exit 0
         if [ "$5" = "on" ]; then
+            # Tear down any existing WiFi client connection
+            rm -f /etc/init.d/S45wifi_client
             if [ -f /etc/network/interfaces.d/wlan0 ]; then
                 ifdown wlan0
                 rm /etc/network/interfaces.d/wlan0
             fi
+            if [ -f /run/wpa_supplicant.wlan0.pid ]; then
+                kill "$(cat /run/wpa_supplicant.wlan0.pid)" 2>/dev/null || true
+            fi
+            pkill wpa_supplicant 2>/dev/null || true
+            pkill udhcpc 2>/dev/null || true
+            sleep 1
             cat <<EOF > /etc/wpa_supplicant.hotspot.conf
 network={
     mode=2
@@ -972,9 +1053,17 @@ wpa-conf /etc/wpa_supplicant.hotspot.conf
 EOF
             ifup wlan0
         else
-            ifdown wlan0
-            rm /etc/network/interfaces.d/wlan0
-            rm /etc/wpa_supplicant.hotspot.conf
+            ifdown wlan0 2>/dev/null || true
+            rm -f /etc/network/interfaces.d/wlan0
+            rm -f /etc/wpa_supplicant.hotspot.conf
+            ip link set wlan0 up 2>/dev/null || true
+            # Auto-reconnect to previous client network if a config exists
+            if [ -f /etc/wpa_supplicant.conf ]; then
+                sleep 1
+                /usr/sbin/wpa_supplicant -B -i wlan0 -c /etc/wpa_supplicant.conf -P /run/wpa_supplicant.wlan0.pid 2>/dev/null || true
+                sleep 3
+                udhcpc -i wlan0 -q 2>/dev/null || true
+            fi
         fi
         ;;
 
