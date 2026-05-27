@@ -1051,7 +1051,7 @@ EOF
     "set gs wifi hotspot"*)
         [ ! -d /sys/class/net/wlan0 ] && exit 0
         if [ "$5" = "on" ]; then
-            [ -f /etc/wpa_supplicant.hotspot.conf ] && exit 0  # already on, nothing to do
+            [ -f /etc/wpa_supplicant.hotspot.conf ] && ip addr show wlan0 2>/dev/null | grep -q "inet " && exit 0  # already on, nothing to do
             ifdown wlan0 2>/dev/null || true
             rm -f /etc/network/interfaces.d/wlan0
             cat <<EOF > /etc/wpa_supplicant.hotspot.conf
