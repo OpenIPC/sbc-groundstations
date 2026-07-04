@@ -690,6 +690,10 @@ case "$@" in
         echo $PIXELPILOT_VIDEO_SCALE
         emit_values "0.5 1.0"
         ;;
+    "get gs system gs_live_colortrans")
+        . /etc/default/pixelpilot
+        [ x$PIXELPILOT_LIVE_COLORTRANS = x"" ] && echo 0 || echo 1
+        ;;
     "get gs system rec_fps")
         . /etc/default/pixelpilot
         echo $PIXELPILOT_DVR_FRAMERATE
@@ -725,17 +729,15 @@ case "$@" in
         echo $PIXELPILOT_DVR_BITRATE
         emit_values "5000\n10000\n15000\n20000\n25000\n30000\n35000\n40000\n45000\n50000"
         ;;
-
+    "get gs system rec_enabled"*)
+        echo 0
+        ;;
+    "get gs system dvr_osd"*)
+        . /etc/default/pixelpilot
+        [ x$PIXELPILOT_DVR_OSD = x"" ] && echo 0 || echo 1
+        ;;
     "set gs system rx_codec"*)
         sed -i "s/^PIXELPILOT_CODEC=.*/PIXELPILOT_CODEC=\"$5\"/" /etc/default/pixelpilot
-        ;;
-    "set gs system gs_live_colortrans"*)
-        if [ "$5" = "on" ]
-        then
-            sed -i "s/^PIXELPILOT_LIVE_COLORTRANS=.*/PIXELPILOT_LIVE_COLORTRANS=\"--live-colortrans\"/" /etc/default/pixelpilot
-        else
-            sed -i "s/^PIXELPILOT_LIVE_COLORTRANS=.*/PIXELPILOT_LIVE_COLORTRANS=\"\"/" /etc/default/pixelpilot
-        fi
         ;;
     "set gs system rx_mode"*)
         EXCLUDE_IFACE="wlan0"
@@ -796,18 +798,20 @@ EOF
             /etc/init.d/S98msposd start
         fi
         ;;
-    "set gs system gs_live_colortrans"*)
-        if [ "$5" = "on" ]; then
-            sed -i "s/^PIXELPILOT_LIVE_COLORTRANS=.*/PIXELPILOT_LIVE_COLORTRANS=\"--live-colortrans\"/" /etc/default/pixelpilot
-        else
-            sed -i "s/^PIXELPILOT_LIVE_COLORTRANS=.*/PIXELPILOT_LIVE_COLORTRANS=\"\"/" /etc/default/pixelpilot
-        fi
-        ;;
+    "set gs system connector"*)             : ;;
     "set gs system resolution"*)
         sed -i "s/^PIXELPILOT_SCREEN_MODE=.*/PIXELPILOT_SCREEN_MODE=\"$5\"/" /etc/default/pixelpilot
         ;;
     "set gs system video_scale"*)
         sed -i "s/^PIXELPILOT_VIDEO_SCALE=.*/PIXELPILOT_VIDEO_SCALE=$5/" /etc/default/pixelpilot
+        ;;
+    "set gs system gs_live_colortrans"*)
+        if [ "$5" = "on" ]
+        then
+            sed -i "s/^PIXELPILOT_LIVE_COLORTRANS=.*/PIXELPILOT_LIVE_COLORTRANS=\"--live-colortrans\"/" /etc/default/pixelpilot
+        else
+            sed -i "s/^PIXELPILOT_LIVE_COLORTRANS=.*/PIXELPILOT_LIVE_COLORTRANS=\"\"/" /etc/default/pixelpilot
+        fi
         ;;
     "set gs system rec_fps"*)
         sed -i "s/^PIXELPILOT_DVR_FRAMERATE=.*/PIXELPILOT_DVR_FRAMERATE=$5/" /etc/default/pixelpilot
@@ -1030,7 +1034,7 @@ EOF
         # Remove interfaces entry to disable auto-reconnect at boot
         rm -f /etc/network/interfaces.d/wlan0
         ;;
-
+    "set gs wifi forget"*)      : ;;   # integrator: forget/remove the saved network ($4 = SSID)
     "set gs wifi wlan"*)
         [ ! -d /sys/class/net/wlan0 ] && exit 0
         if [ "$5" = "on" ]; then
