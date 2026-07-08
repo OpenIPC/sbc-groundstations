@@ -820,7 +820,7 @@ EOF
         fi
         ;;
     "set gs system rec_fps"*)
-        sed -i "s/^PIXELPILOT_DVR_FRAMERATE=.*/PIXELPILOT_DVR_FRAMERATE=$5/" /etc/default/pixelpilot
+        sed -i "s/^PIXELPILOT_DVR_FRAMERATE=.*/PIXELPILOT_DVR_FRAMERATE=\"$5\"/" /etc/default/pixelpilot
         ;;
     "set gs system rec_enabled"*)
         if [ "$5" = "off" ]; then
