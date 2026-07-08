@@ -4,7 +4,7 @@
 #
 ###############################################################################
 
-MSPOSD_VERSION = 694221a59e4b17fd4324d24337a7bf3293127dcf
+MSPOSD_VERSION = 27ae3a0779fe2d7148a8d775c4313c321c0f6d1d
 MSPOSD_SITE = https://github.com/OpenIPC/msposd.git
 MSPOSD_SITE_METHOD = git
 MSPOSD_INSTALL_TARGET = YES
