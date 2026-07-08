@@ -80,6 +80,28 @@ Once flashed, the Buildroot image can update itself via several ways:
 - Use `./build.sh ssh-flash` to flash a local build to `BR2_BOARD_HOST`. See menuconfig.
 - Use `./build.sh flash` to flash a local build to the eMMC using `rkdeveloptool` (maskrom).
 
+# Boot Menu / Debug Boot
+
+Hold the `Up` button while powering on (keep it pressed until the splash
+appears) to open a small boot menu on the HDMI screen:
+
+- `Normal boot` — the default quiet boot (same as not entering the menu).
+- `Verbose boot` — debug boot: boots without `quiet`, with `loglevel=8` and
+  the kernel console mirrored to the HDMI screen (`console=tty0`) in addition
+  to the serial console. The splash is skipped so the kernel log stays
+  visible.
+
+Navigate with `Up`/`Down`, confirm with `Right`. The selection applies to the
+current boot only.
+
+On boards without buttons (or over serial), the same debug boot can be
+started from the U-Boot prompt:
+
+```
+setenv pxe_label_override verbose
+boot
+```
+
 # Factory Reset
 
 - Hold the `Right` button during boot.
