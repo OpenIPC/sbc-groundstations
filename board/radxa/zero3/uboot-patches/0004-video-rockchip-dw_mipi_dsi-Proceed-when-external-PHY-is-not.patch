@@ -1,0 +1,27 @@
+From: Ondrej Jirman <megi@xff.cz>
+Date: Sat, 08 Nov 2025 12:37:59 +0700
+Subject: [PATCH] video: rockchip: dw_mipi_dsi: Proceed when external PHY is not defined
+
+In this case the DM returns ENOENT, not ENODATA.
+
+Signed-off-by: Ondrej Jirman <megi@xff.cz>
+Reviewed-by: Svyatoslav Ryhel <clamor95@gmail.com>
+Signed-off-by: Dang Huynh <dang.huynh@mainlining.org>
+---
+ drivers/video/rockchip/dw_mipi_dsi_rockchip.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/video/rockchip/dw_mipi_dsi_rockchip.c b/drivers/video/rockchip/dw_mipi_dsi_rockchip.c
+index c47992dfb13..95e825eb3d6 100644
+--- a/drivers/video/rockchip/dw_mipi_dsi_rockchip.c
++++ b/drivers/video/rockchip/dw_mipi_dsi_rockchip.c
+@@ -839,7 +839,7 @@ static int dw_mipi_dsi_rockchip_probe(struct udevice *dev)
+ 	 * NULL if it's not initialized.
+ 	 */
+ 	ret = generic_phy_get_by_name(dev, "dphy", &priv->phy);
+-	if (ret && ret != -ENODATA) {
++	if (ret && ret != -ENOENT) {
+ 		dev_err(dev, "failed to get mipi dphy: %d\n", ret);
+ 		return ret;
+ 	}
+

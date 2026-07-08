@@ -1,3 +1,14 @@
 CONFIG_CMD_SQUASHFS=y
 CONFIG_ZSTD=y
 CONFIG_BOOTDELAY=1
+CONFIG_VIDEO=y
+CONFIG_DISPLAY=y
+CONFIG_VIDEO_ROCKCHIP=y
+CONFIG_DISPLAY_ROCKCHIP_HDMI=y
+CONFIG_VIDEO_REMOVE=y
+CONFIG_BMP=y
+CONFIG_CMD_BMP=y
+CONFIG_BMP_24BPP=y
+CONFIG_USE_PREBOOT=y
+CONFIG_PREBOOT="setenv stdout serial; setenv stderr serial; for d in 0 1; do if sqfsload mmc ${d}:1 ${loadaddr} /usr/share/splash.bmp; then bmp display ${loadaddr} m m; fi; done"
+

@@ -1,0 +1,46 @@
+From: Dang Huynh <dang.huynh@mainlining.org>
+Date: Sat, 08 Nov 2025 12:38:07 +0700
+Subject: [PATCH] configs: pinetab2-rk3566: Enable video and USB keyboard
+
+Now that we have VOP2 support, let's enable it and support the
+built in USB keyboard.
+
+Signed-off-by: Dang Huynh <dang.huynh@mainlining.org>
+---
+ configs/pinetab2-rk3566_defconfig | 10 ++++++++++
+ 1 file changed, 10 insertions(+)
+
+diff --git a/configs/pinetab2-rk3566_defconfig b/configs/pinetab2-rk3566_defconfig
+index 6e5fde591d0..3b8441e3552 100644
+--- a/configs/pinetab2-rk3566_defconfig
++++ b/configs/pinetab2-rk3566_defconfig
+@@ -68,6 +68,7 @@ CONFIG_MMC_SDHCI_SDMA=y
+ CONFIG_MMC_SDHCI_ROCKCHIP=y
+ CONFIG_SPI_FLASH_SFDP_SUPPORT=y
+ CONFIG_SPI_FLASH_SILICONKAISER=y
++CONFIG_PHY_ROCKCHIP_INNO_DSIDPHY=y
+ CONFIG_PHY_ROCKCHIP_INNO_USB2=y
+ CONFIG_PHY_ROCKCHIP_NANENG_COMBOPHY=y
+ CONFIG_SPL_PINCTRL=y
+@@ -93,6 +94,7 @@ CONFIG_USB_OHCI_HCD=y
+ CONFIG_USB_OHCI_GENERIC=y
+ CONFIG_USB_DWC3=y
+ CONFIG_USB_DWC3_GENERIC=y
++CONFIG_USB_KEYBOARD=y
+ CONFIG_USB_HOST_ETHER=y
+ CONFIG_USB_ETHER_ASIX=y
+ CONFIG_USB_ETHER_ASIX88179=y
+@@ -100,4 +102,12 @@ CONFIG_USB_ETHER_RTL8152=y
+ CONFIG_USB_GADGET=y
+ CONFIG_USB_GADGET_DOWNLOAD=y
+ CONFIG_USB_FUNCTION_ROCKUSB=y
++CONFIG_VIDEO=y
++CONFIG_VIDEO_LCD_BOE_TH101MB31IG002_28A=y
++CONFIG_DISPLAY=y
++CONFIG_VIDEO_ROCKCHIP=y
++CONFIG_DISPLAY_ROCKCHIP_HDMI=y
++CONFIG_DISPLAY_ROCKCHIP_DW_MIPI=y
++CONFIG_VIDEO_BRIDGE=y
++CONFIG_VIDEO_REMOVE=y
+ CONFIG_ERRNO_STR=y
+

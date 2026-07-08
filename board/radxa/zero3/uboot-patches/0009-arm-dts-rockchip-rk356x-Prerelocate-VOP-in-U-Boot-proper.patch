@@ -1,0 +1,28 @@
+From: Dang Huynh <dang.huynh@mainlining.org>
+Date: Sat, 08 Nov 2025 12:38:04 +0700
+Subject: [PATCH] arm: dts: rockchip: rk356x: Prerelocate VOP in U-Boot proper
+
+We need to prerelocate VOP2 memory so the driver can work. This
+will only support U-Boot proper.
+
+Signed-off-by: Dang Huynh <dang.huynh@mainlining.org>
+---
+ arch/arm/dts/rk356x-u-boot.dtsi | 4 ++++
+ 1 file changed, 4 insertions(+)
+
+diff --git a/arch/arm/dts/rk356x-u-boot.dtsi b/arch/arm/dts/rk356x-u-boot.dtsi
+index 738b9673d35..1ed06239f05 100644
+--- a/arch/arm/dts/rk356x-u-boot.dtsi
++++ b/arch/arm/dts/rk356x-u-boot.dtsi
+@@ -170,6 +170,10 @@
+ 	bootph-all;
+ };
+ 
++&vop {
++	bootph-some-ram;
++};
++
+ &xin24m {
+ 	bootph-all;
+ };
+
