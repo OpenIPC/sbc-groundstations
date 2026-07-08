@@ -74,36 +74,42 @@ list_wifi_channels() {
     iw list | grep MHz | grep -v disabled | grep -v "radar detection" | grep \* | tr -d '[]' | awk '{print $4 " (" $2 " " $3 ")"}' | grep '^[1-9]' | sort -n | uniq | head -c -1
 }
 
+# Remove the network stanza for <ssid> from wpa_supplicant.conf (no-op if absent).
+wpa_conf_remove_network() {
+    local ssid="$1"
+    local conf="/etc/wpa_supplicant.conf"
+    local tmpfile
+    [ -f "$conf" ] || return 0
+    tmpfile=$(mktemp)
+    awk -v ssid="$ssid" '
+        /network=\{/ { in_block=1; block="" }
+        in_block { block = block $0 "\n" }
+        in_block && /\}/ {
+            if (index(block, "ssid=\"" ssid "\"") == 0)
+                printf "%s", block
+            in_block=0; block=""
+            next
+        }
+        !in_block { print }
+    ' "$conf" > "$tmpfile"
+    mv "$tmpfile" "$conf"
+}
+
 # Add or update a network stanza in wpa_supplicant.conf.
 # Usage: wpa_conf_update_network <ssid> <psk>  (psk may be empty for open networks)
 wpa_conf_update_network() {
     local ssid="$1"
     local psk="$2"
     local conf="/etc/wpa_supplicant.conf"
-    local tmpfile
-    tmpfile=$(mktemp)
 
-    # Remove any existing stanza for this SSID, then append the updated one
-    if [ -f "$conf" ]; then
-        awk -v ssid="$ssid" '
-            /network=\{/ { in_block=1; block="" }
-            in_block { block = block $0 "\n" }
-            in_block && /\}/ {
-                if (index(block, "ssid=\"" ssid "\"") == 0)
-                    printf "%s", block
-                in_block=0; block=""
-                next
-            }
-            !in_block { print }
-        ' "$conf" > "$tmpfile"
-    fi
+    # Drop any existing stanza for this SSID, then append the updated one
+    wpa_conf_remove_network "$ssid"
 
     if [ -z "$psk" ]; then
-        printf 'network={\n    ssid="%s"\n    key_mgmt=NONE\n}\n' "$ssid" >> "$tmpfile"
+        printf 'network={\n    ssid="%s"\n    key_mgmt=NONE\n}\n' "$ssid" >> "$conf"
     else
-        printf 'network={\n    ssid="%s"\n    psk="%s"\n}\n' "$ssid" "$psk" >> "$tmpfile"
+        printf 'network={\n    ssid="%s"\n    psk="%s"\n}\n' "$ssid" "$psk" >> "$conf"
     fi
-    mv "$tmpfile" "$conf"
 }
 
 send_cmd() {
@@ -1034,7 +1040,19 @@ EOF
         # Remove interfaces entry to disable auto-reconnect at boot
         rm -f /etc/network/interfaces.d/wlan0
         ;;
-    "set gs wifi forget"*)      : ;;   # integrator: forget/remove the saved network ($4 = SSID)
+    "set gs wifi forget"*)
+        # Forget/remove the saved network ($5 = SSID). If it's the network we're
+        # currently on, tear the connection down first (as with disconnect).
+        [ -z "$5" ] && exit 0
+        if [ -d /sys/class/net/wlan0 ]; then
+            current=$(iw dev wlan0 link 2>/dev/null | awk '/SSID:/ { sub(/.*SSID: /, ""); print; exit }')
+            if [ "$current" = "$5" ]; then
+                ifdown wlan0 2>/dev/null || true
+                rm -f /etc/network/interfaces.d/wlan0
+            fi
+        fi
+        wpa_conf_remove_network "$5"
+        ;;
     "set gs wifi wlan"*)
         [ ! -d /sys/class/net/wlan0 ] && exit 0
         if [ "$5" = "on" ]; then
