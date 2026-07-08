@@ -3,6 +3,17 @@
 #   board/common/gen-boot-scr.sh
 # Placeholders __FILENAME__ and __BLKCNT__ are patched at build time.
 
+# Mirror flasher output to the HDMI screen. Attaching vidconsole re-runs the
+# console mux; the video device was already probed by the splash in preboot.
+setenv stdout serial,vidconsole
+setenv stderr serial,vidconsole
+cls
+
+# On any error: halt with the messages on screen instead of falling back to
+# bootflow (which would boot a possibly half-flashed system). Ctrl-C on the
+# serial console escapes the halt loop.
+setenv flash_halt 'echo ""; echo "########################################"; echo "# FLASHING FAILED - halted             #"; echo "# Check the error messages above.     #"; echo "########################################"; while true; do sleep 10; done'
+
 # Set source location (SD card, first partition)
 setenv src_device mmc 1:1
 setenv filename __FILENAME__
@@ -23,7 +34,7 @@ if load ${src_device} ${loadaddr} ${filename}; then
     echo "OK - Loaded ${filesize} bytes to address ${loadaddr}"
 else
     echo "ERROR: Failed to read ${filename} from ${src_device}"
-    exit
+    run flash_halt
 fi
 
 # Switch to eMMC device
@@ -33,7 +44,7 @@ if mmc dev ${emmc_device}; then
     echo "OK - Now using eMMC"
 else
     echo "ERROR: Failed to switch to eMMC device ${emmc_device}"
-    exit
+    run flash_halt
 fi
 
 # Write to eMMC
@@ -53,6 +64,7 @@ if test $? -eq 0; then
 else
     echo ""
     echo "ERROR: Write failed!"
+    run flash_halt
 fi
 fatrm ${src_device} boot.scr
 if test $? -eq 0; then
@@ -63,6 +75,7 @@ if test $? -eq 0; then
 else
     echo ""
     echo "ERROR: Remove of boot.scr failed!"
+    run flash_halt
 fi
 fatrm ${src_device} ${filename}
 if test $? -eq 0; then
@@ -73,4 +86,14 @@ if test $? -eq 0; then
 else
     echo ""
     echo "ERROR: Remove of ${filename} failed!"
+    run flash_halt
 fi
+
+echo ""
+echo "Restarting in:"
+for i in 5 4 3 2 1; do
+    echo -n "  ${i}"
+    sleep 1
+done
+echo ""
+reset
