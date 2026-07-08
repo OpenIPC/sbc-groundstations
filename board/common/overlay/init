@@ -149,7 +149,7 @@ if [ -n "$GADGET_MODE_GPIO" ]; then
     GADGET_MODE_GPIO_STATE=$(gpioget $GADGET_MODE_GPIO)
   fi
 fi
-if [ "$(gpioget $GADGET_MODE_GPIO_STATE)" = "1" ]
+if [ "$GADGET_MODE_GPIO_STATE" = "1" ]
 then
   echo '<0>gadget_mode: #####################################################################' > /dev/kmsg
   echo '<0>gadget_mode: #                                                                   #' > /dev/kmsg
