@@ -11,7 +11,7 @@ CONFIG_CMD_BMP=y
 CONFIG_CMD_CLS=y
 CONFIG_BMP_24BPP=y
 CONFIG_USE_PREBOOT=y
-CONFIG_PREBOOT="for d in 0 1; do if sqfsload mmc ${d}:1 ${loadaddr} /usr/share/splash.bmp; then bmp display ${loadaddr} m m; fi; done; setenv stdout serial; setenv stderr serial; for f in /boot/uboot-menu.env /boot/uboot-buttons.env; do if sqfsload mmc 1:1 ${loadaddr} $f || sqfsload mmc 0:1 ${loadaddr} $f; then env import -t ${loadaddr} ${filesize}; fi; done; if env exists preboot_hook; then run preboot_hook; fi"
+CONFIG_PREBOOT="for d in 0 1; do if sqfsload mmc ${d}:1 ${loadaddr} /usr/share/splash-bg.bmp; then bmp display ${loadaddr} m m; fi; if sqfsload mmc ${d}:1 ${loadaddr} /usr/share/splash.bmp; then bmp display ${loadaddr} m m; fi; done; setenv stdout serial; setenv stderr serial; for f in /boot/uboot-menu.env /boot/uboot-buttons.env; do if sqfsload mmc 1:1 ${loadaddr} $f || sqfsload mmc 0:1 ${loadaddr} $f; then env import -t ${loadaddr} ${filesize}; fi; done; if env exists preboot_hook; then run preboot_hook; fi"
 CONFIG_SYS_CONSOLE_IS_IN_ENV=y
 CONFIG_CONSOLE_MUX=y
 
