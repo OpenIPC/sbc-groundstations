@@ -31,7 +31,7 @@ mount -t tmp /tmp || exit 1
 
 # splash only on quiet boots; keep kernel output visible on verbose/debug boots
 if grep -q quiet /proc/cmdline; then
-	fbv -c -u -i -y /usr/share/splash.png &
+	fbv -c -u -i -y -f /usr/share/splash.png &
 fi
 
 # Extract root device info from mountinfo
