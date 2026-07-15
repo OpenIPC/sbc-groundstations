@@ -18,8 +18,9 @@ PIXELPILOT_DVR_MAX_SIZE="4000"
 
 # Opt-in Opus audio playback (audio muxed into the RTP stream by the air unit,
 # split by payload type). Leave PIXELPILOT_AUDIO empty to keep audio off.
-# Set PIXELPILOT_AUDIO="--audio" to enable, and optionally pick an ALSA output
-# device, e.g. PIXELPILOT_AUDIO_DEVICE="plughw:CARD=rockchiphdmi0,DEV=0".
+# Set PIXELPILOT_AUDIO="--audio" to enable, and optionally pick the ALSA output
+# by card id (from /proc/asound/cards), e.g. PIXELPILOT_AUDIO_DEVICE="rockchiphdmi".
+# Empty = system default. Also selectable live from the OSD (System -> Receiver -> Output).
 PIXELPILOT_AUDIO=""
 PIXELPILOT_AUDIO_DEVICE=""
 PIXELPILOT_AUDIO_ARGS="$PIXELPILOT_AUDIO${PIXELPILOT_AUDIO:+${PIXELPILOT_AUDIO_DEVICE:+ --audio-device $PIXELPILOT_AUDIO_DEVICE}}"

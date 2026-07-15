@@ -742,6 +742,18 @@ case "$@" in
         . /etc/default/pixelpilot
         [ x$PIXELPILOT_DVR_OSD = x"" ] && echo 0 || echo 1
         ;;
+    "get gs system audio_device"*)
+        . /etc/default/pixelpilot
+        cur="$PIXELPILOT_AUDIO_DEVICE"
+        [ -z "$cur" ] && cur="default"
+        echo "$cur"
+        # Options: "default" + the card ids from /proc/asound/cards (e.g. rockchiphdmi, HEADSET)
+        opts="default"
+        for c in $(awk -F'[][]' '/^ *[0-9]+ \[/{gsub(/ /,"",$2); print $2}' /proc/asound/cards); do
+            opts="$opts\n$c"
+        done
+        emit_values "$opts"
+        ;;
     "get gs system audio"*)
         . /etc/default/pixelpilot
         [ x$PIXELPILOT_AUDIO = x"" ] && echo 0 || echo 1
@@ -857,6 +869,11 @@ EOF
         else
             sed -i "s/^PIXELPILOT_DVR_OSD=.*/PIXELPILOT_DVR_OSD=\"\"/" /etc/default/pixelpilot
         fi
+        ;;
+    "set gs system audio_device"*)
+        val="$5"
+        [ "$val" = "default" ] && val=""
+        sed -i "s|^PIXELPILOT_AUDIO_DEVICE=.*|PIXELPILOT_AUDIO_DEVICE=\"$val\"|" /etc/default/pixelpilot
         ;;
     "set gs system audio"*)
         if [ "$5" = "on" ]; then
