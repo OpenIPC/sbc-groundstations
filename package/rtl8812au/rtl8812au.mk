@@ -2,7 +2,7 @@
 # RTL8812AU package (external kernel)
 ################################################################################
 
-RTL8812AU_VERSION = 7bccd51541dd505270d322a7da3b9feccc910393
+RTL8812AU_VERSION = be10cbbbd9b6b5325554a06a0132985a6b890175
 RTL8812AU_SITE = https://github.com/svpcom/rtl8812au
 RTL8812AU_SITE_METHOD = git
 RTL8812AU_LICENSE = unspecified

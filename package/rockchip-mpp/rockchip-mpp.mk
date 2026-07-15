@@ -1,5 +1,5 @@
-ROCKCHIP_MPP_VERSION = develop
-ROCKCHIP_MPP_SITE = https://github.com/HermanChen/mpp.git
+ROCKCHIP_MPP_VERSION = c2c1ee502b3a26efebcf843f7a0aeb4d172c6237
+ROCKCHIP_MPP_SITE = https://github.com/rockchip-linux/mpp.git
 ROCKCHIP_MPP_SITE_METHOD = git
 ROCKCHIP_MPP_INSTALL_STAGING = YES
 ROCKCHIP_MPP_INSTALL_TARGET = YES

@@ -667,7 +667,7 @@ case "$@" in
     "get gs system rx_codec")
         . /etc/default/pixelpilot
         echo $PIXELPILOT_CODEC
-        emit_values "h264\nh265"
+        emit_values "h264\nh265\nauto"
         ;;
     "get gs system rx_mode")
         . /etc/default/wifibroadcast
