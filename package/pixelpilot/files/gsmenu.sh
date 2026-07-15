@@ -742,6 +742,10 @@ case "$@" in
         . /etc/default/pixelpilot
         [ x$PIXELPILOT_DVR_OSD = x"" ] && echo 0 || echo 1
         ;;
+    "get gs system audio"*)
+        . /etc/default/pixelpilot
+        [ x$PIXELPILOT_AUDIO = x"" ] && echo 0 || echo 1
+        ;;
     "set gs system rx_codec"*)
         sed -i "s/^PIXELPILOT_CODEC=.*/PIXELPILOT_CODEC=\"$5\"/" /etc/default/pixelpilot
         ;;
@@ -852,6 +856,13 @@ EOF
             sed -i "s/^PIXELPILOT_DVR_OSD=.*/PIXELPILOT_DVR_OSD=\"--dvr-osd\"/" /etc/default/pixelpilot
         else
             sed -i "s/^PIXELPILOT_DVR_OSD=.*/PIXELPILOT_DVR_OSD=\"\"/" /etc/default/pixelpilot
+        fi
+        ;;
+    "set gs system audio"*)
+        if [ "$5" = "on" ]; then
+            sed -i "s/^PIXELPILOT_AUDIO=.*/PIXELPILOT_AUDIO=\"--audio\"/" /etc/default/pixelpilot
+        else
+            sed -i "s/^PIXELPILOT_AUDIO=.*/PIXELPILOT_AUDIO=\"\"/" /etc/default/pixelpilot
         fi
         ;;
 
