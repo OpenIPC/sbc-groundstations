@@ -754,6 +754,13 @@ case "$@" in
         done
         emit_values "$opts"
         ;;
+    "get gs system audio_volume"*)
+        . /etc/default/pixelpilot
+        v="$PIXELPILOT_AUDIO_VOLUME"
+        [ -z "$v" ] && v=100
+        echo "$v"
+        emit_values "0 100"
+        ;;
     "get gs system audio"*)
         . /etc/default/pixelpilot
         [ x$PIXELPILOT_AUDIO = x"" ] && echo 0 || echo 1
@@ -874,6 +881,9 @@ EOF
         val="$5"
         [ "$val" = "default" ] && val=""
         sed -i "s|^PIXELPILOT_AUDIO_DEVICE=.*|PIXELPILOT_AUDIO_DEVICE=\"$val\"|" /etc/default/pixelpilot
+        ;;
+    "set gs system audio_volume"*)
+        sed -i "s/^PIXELPILOT_AUDIO_VOLUME=.*/PIXELPILOT_AUDIO_VOLUME=\"$5\"/" /etc/default/pixelpilot
         ;;
     "set gs system audio"*)
         if [ "$5" = "on" ]; then
