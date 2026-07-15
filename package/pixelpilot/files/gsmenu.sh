@@ -311,6 +311,17 @@ case "$@" in
         get_majestic_value '.fpv.noiseLevel'
         emit_values "0 1"
         ;;
+    "get air camera audio_enabled")
+        get_majestic_value '.audio.enabled' | grep -q true && echo 1 || echo 0
+        ;;
+    "get air camera audio_volume")
+        get_majestic_value '.audio.volume'
+        emit_values "0 100"
+        ;;
+    "get air camera audio_srate")
+        get_majestic_value '.audio.srate'
+        emit_values "8000\n16000\n32000\n48000"
+        ;;
 
     "set air camera mirror"*)
         if [ "$5" = "on" ]; then
@@ -390,6 +401,19 @@ case "$@" in
         ;;
     "set air camera noiselevel"*)
         $SSH "cli -s .fpv.noiseLevel $5 && killall -1 majestic"
+        ;;
+    "set air camera audio_enabled"*)
+        if [ "$5" = "on" ]; then
+            $SSH 'cli -s .audio.enabled true && killall -1 majestic'
+        else
+            $SSH 'cli -s .audio.enabled false && killall -1 majestic'
+        fi
+        ;;
+    "set air camera audio_volume"*)
+        $SSH "cli -s .audio.volume $5 && killall -1 majestic"
+        ;;
+    "set air camera audio_srate"*)
+        $SSH "cli -s .audio.srate $5 && killall -1 majestic"
         ;;
 
 # ── Air: Telemetry ───────────────────────────────────────────────────────────
