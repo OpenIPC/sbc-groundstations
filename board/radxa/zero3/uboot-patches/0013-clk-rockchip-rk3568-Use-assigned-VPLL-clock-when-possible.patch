@@ -1,0 +1,29 @@
+From: Dang Huynh <dang.huynh@mainlining.org>
+Date: Sat, 08 Nov 2025 12:38:08 +0700
+Subject: [PATCH] clk: rockchip: rk3568: Use assigned VPLL clock when possible
+
+This matches how VPLL is configured under Linux and avoid weird
+behaviors when VPLL is reconfigured under Linux.
+
+Signed-off-by: Dang Huynh <dang.huynh@mainlining.org>
+---
+ drivers/clk/rockchip/clk_rk3568.c | 6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/clk/rockchip/clk_rk3568.c b/drivers/clk/rockchip/clk_rk3568.c
+index 533031caead..cd0e24d77dc 100644
+--- a/drivers/clk/rockchip/clk_rk3568.c
++++ b/drivers/clk/rockchip/clk_rk3568.c
+@@ -1820,7 +1820,11 @@ static ulong rk3568_dclk_vop_set_clk(struct rk3568_clk_priv *priv,
+ 			     ((div - 1) << DCLK0_VOP_DIV_SHIFT));
+ 		rk3568_pmu_pll_set_rate(priv, HPLL, div * rate);
+ 	} else if (sel == DCLK_VOP_SEL_VPLL) {
+-		div = DIV_ROUND_UP(RK3568_VOP_PLL_LIMIT_FREQ, rate);
++		if (priv->vpll_hz)
++			div = DIV_ROUND_UP(priv->vpll_hz, rate);
++		else
++			div = DIV_ROUND_UP(RK3568_VOP_PLL_LIMIT_FREQ, rate);
++
+ 		rk_clrsetreg(&cru->clksel_con[conid],
+ 			     DCLK0_VOP_DIV_MASK | DCLK0_VOP_SEL_MASK,
+ 			     (DCLK_VOP_SEL_VPLL << DCLK0_VOP_SEL_SHIFT) |

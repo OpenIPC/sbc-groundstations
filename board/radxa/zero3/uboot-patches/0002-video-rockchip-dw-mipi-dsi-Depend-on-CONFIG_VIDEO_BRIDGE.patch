@@ -1,0 +1,27 @@
+From: Dang Huynh <dang.huynh@mainlining.org>
+Date: Sat, 08 Nov 2025 12:37:57 +0700
+Subject: [PATCH] video: rockchip: dw-mipi-dsi: Depend on CONFIG_VIDEO_BRIDGE
+
+The driver is in video bridge class, so we must depend on it or
+the driver will fail to init.
+
+Reviewed-by: Svyatoslav Ryhel <clamor95@gmail.com>
+Signed-off-by: Dang Huynh <dang.huynh@mainlining.org>
+---
+ drivers/video/rockchip/Kconfig | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/video/rockchip/Kconfig b/drivers/video/rockchip/Kconfig
+index 0f4550a29e3..dfd08f1e5d1 100644
+--- a/drivers/video/rockchip/Kconfig
++++ b/drivers/video/rockchip/Kconfig
+@@ -72,7 +72,7 @@ config DISPLAY_ROCKCHIP_MIPI
+ 
+ config DISPLAY_ROCKCHIP_DW_MIPI
+ 	bool "Rockchip Designware MIPI"
+-	depends on VIDEO_ROCKCHIP
++	depends on VIDEO_ROCKCHIP && VIDEO_BRIDGE
+ 	select VIDEO_DW_MIPI_DSI
+ 	help
+ 	  Select the Designware MIPI DSI controller in use on some Rockchip
+
