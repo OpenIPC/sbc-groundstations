@@ -724,11 +724,6 @@ case "$@" in
         . /etc/default/pixelpilot
         [ x$PIXELPILOT_LIVE_COLORTRANS = x"" ] && echo 0 || echo 1
         ;;
-    "get gs system rec_fps")
-        . /etc/default/pixelpilot
-        echo $PIXELPILOT_DVR_FRAMERATE
-        emit_values "60\n90\n120"
-        ;;
     "get gs system dvr_mode")
         . /etc/default/pixelpilot
         echo $PIXELPILOT_DVR_MODE
@@ -865,9 +860,6 @@ EOF
         else
             sed -i "s/^PIXELPILOT_LIVE_COLORTRANS=.*/PIXELPILOT_LIVE_COLORTRANS=\"\"/" /etc/default/pixelpilot
         fi
-        ;;
-    "set gs system rec_fps"*)
-        sed -i "s/^PIXELPILOT_DVR_FRAMERATE=.*/PIXELPILOT_DVR_FRAMERATE=\"$5\"/" /etc/default/pixelpilot
         ;;
     "set gs system rec_enabled"*)
         if [ "$5" = "off" ]; then
