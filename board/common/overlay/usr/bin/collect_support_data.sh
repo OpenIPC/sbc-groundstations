@@ -102,6 +102,80 @@ cat /proc/mounts > hardware/proc_mounts.txt 2>&1
 ip link show > hardware/network_interfaces.txt 2>&1
 ip addr show > hardware/ip_addr.txt 2>&1
 
+# 2a. DISPLAY / ROCKCHIP HARDWARE (DRM, RGA, MPP)
+echo_colored "Collecting DRM/Rockchip/RGA/MPP diagnostics..." "$GREEN"
+mkdir -p display_rockchip/drm display_rockchip/rockchip display_rockchip/rga display_rockchip/mpp
+
+# The DRM/VOP2 and RGA debug nodes live under debugfs, which this platform
+# does not mount by default. Mount it ourselves if needed and remember to
+# undo that in the cleanup step, so the collector doesn't leave the system
+# in a different state than it found it.
+MOUNTED_DEBUGFS=0
+if [ ! -d /sys/kernel/debug/dri ]; then
+    if mount -t debugfs none /sys/kernel/debug 2>/dev/null; then
+        MOUNTED_DEBUGFS=1
+    fi
+fi
+
+# DRM: connector/plane/crtc enumeration plus the rockchip VOP2 debugfs dump
+# (mode timings, window/plane state, GEM buffer map, register snapshot).
+# Directly relevant to the padding/stride class of bugs investigated on this
+# pipeline (DVR reencode colortrans/RGA corruption).
+modetest -c > display_rockchip/drm/modetest_connectors.txt 2>&1 || echo "modetest not available" > display_rockchip/drm/modetest_connectors.txt
+modetest -p > display_rockchip/drm/modetest_planes.txt 2>&1 || echo "modetest not available" > display_rockchip/drm/modetest_planes.txt
+collect_file "/sys/class/drm/version" "display_rockchip/drm/drm_version.txt"
+
+for summary in /sys/kernel/debug/dri/*/summary; do
+    [ -e "$summary" ] || continue
+    carddir=$(dirname "$summary")
+    card=$(basename "$carddir")
+    for f in summary clients framebuffer state name mm_dump regs active_regs; do
+        collect_file "$carddir/$f" "display_rockchip/drm/card${card}_${f}.txt"
+    done
+done
+
+# Rockchip SoC identification + clock/thermal state (GPU/DDR/VDEC/VENC
+# devfreq scaling directly matters for transient RGA/GPU hiccups -- a
+# throttled or just-woken-up device is a plausible trigger).
+tr '\0' '\n' < /sys/firmware/devicetree/base/compatible > display_rockchip/rockchip/soc_compatible.txt 2>/dev/null || echo "not available" > display_rockchip/rockchip/soc_compatible.txt
+
+collect_file "/sys/kernel/debug/devfreq/devfreq_summary" "display_rockchip/rockchip/devfreq_summary.txt"
+
+for dev in /sys/class/devfreq/*; do
+    [ -d "$dev" ] || continue
+    name=$(basename "$dev")
+    {
+        echo "device: $name"
+        echo "governor: $(cat "$dev/governor" 2>/dev/null || echo N/A)"
+        echo "cur_freq_hz: $(cat "$dev/cur_freq" 2>/dev/null || echo N/A)"
+        echo "min_freq_hz: $(cat "$dev/min_freq" 2>/dev/null || echo N/A)"
+        echo "max_freq_hz: $(cat "$dev/max_freq" 2>/dev/null || echo N/A)"
+        echo "available_frequencies_hz: $(cat "$dev/available_frequencies" 2>/dev/null || echo N/A)"
+    } > "display_rockchip/rockchip/devfreq_${name}.txt" 2>&1 || true
+done
+
+: > display_rockchip/rockchip/thermal_zones.txt
+for zone in /sys/class/thermal/thermal_zone*; do
+    [ -d "$zone" ] || continue
+    echo "$(cat "$zone/type" 2>/dev/null || echo N/A): $(cat "$zone/temp" 2>/dev/null || echo N/A)" >> display_rockchip/rockchip/thermal_zones.txt || true
+done
+
+# RGA (2D blit/scale/CSC engine used for DVR reencode copy/resize/padding).
+for f in driver_version hardware load scheduler_status mm_session request_manager debug dump_image dump_path; do
+    collect_file "/sys/kernel/debug/rkrga/$f" "display_rockchip/rga/${f}.txt"
+done
+
+# MPP (rockchip-mpp video codec service): dump every stat file it exposes
+# under /proc, per hardware block (rkvdec/rkvenc/vdpu/vepu/iep/jpegd/...).
+if [ -d /proc/mpp_service ]; then
+    find /proc/mpp_service -type f 2>/dev/null | while read -r f; do
+        relname=$(echo "$f" | sed 's#/proc/mpp_service/##; s#/#_#g')
+        cat "$f" > "display_rockchip/mpp/${relname}.txt" 2>/dev/null || echo "could not read $f" > "display_rockchip/mpp/${relname}.txt"
+    done
+else
+    echo "mpp_service not available" > display_rockchip/mpp/not_available.txt
+fi
+
 # 3. KERNEL AND DRIVERS
 echo_colored "Collecting kernel and driver information..." "$GREEN"
 mkdir -p kernel
@@ -170,6 +244,17 @@ for log in /var/log/*.log; do
     fi
 done
 
+# PixelPilot (rotated backups are named pixelpilot.1.log, pixelpilot.2.log, ...
+# by spdlog's rotating file sink) -- already picked up by the glob above if
+# /var/log/pixelpilot.log exists, this just makes sure the current and every
+# rotated backup are collected even if the glob pattern above ever changes.
+for log in /var/log/pixelpilot.log /var/log/pixelpilot.*.log; do
+    if [ -f "$log" ]; then
+        base_name=$(basename "$log")
+        collect_log "$log" "logs/${base_name}"
+    fi
+done
+
 # 7. CONFIGURATION FILES
 echo_colored "Collecting configuration files..." "$GREEN"
 mkdir -p configs
@@ -198,6 +283,22 @@ collect_file "/etc/shells" "configs/shells"
 # Buildroot specific
 collect_file "/etc/buildroot-version" "configs/buildroot_version"
 collect_file "/etc/buildroot-build" "configs/buildroot_build"
+
+# PixelPilot: the effective args/config in force for the run(s) captured in
+# logs/pixelpilot*.log above. Config can be overridden from the SD card, so
+# collect whichever copy is actually active (matches PIXELPILOT_ARGS logic
+# in /etc/default/pixelpilot).
+collect_file "/etc/default/pixelpilot" "configs/pixelpilot_defaults"
+if [ -f /media/dvr/pixelpilot.yaml ]; then
+    collect_file "/media/dvr/pixelpilot.yaml" "configs/pixelpilot.yaml"
+else
+    collect_file "/etc/pixelpilot.yaml" "configs/pixelpilot.yaml"
+fi
+if [ -f /media/dvr/osd.json ]; then
+    collect_file "/media/dvr/osd.json" "configs/pixelpilot_osd.json"
+else
+    collect_file "/etc/pixelpilot/osd.json" "configs/pixelpilot_osd.json"
+fi
 
 # 8. PACKAGE INFORMATION
 echo_colored "Collecting package information..." "$GREEN"
@@ -251,6 +352,7 @@ PROCESSES:
 COLLECTED DATA:
 - System Info: $(ls -1 system_info/ 2>/dev/null | wc -l) files
 - Hardware Info: $(ls -1 hardware/ 2>/dev/null | wc -l) files
+- Display/Rockchip Info: $(find display_rockchip/ -type f 2>/dev/null | wc -l) files
 - Kernel Info: $(ls -1 kernel/ 2>/dev/null | wc -l) files
 - Network Info: $(ls -1 network/ 2>/dev/null | wc -l) files
 - Log Files: $(ls -1 logs/ 2>/dev/null | wc -l) files
@@ -272,11 +374,13 @@ This archive contains system information collected for troubleshooting purposes.
 CONTENTS:
 1. system_info/      - Basic system information
 2. hardware/         - Hardware and device information
+2a. display_rockchip/ - DRM/VOP2 display state, Rockchip devfreq/thermal,
+                         RGA and MPP (video codec) diagnostics
 3. kernel/           - Kernel and driver information
 4. network/          - Network configuration and status
 5. processes/        - Running processes and services
-6. logs/             - System and application logs
-7. configs/          - Configuration files
+6. logs/             - System and application logs (includes pixelpilot.log)
+7. configs/          - Configuration files (includes pixelpilot config)
 8. packages/         - Installed package information
 9. environment/      - Environment variables
 10. custom_checks/   - Additional diagnostic checks
@@ -317,6 +421,12 @@ fi
 # 15. CLEANUP
 echo_colored "Cleaning up temporary files..." "$GREEN"
 rm -rf "${COLLECTION_DIR}"
+
+# Leave the system as we found it: only unmount debugfs if this script was
+# the one that mounted it (section 2a).
+if [ "$MOUNTED_DEBUGFS" = "1" ]; then
+    umount /sys/kernel/debug 2>/dev/null || true
+fi
 
 # 16. FINAL INSTRUCTIONS
 cat << EOF
