@@ -243,6 +243,7 @@
         {
             "name": "msposd",
             "type": "ExternalSurfaceWidget",
+            "shm_name": "msposd",
             "x": 0,
             "y": 0,
             "width": 0,
@@ -293,6 +294,27 @@
                 {"name": "os_mon.power.power",
                  "convert": "x / 1000000"}
             ]
+        },
+        {
+            "name": "SignalWarning",
+            "type": "SignalWarningWidget",
+            "x": 0,
+            "y": 0,
+            "rate": true,
+            "rate_divisor": 125000,
+            "average_ms": 1000,
+            "threshold": 8,
+            "critical": 2,
+            "facts": [ { "name": "gstreamer.received_bytes" } ]
+        },
+        {
+            "name": "MspDisplayPort",
+            "type": "---MspDisplayPortWidget",
+            "x": 0,
+            "y": 0,
+            "font_path": "/usr/share/fonts/font_btfl_hd.png",
+            "udp_port": 14551,
+            "facts": []
         }
     ]
 }
