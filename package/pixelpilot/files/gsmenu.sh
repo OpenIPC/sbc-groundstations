@@ -311,6 +311,17 @@ case "$@" in
         get_majestic_value '.fpv.noiseLevel'
         emit_values "0 1"
         ;;
+    "get air camera audio_enabled")
+        get_majestic_value '.audio.enabled' | grep -q true && echo 1 || echo 0
+        ;;
+    "get air camera audio_volume")
+        get_majestic_value '.audio.volume'
+        emit_values "0 100"
+        ;;
+    "get air camera audio_srate")
+        get_majestic_value '.audio.srate'
+        emit_values "8000\n16000\n32000\n48000"
+        ;;
 
     "set air camera mirror"*)
         if [ "$5" = "on" ]; then
@@ -390,6 +401,19 @@ case "$@" in
         ;;
     "set air camera noiselevel"*)
         $SSH "cli -s .fpv.noiseLevel $5 && killall -1 majestic"
+        ;;
+    "set air camera audio_enabled"*)
+        if [ "$5" = "on" ]; then
+            $SSH 'cli -s .audio.enabled true && killall -1 majestic'
+        else
+            $SSH 'cli -s .audio.enabled false && killall -1 majestic'
+        fi
+        ;;
+    "set air camera audio_volume"*)
+        $SSH "cli -s .audio.volume $5 && killall -1 majestic"
+        ;;
+    "set air camera audio_srate"*)
+        $SSH "cli -s .audio.srate $5 && killall -1 majestic"
         ;;
 
 # ── Air: Telemetry ───────────────────────────────────────────────────────────
@@ -700,11 +724,6 @@ case "$@" in
         . /etc/default/pixelpilot
         [ x$PIXELPILOT_LIVE_COLORTRANS = x"" ] && echo 0 || echo 1
         ;;
-    "get gs system rec_fps")
-        . /etc/default/pixelpilot
-        echo $PIXELPILOT_DVR_FRAMERATE
-        emit_values "60\n90\n120"
-        ;;
     "get gs system dvr_mode")
         . /etc/default/pixelpilot
         echo $PIXELPILOT_DVR_MODE
@@ -741,6 +760,29 @@ case "$@" in
     "get gs system dvr_osd"*)
         . /etc/default/pixelpilot
         [ x$PIXELPILOT_DVR_OSD = x"" ] && echo 0 || echo 1
+        ;;
+    "get gs system audio_device"*)
+        . /etc/default/pixelpilot
+        cur="$PIXELPILOT_AUDIO_DEVICE"
+        [ -z "$cur" ] && cur="default"
+        echo "$cur"
+        # Options: "default" + the card ids from /proc/asound/cards (e.g. rockchiphdmi, HEADSET)
+        opts="default"
+        for c in $(awk -F'[][]' '/^ *[0-9]+ \[/{gsub(/ /,"",$2); print $2}' /proc/asound/cards); do
+            opts="$opts\n$c"
+        done
+        emit_values "$opts"
+        ;;
+    "get gs system audio_volume"*)
+        . /etc/default/pixelpilot
+        v="$PIXELPILOT_AUDIO_VOLUME"
+        [ -z "$v" ] && v=100
+        echo "$v"
+        emit_values "0 100"
+        ;;
+    "get gs system audio"*)
+        . /etc/default/pixelpilot
+        [ x$PIXELPILOT_AUDIO = x"" ] && echo 0 || echo 1
         ;;
     "set gs system rx_codec"*)
         sed -i "s/^PIXELPILOT_CODEC=.*/PIXELPILOT_CODEC=\"$5\"/" /etc/default/pixelpilot
@@ -819,9 +861,6 @@ EOF
             sed -i "s/^PIXELPILOT_LIVE_COLORTRANS=.*/PIXELPILOT_LIVE_COLORTRANS=\"\"/" /etc/default/pixelpilot
         fi
         ;;
-    "set gs system rec_fps"*)
-        sed -i "s/^PIXELPILOT_DVR_FRAMERATE=.*/PIXELPILOT_DVR_FRAMERATE=\"$5\"/" /etc/default/pixelpilot
-        ;;
     "set gs system rec_enabled"*)
         if [ "$5" = "off" ]; then
             : #noop
@@ -852,6 +891,21 @@ EOF
             sed -i "s/^PIXELPILOT_DVR_OSD=.*/PIXELPILOT_DVR_OSD=\"--dvr-osd\"/" /etc/default/pixelpilot
         else
             sed -i "s/^PIXELPILOT_DVR_OSD=.*/PIXELPILOT_DVR_OSD=\"\"/" /etc/default/pixelpilot
+        fi
+        ;;
+    "set gs system audio_device"*)
+        val="$5"
+        [ "$val" = "default" ] && val=""
+        sed -i "s|^PIXELPILOT_AUDIO_DEVICE=.*|PIXELPILOT_AUDIO_DEVICE=\"$val\"|" /etc/default/pixelpilot
+        ;;
+    "set gs system audio_volume"*)
+        sed -i "s/^PIXELPILOT_AUDIO_VOLUME=.*/PIXELPILOT_AUDIO_VOLUME=\"$5\"/" /etc/default/pixelpilot
+        ;;
+    "set gs system audio"*)
+        if [ "$5" = "on" ]; then
+            sed -i "s/^PIXELPILOT_AUDIO=.*/PIXELPILOT_AUDIO=\"--audio\"/" /etc/default/pixelpilot
+        else
+            sed -i "s/^PIXELPILOT_AUDIO=.*/PIXELPILOT_AUDIO=\"\"/" /etc/default/pixelpilot
         fi
         ;;
 

@@ -3,7 +3,6 @@ PIXELPILOT_OSD_ARGS="--osd --osd-custom-message --osd-config $PIXELPILOT_OSD_CON
 PIXELPILOT_CONFIG_YAML="$([ -f /media/dvr/pixelpilot.yaml ] && echo /media/dvr/pixelpilot.yaml || echo /etc/pixelpilot.yaml)"
 PIXELPILOT_SCREEN_MODE="1920x1080@60"
 PIXELPILOT_DISABLE_VSYNC="--disable-vsync"
-PIXELPILOT_DVR_FRAMERATE="60"
 PIXELPILOT_CODEC="h265"
 PIXELPILOT_VIDEO_SCALE=1.0
 PIXELPILOT_LIVE_COLORTRANS=""
@@ -15,4 +14,20 @@ PIXELPILOT_DVR_RESOLUTION="1080p"
 PIXELPILOT_DVR_MODE="reencode"
 PIXELPILOT_DVR_MAX_SIZE="4000"
 
-PIXELPILOT_ARGS="--config $PIXELPILOT_CONFIG_YAML $PIXELPILOT_OSD_ARGS $PIXELPILOT_DISABLE_VSYNC --codec $PIXELPILOT_CODEC --screen-mode $PIXELPILOT_SCREEN_MODE --video-scale $PIXELPILOT_VIDEO_SCALE --dvr-framerate $PIXELPILOT_DVR_FRAMERATE --dvr-fmp4 --dvr-sequenced-files --dvr-template /media/dvr/record_%Y-%m-%d_%H-%M-%S.mp4 $PIXELPILOT_LIVE_COLORTRANS --dvr-reenc-codec $PIXELPILOT_DVR_CODEC --dvr-reenc-bitrate $PIXELPILOT_DVR_BITRATE --dvr-reenc-fps $PIXELPILOT_DVR_FPS $PIXELPILOT_DVR_OSD --dvr-reenc-resolution $PIXELPILOT_DVR_RESOLUTION --dvr-mode $PIXELPILOT_DVR_MODE --dvr-max-size $PIXELPILOT_DVR_MAX_SIZE"
+
+# Opt-in Opus audio playback (audio muxed into the RTP stream by the air unit,
+# split by payload type). Leave PIXELPILOT_AUDIO empty to keep audio off.
+# Set PIXELPILOT_AUDIO="--audio" to enable, and optionally pick the ALSA output
+# by card id (from /proc/asound/cards), e.g. PIXELPILOT_AUDIO_DEVICE="rockchiphdmi".
+# Empty = system default. Also selectable live from the OSD (System -> Receiver -> Output).
+# PIXELPILOT_AUDIO_VOLUME is the software output volume in percent (0-100, empty = 100%).
+PIXELPILOT_AUDIO=""
+PIXELPILOT_AUDIO_DEVICE=""
+PIXELPILOT_AUDIO_VOLUME=""
+PIXELPILOT_AUDIO_ARGS="$PIXELPILOT_AUDIO"
+if [ -n "$PIXELPILOT_AUDIO" ]; then
+	[ -n "$PIXELPILOT_AUDIO_DEVICE" ] && PIXELPILOT_AUDIO_ARGS="$PIXELPILOT_AUDIO_ARGS --audio-device $PIXELPILOT_AUDIO_DEVICE"
+	[ -n "$PIXELPILOT_AUDIO_VOLUME" ] && PIXELPILOT_AUDIO_ARGS="$PIXELPILOT_AUDIO_ARGS --audio-volume $PIXELPILOT_AUDIO_VOLUME"
+fi
+
+PIXELPILOT_ARGS="--config $PIXELPILOT_CONFIG_YAML $PIXELPILOT_OSD_ARGS --codec $PIXELPILOT_CODEC --screen-mode $PIXELPILOT_SCREEN_MODE --video-scale $PIXELPILOT_VIDEO_SCALE $PIXELPILOT_AUDIO_ARGS --dvr-fmp4 --dvr-sequenced-files --dvr-template /media/dvr/record_%Y-%m-%d_%H-%M-%S.mp4 $PIXELPILOT_LIVE_COLORTRANS --dvr-reenc-codec $PIXELPILOT_DVR_CODEC --dvr-reenc-bitrate $PIXELPILOT_DVR_BITRATE --dvr-reenc-fps $PIXELPILOT_DVR_FPS $PIXELPILOT_DVR_OSD --dvr-reenc-resolution $PIXELPILOT_DVR_RESOLUTION --dvr-mode $PIXELPILOT_DVR_MODE --dvr-max-size $PIXELPILOT_DVR_MAX_SIZE"
