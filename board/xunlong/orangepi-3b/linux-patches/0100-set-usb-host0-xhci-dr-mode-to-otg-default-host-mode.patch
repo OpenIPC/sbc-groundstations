@@ -1,0 +1,15 @@
+diff --git a/arch/arm64/boot/dts/rockchip/rk3566-orangepi-3b.dts b/arch/arm64/boot/dts/rockchip/rk3566-orangepi-3b.dts
+index 890f1cb78..c7e6cf050 100644
+--- a/arch/arm64/boot/dts/rockchip/rk3566-orangepi-3b.dts
++++ b/arch/arm64/boot/dts/rockchip/rk3566-orangepi-3b.dts
+@@ -881,7 +881,9 @@
+ };
+ 
+ &usb_host0_xhci {
+-	dr_mode = "host";
++	dr_mode = "otg";
++	usb-role-switch;
++	role-switch-default-mode = "host";
+ 	extcon = <&usb2phy0>;
+ 	status = "okay";
+ };
