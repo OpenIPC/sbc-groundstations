@@ -23,7 +23,7 @@
             "x": -250,
             "y": 0,
             "facts": [
-                {"name": "os_mon.wifi.rssi", "tags": {"type": "rssi_a"}}
+                {"name": "os_mon.wifi.rssi", "tags": {"adapter": "0", "type": "rssi_a"}}
             ],
             "ranges_and_icons": [
                 {"range": [70, 100], "icon_path": "signal1.png"},
@@ -42,7 +42,7 @@
             "x": -205,
             "y": 0,
             "facts": [
-                {"name": "os_mon.wifi.rssi", "tags": {"type": "rssi_b"}}
+                {"name": "os_mon.wifi.rssi", "tags": {"adapter": "0", "type": "rssi_b"}}
             ],
             "ranges_and_icons": [
                 {"range": [70, 100], "icon_path": "signal1.png"},
