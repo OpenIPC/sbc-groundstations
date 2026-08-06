@@ -23,7 +23,7 @@
             "x": -250,
             "y": 0,
             "facts": [
-                {"name": "os_mon.wifi.rssi", "tags": {"type": "rssi_a"}}
+                {"name": "os_mon.wifi.rssi", "tags": {"adapter": "0", "type": "rssi_a"}}
             ],
             "ranges_and_icons": [
                 {"range": [70, 100], "icon_path": "signal1.png"},
@@ -42,7 +42,7 @@
             "x": -205,
             "y": 0,
             "facts": [
-                {"name": "os_mon.wifi.rssi", "tags": {"type": "rssi_b"}}
+                {"name": "os_mon.wifi.rssi", "tags": {"adapter": "0", "type": "rssi_b"}}
             ],
             "ranges_and_icons": [
                 {"range": [70, 100], "icon_path": "signal1.png"},
@@ -170,6 +170,58 @@
             ]
         },
         {
+            "name": "WFBNG RF temperature adapter 1",
+            "type": "---IconTplTextWidget",
+            "x": -250,
+            "y": 155,
+            "icon_path": "device_thermostat.png",
+            "template": "RF %u°C / %u°C",
+            "___comment": "BoxWidget height above needs to be 165",
+            "facts": [
+                {"name": "wfbcli.rf_temperature", "tags": {"ant_id": "0"}},
+                {"name": "wfbcli.rf_temperature", "tags": {"ant_id": "256"}}
+            ]
+        },
+        {
+            "name": "APFPV WiFi RF temperature adapter 1",
+            "type": "---IconTplTextWidget",
+            "x": -250,
+            "y": 155,
+            "icon_path": "device_thermostat.png",
+            "template": "RF %i°C / %i°C",
+            "___comment": "BoxWidget height above needs to be 165",
+            "facts": [
+                {"name": "os_mon.wifi.temperature", "tags": {"adapter": "0", "rf_path": "0"}},
+                {"name": "os_mon.wifi.temperature", "tags": {"adapter": "0", "rf_path": "1"}}
+            ]
+        },
+        {
+            "name": "APFPV WiFi RF temperature adapter 2",
+            "type": "---IconTplTextWidget",
+            "x": -250,
+            "y": 185,
+            "icon_path": "device_thermostat.png",
+            "template": "RF %i°C / %i°C",
+            "___comment": "BoxWidget height above needs to be 195",
+            "facts": [
+                {"name": "os_mon.wifi.temperature", "tags": {"adapter": "1", "rf_path": "0"}},
+                {"name": "os_mon.wifi.temperature", "tags": {"adapter": "1", "rf_path": "1"}}
+            ]
+        },
+        {
+            "name": "APFPV WiFi RF temperature adapter 3",
+            "type": "---IconTplTextWidget",
+            "x": -250,
+            "y": 215,
+            "icon_path": "device_thermostat.png",
+            "template": "RF %i°C / %i°C",
+            "___comment": "BoxWidget height above needs to be 225",
+            "facts": [
+                {"name": "os_mon.wifi.temperature", "tags": {"adapter": "2", "rf_path": "0"}},
+                {"name": "os_mon.wifi.temperature", "tags": {"adapter": "2", "rf_path": "1"}}
+            ]
+        },
+        {
             "type": "IconSelectorWidget",
             "name": "No signal icon",
             "x": -250,
@@ -217,6 +269,19 @@
                     "__comment": "Should be sum per-second, scaled to Megs",
                     "name": "gstreamer.received_bytes"
                 }
+            ]
+        },
+        {
+            "name": "Video codec",
+            "type": "IconSelectorWidget",
+            "x": -80,
+            "y": 65,
+            "facts": [
+                { "name": "video.codec_id" }
+            ],
+            "ranges_and_icons": [
+                { "range": [0, 0], "icon_path": "h264.png" },
+                { "range": [1, 1], "icon_path": "h265.png" }
             ]
         },
         {
