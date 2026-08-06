@@ -1200,9 +1200,14 @@ EOF
         exit 1
         ;;
 esac
+rc=$?
 
-case $? in
+case "$1" in
+    set|button) sync ;;
+esac
+
+case $rc in
     0) ;;
     1) exit 0 ;;
-    *) exit $? ;;
+    *) exit $rc ;;
 esac
