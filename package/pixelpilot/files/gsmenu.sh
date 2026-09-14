@@ -757,6 +757,10 @@ case "$@" in
     "get gs system rec_enabled"*)
         echo 0
         ;;
+    "get gs system dvr_on_signal"*)
+        . /etc/default/pixelpilot
+        [ x$PIXELPILOT_DVR_ON_SIGNAL = x"" ] && echo 0 || echo 1
+        ;;
     "get gs system dvr_osd"*)
         . /etc/default/pixelpilot
         [ x$PIXELPILOT_DVR_OSD = x"" ] && echo 0 || echo 1
@@ -866,6 +870,13 @@ EOF
             : #noop
         else
             : #noop
+        fi
+        ;;
+    "set gs system dvr_on_signal"*)
+        if [ "$5" = "on" ]; then
+            sed -i "s/^PIXELPILOT_DVR_ON_SIGNAL=.*/PIXELPILOT_DVR_ON_SIGNAL=\"--dvr-on-signal\"/" /etc/default/pixelpilot
+        else
+            sed -i "s/^PIXELPILOT_DVR_ON_SIGNAL=.*/PIXELPILOT_DVR_ON_SIGNAL=\"\"/" /etc/default/pixelpilot
         fi
         ;;
     "set gs system dvr_mode"*)
