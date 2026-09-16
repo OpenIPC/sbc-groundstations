@@ -7,7 +7,12 @@ set -o pipefail
 
 REMOTE_IP="${REMOTE_IP:-10.5.0.10}"
 AIR_FIRMWARE_TYPE="${AIR_FIRMWARE_TYPE:-wfb}"
-SSH_PASS="12345"
+SSH_PASS="${SSH_PASS:-CHANGEME}"  # air unit's root password -- NOT the GS's own, a
+                                  # prior copy-paste bug had this literally "12345"
+                                  # (the GS's password), so every SSH to the air
+                                  # unit silently failed auth. Real value belongs in
+                                  # /etc/gsmenu.local.sh (untracked), never here.
+[ -r /etc/gsmenu.local.sh ] && . /etc/gsmenu.local.sh
 CACHE_DIR="/tmp/gsmenu_cache"
 CACHE_TTL=10 # seconds
 MAJESTIC_YAML="/etc/majestic.yaml"
@@ -72,6 +77,63 @@ get_aalink_value() {
 # Helper: list available wifi channels (used by air and gs)
 list_wifi_channels() {
     iw list | grep MHz | grep -v disabled | grep -v "radar detection" | grep \* | tr -d '[]' | awk '{print $4 " (" $2 " " $3 ")"}' | grep '^[1-9]' | sort -n | uniq | head -c -1
+}
+
+# Channel scan (HDZero-style): hop the ground station's SECONDARY wfb-ng RX
+# NIC across every channel the adapter supports, sampling the raw 802.11 frame
+# rate it hears on each as a stand-in for RF congestion. rx_packets, not `iw
+# survey dump`, because the rtl88xxau_wfb/rtl88x2eu/rtl88x2cu drivers used here
+# generally don't implement cfg80211's survey callback (busy/noise would read
+# zero) — packet counting only needs the NIC to be in monitor mode, which it
+# already is for wfb-ng RX, and is the same technique the on-device
+# vrx_monitor.sh diagnostic already relies on for these exact adapters.
+#
+# The PRIMARY NIC is left on the live channel throughout, so video keeps
+# receiving (single-antenna) during the scan; with only one configured NIC
+# there is no secondary to spare and the single NIC is used for both, so video
+# will drop out for the ~2s the scan takes. Results are raw per-channel frame
+# counts (channel:count lines) — the caller normalizes into a bar/percentage,
+# since the right scale depends on how many channels were sampled.
+#
+# `iw list` reports every channel the PHY supports, both bands — but wfb-ng
+# only ever runs on ONE band at a time (this rig: 5.8GHz only), so scanning
+# the other band just adds irrelevant rows. Filtered to the live channel's own
+# band (>=36 == 5GHz+, matching the "Channel" dropdown's own channel numbers).
+CHANSCAN_DWELL_S=0.25
+chanscan_run() {
+    . /etc/default/wifibroadcast
+    set -- $WFB_NICS
+    local scan_nic="${2:-$1}"
+    [ -z "$scan_nic" ] && return 1
+
+    local cur_channel cur_bw ht
+    cur_channel=$(awk -F= '/^wifi_channel/{print $2}' /etc/wifibroadcast.cfg | awk '{print $1}')
+    cur_bw=$(awk -F= '/^bandwidth/{print $2}' /etc/wifibroadcast.cfg | tr -d ' ')
+    case "$cur_bw" in 40) ht="HT40+" ;; *) ht="NOHT" ;; esac  # wfb-ng runs 20MHz as plain NOHT, not HT20
+
+    local statf="/sys/class/net/${scan_nic}/statistics/rx_packets"
+    local ch before after count results=""
+    for ch in $(list_wifi_channels | awk '{print $1}'); do
+        if [ "$cur_channel" -ge 36 ]; then
+            [ "$ch" -lt 36 ] && continue
+        else
+            [ "$ch" -ge 36 ] && continue
+        fi
+        iw dev "$scan_nic" set channel "$ch" "$ht" 2>/dev/null || continue
+        before=$(cat "$statf" 2>/dev/null); [ -z "$before" ] && before=0
+        sleep "$CHANSCAN_DWELL_S"
+        after=$(cat "$statf" 2>/dev/null); [ -z "$after" ] && after=0
+        count=$((after - before))
+        [ "$count" -lt 0 ] && count=0
+        results="${results}${ch}:${count}
+"
+    done
+
+    # Restore the scan NIC to the live channel/width before returning.
+    iw dev "$scan_nic" set channel "$cur_channel" "$ht" 2>/dev/null
+
+    printf '%s' "$results" > /tmp/gsmenu_cache/chanscan_results
+    printf '%s' "$results"
 }
 
 # Remove the network stanza for <ssid> from wpa_supplicant.conf (no-op if absent).
@@ -606,6 +668,9 @@ case "$@" in
         channel=$(grep wifi_channel /etc/wifibroadcast.cfg | cut -d ' ' -f 3)
         iw list | grep "\[$channel\]" | tr -d '[]' | awk '{print $4 " (" $2 " " $3 ")"}' | sort -n | uniq | head -c -1
         emit_values_cmd list_wifi_channels
+        ;;
+    "get gs wfbng chanscan_results")
+        chanscan_run
         ;;
     "get gs wfbng bandwidth")
         grep ^bandwidth /etc/wifibroadcast.cfg | cut -d ' ' -f 3
