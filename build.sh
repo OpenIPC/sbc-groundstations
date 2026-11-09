@@ -67,6 +67,22 @@ setup_buildroot() {
     fi
 }
 
+# Apply buildroot-patches/*.patch to the Buildroot tree. A patch that
+# reverses cleanly is already in (buildroot/ kept from an earlier run) and
+# is skipped; one that applies neither way stops the build.
+patch_buildroot() {
+    local p
+    for p in buildroot-patches/*.patch; do
+        [ -e "$p" ] || continue
+        if patch -d "$BUILDROOT_DIR" -p1 -R -s -f --dry-run < "$p" >/dev/null 2>&1; then
+            echo "Buildroot patch already applied: $(basename "$p")"
+        else
+            echo "Applying Buildroot patch: $(basename "$p")"
+            patch -d "$BUILDROOT_DIR" -p1 -N < "$p"
+        fi
+    done
+}
+
 # Function to build the project
 build_project() {
 
@@ -123,7 +139,8 @@ main() {
     
     # Setup Buildroot if needed
     setup_buildroot
-    
+    patch_buildroot
+
     # Build the project
     build_project
 }
