@@ -69,16 +69,24 @@ setup_buildroot() {
 
 # Apply buildroot-patches/*.patch to the Buildroot tree. A patch that
 # reverses cleanly is already in (buildroot/ kept from an earlier run) and
-# is skipped; one that applies neither way stops the build.
+# is skipped. Otherwise it is dry-run first, because patch applies the hunks
+# that fit even when others fail: a patch that does not apply as a whole
+# leaves the tree untouched and stops the build.
 patch_buildroot() {
     local p
     for p in buildroot-patches/*.patch; do
         [ -e "$p" ] || continue
         if patch -d "$BUILDROOT_DIR" -p1 -R -s -f --dry-run < "$p" >/dev/null 2>&1; then
             echo "Buildroot patch already applied: $(basename "$p")"
-        else
+        elif patch -d "$BUILDROOT_DIR" -p1 -N -s -f --dry-run < "$p" >/dev/null 2>&1; then
             echo "Applying Buildroot patch: $(basename "$p")"
-            patch -d "$BUILDROOT_DIR" -p1 -N < "$p"
+            patch -d "$BUILDROOT_DIR" -p1 -N -f < "$p"
+        else
+            echo "Error: $p neither applies to $BUILDROOT_DIR/ nor is fully applied there." >&2
+            echo "The tree is partly patched or is not Buildroot $BUILDROOT_VERSION. Remove it" >&2
+            echo "except the downloads in $BUILDROOT_DIR/dl and run $0 again:" >&2
+            echo "  find $BUILDROOT_DIR -mindepth 1 -maxdepth 1 ! -name dl -exec rm -rf {} +" >&2
+            exit 1
         fi
     done
 }
