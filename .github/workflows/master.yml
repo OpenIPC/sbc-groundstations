@@ -17,7 +17,8 @@ env:
 jobs:
   buildroot:
     name: Build Firmware
-    runs-on: ubuntu-latest
+    # Pinned: ubuntu-latest moved to 26.04, which has no qemu-user-static
+    runs-on: ubuntu-24.04
 
     strategy:
       fail-fast: false
